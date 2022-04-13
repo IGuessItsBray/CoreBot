@@ -1,0 +1,26 @@
+{
+  "name": "bot-skeleton",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "@discordjs/voice": "github:discordjs/voice",
+    "colors": "^1.4.0",
+    "discord-api-types": "^0.28.0",
+    "discord-auditlog": "^3.0.3",
+    "discord-player": "^5.2.2",
+    "discord.js": "^13.6.0",
+    "discordjs-logger": "^3.0.0",
+    "distube": "^3.3.2",
+    "eris": "^0.16.1",
+    "ffmpeg": "^0.0.4",
+    "mongoose": "^6.2.10"
+  }
+}
