@@ -20,6 +20,7 @@
     "discordjs-logger": "^3.0.0",
     "distube": "^3.3.2",
     "eris": "^0.16.1",
+    "express": "^4.17.3",
     "ffmpeg": "^0.0.4",
     "mongoose": "^6.2.10"
   }

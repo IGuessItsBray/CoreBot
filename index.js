@@ -2,7 +2,9 @@ const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const config = require("./config.json");
+const { Player } = require('discord-player')
 const { token } = require('./config.json');
+const { readdirSync } = require('fs');
 
 //Hello World!!
 
@@ -15,10 +17,14 @@ const client = new Client({ intents: [Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFolders = fs.readdirSync('./commands');
 
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
+for (const folder of commandFolders) {
+	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const command = require(`./commands/${folder}/${file}`);
+		client.commands.set(command.name, command);
+	}
 }
 
 client.once('ready', () => {
@@ -56,7 +62,7 @@ client.once('ready', () => {
 			});
 		}
 	});
-	
+
 	//Connect-To-Voice - BUG
 	const guild = client.guilds.cache.get(config.GUILDID);
 	try {
@@ -78,24 +84,25 @@ client.once('ready', () => {
 
 //Cross Server Chat 
 function formatDate() {
-    const date = new Date();
+	const date = new Date();
 
-    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
+	return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
 }
 
 setup(bot, config);
 
 bot.connect();
 
-bot.on('error', (err) => console.log(`${formatDate()} : ${err.stack || err.message}`) );
-bot.on('warn', (msg) => console.log(`${formatDate()} : ${msg}`) );
+bot.on('error', (err) => console.log(`${formatDate()} : ${err.stack || err.message}`));
+bot.on('warn', (msg) => console.log(`${formatDate()} : ${msg}`));
 
 client.once('ready', () => {
-console.log('✅ Bot │ Bot online!');
+	console.log('✅ Bot │ Bot online!');
 });
 
 // Create & Initialize the DB connection
 require('./db/mongo').initMongo();
+
 
 
 //Addons

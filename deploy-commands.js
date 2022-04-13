@@ -12,9 +12,19 @@ const client = new Client({
 
 // Keep the command reading mostly the same - nothing to fix here.
 const commands = [];
+const commandFolders = fs.readdirSync('./commands');
+
+for (const folder of commandFolders) {
+    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        commands.push(command);
+    }
+}
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
+    
 
     //commands.push(command.data.toJSON());
     // replace the above line with the below if you use my format instead of command builders 

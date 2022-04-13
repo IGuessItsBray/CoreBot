@@ -67,4 +67,4 @@ const {
 	getUser,
 	deleteUser,
 	getAllUsers,
-} = require('../db/dbAccess');
+} = require('../../db/dbAccess');
