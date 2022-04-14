@@ -122,7 +122,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction) {
-        const announceChannelIds = require('./config.json').GUILD_CHANNELS;
+        const announceChannelIds = require('../config.json').GUILD_CHANNELS;
         const type = interaction.options.getString('type');
         const author = interaction.options.getString('author');
         const colour = interaction.options.getString('colour') ?? '000000';
