@@ -122,7 +122,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction) {
-        const announceChannelIds = require('../config.json').GUILD_CHANNELS;
+        const announceChannelIds = require('../../config.json').GUILD_CHANNELS;
         const type = interaction.options.getString('type');
         const author = interaction.options.getString('author');
         const colour = interaction.options.getString('colour') ?? '000000';
@@ -169,7 +169,7 @@ module.exports = {
 
                 // match guilds to selected guild ids
                 // retrieve the matching channels from the client
-                const announceChannelIds = require('../config.json').GUILD_CHANNELS;
+                const announceChannelIds = require('../../config.json').GUILD_CHANNELS;
                 const selectedChannels = selectInteraction.values.map(id => {
                     return interaction.client.channels.cache.get(announceChannelIds[id]);
                 });
