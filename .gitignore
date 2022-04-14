@@ -127,5 +127,6 @@ dist
 .pnp.*
 # Configuration
 config.json
+config2.json
 .env
 config.js
