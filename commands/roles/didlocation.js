@@ -42,11 +42,11 @@ module.exports = {
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046954658906183')
-                    .setLabel('North America')
+                    .setLabel('NA')
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046955015409705')
-                    .setLabel('South America')
+                    .setLabel('SA')
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046955816538132')
