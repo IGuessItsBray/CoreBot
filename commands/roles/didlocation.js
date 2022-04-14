@@ -52,16 +52,16 @@ module.exports = {
                     .setCustomId('rolebutton_945046955816538132')
                     .setLabel('Asia')
                     .setStyle('PRIMARY'),
-                new MessageButton()
-                    .setCustomId('rolebutton_945046956516978778')
-                    .setLabel('Oceania')
-                    .setStyle('PRIMARY'),
             );
         const row2 = new MessageActionRow()
             .addComponents(
                 new MessageButton()
                     .setCustomId('rolebutton_945046957133553694')
                     .setLabel('Africa')
+                    .setStyle('PRIMARY'),
+                new MessageButton()
+                    .setCustomId('rolebutton_945046956516978778')
+                    .setLabel('Oceania')
                     .setStyle('PRIMARY'),
             );
 
