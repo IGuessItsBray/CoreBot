@@ -42,11 +42,11 @@ module.exports = {
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046954658906183')
-                    .setLabel('NA')
+                    .setLabel('North America')
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046955015409705')
-                    .setLabel('SA')
+                    .setLabel('South America')
                     .setStyle('PRIMARY'),
                 new MessageButton()
                     .setCustomId('rolebutton_945046955816538132')
@@ -56,13 +56,16 @@ module.exports = {
                     .setCustomId('rolebutton_945046956516978778')
                     .setLabel('Oceania')
                     .setStyle('PRIMARY'),
+            );
+        const row2 = new MessageActionRow()
+            .addComponents(
                 new MessageButton()
                     .setCustomId('rolebutton_945046957133553694')
                     .setLabel('Africa')
                     .setStyle('PRIMARY'),
             );
 
-        await interaction.reply({ content: 'Select your age:', components: [row] });
+        await interaction.reply({ content: 'Select your age:', components: [row, row2] });
     },
 
     // ------------------------------------------------------------------------------
