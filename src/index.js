@@ -21,11 +21,11 @@ exports.setup = function (bot, config) {
                 network[val.channelID] = val;
                 channelsCache[val.channelID] = new Map();
                 
-                bot.executeWebhook(val.whID, val.whToken, {
-                    username: bot.user.username,
-                    avatarURL: bot.user.avatarURL,
-                    content: 'Bot Ready - Cross Server system operational!',
-                } );
+                //bot.executeWebhook(val.whID, val.whToken, {
+                    //username: bot.user.username,
+                    //avatarURL: bot.user.avatarURL,
+                    //content: 'Bot Ready - Cross Server system operational!',
+                //} );
             }
         }
     } );
