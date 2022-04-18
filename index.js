@@ -62,22 +62,6 @@ client.once('ready', () => {
 			});
 		}
 	});
-
-	//Connect-To-Voice - BUG
-	const guild = client.guilds.cache.get(config.GUILDID);
-	try {
-		joinVoiceChannel({
-			adapterCreator: guild.voiceAdapterCreator,
-			guildId: guild.id,
-			channelId: config.CHANNELID,
-			selfDeaf: config.DEAFENED ?? false,
-			selfMute: config.MICMUTED ?? false
-		});
-		console.info(`✅ CTV │ "${guild.channels.cache.get(config.CHANNELID).name}" in guild "${guild.name}."`);
-	} catch (e) {
-		console.error('❌│ Check TOKEN, GUILDID, and CHANNELID in config.json');
-		process.exit(1)
-	}
 });
 
 
@@ -116,3 +100,4 @@ console.log('✅ JoinLeave │ JoinLeave online!');
 const logs = require("./logs");
 logs(client);
 console.log('✅ Logs │ Logs Active!');
+const ctv = require("./modules/ctv");
