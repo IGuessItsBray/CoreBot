@@ -1,3 +1,5 @@
+const admin_roles = require('../../config.json').PERMS.ADMIN;
+const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -11,26 +13,13 @@ module.exports = {
     enabled: true,
     default_permission: false,
     permissions: [
-        {
-            id: "804915620654350346",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "938247355684249631",
-            type: "ROLE",
-            permission: true
-        },
-        {
-            id: "945205088287326248",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "530845321270657085",
-            type: "USER",
-            permission: true
-        }
+        ...dev_users.map(user => {
+            return {
+                id: user,
+                type: 'USER',
+                permission: true,
+            };
+        }),
     ],
 
     // ------------------------------------------------------------------------------

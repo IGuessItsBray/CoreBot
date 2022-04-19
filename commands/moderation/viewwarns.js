@@ -1,4 +1,5 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { MessageEmbed } = require("discord.js");
+const { getWarnings } = require('../../db/dbAccess');
 const admin_roles = require('../../config.json').PERMS.ADMIN;
 const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = {
@@ -7,11 +8,11 @@ module.exports = {
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'element',
-    description: 'Select your Element!',
+    name: 'viewwarns',
+    description: 'View a members warnings',
     type: 'CHAT_INPUT',
-    guild_id: [`940774597287112766`],
-    enabled: true,
+    guild_id: [],
+    enabled: false,
     default_permission: false,
     permissions: [
         ...admin_roles.map(role => {
@@ -29,34 +30,50 @@ module.exports = {
             };
         }),
     ],
+
     // ------------------------------------------------------------------------------
     // Options
     // ------------------------------------------------------------------------------
 
-    options: [],
+    options: [
+        {
+            name: 'user',
+            description: 'The user to check',
+            type: 'USER',
+            required: false,
+        },
+        {
+            name: 'userid',
+            description: 'The userID to check',
+            type: 'STRING',
+            required: false,
+        },
+    ],
 
     // ------------------------------------------------------------------------------
     // Execution
     // ------------------------------------------------------------------------------
 
     async execute(interaction, ephemeral = false) {
-        const row = new MessageActionRow()
-        .addComponents(
-            new MessageButton()
-                .setCustomId('rolebutton_945776263367372850')
-                .setLabel('Air')
-                .setStyle('PRIMARY'),
-            new MessageButton()
-                .setCustomId('rolebutton_945776318681849926')
-                .setLabel('Army')
-                .setStyle('PRIMARY'),
-            new MessageButton()
-                .setCustomId('rolebutton_945776387728482354')
-                .setLabel('Sea')
-                .setStyle('PRIMARY'),
+        const userId =
+            interaction.options.getString('userid') ??
+            interaction.options.getUser('user').id;
+        if (!userId) {
+            await interaction.reply('no user specified');
+            return;
+        }
+        const warnings = await getWarnings(
+            interaction.guild,
+            userId,
         );
+        const formatted = warnings.map(warning => {
+            return `<t:${Math.floor(new Date(warning.timestamp).getTime() / 1000.0)}:R> <@${warning.modId}>: ${warning.reason}`;
+        }).join('\n');
+        await interaction.reply({
+            content: `**Warnings for <@${userId}>:**\n${formatted ?? '*none*'}`,
+            allowedMentions:{ parse: [] },
+        });
 
-    await interaction.reply({ content: 'Select your element:', components: [row] });
     },
 
     // ------------------------------------------------------------------------------

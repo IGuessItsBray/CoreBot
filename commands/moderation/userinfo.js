@@ -1,4 +1,6 @@
 const { ContextMenuInteraction, MessageEmbed, Intents } = require("discord.js");
+const admin_roles = require('../../config.json').PERMS.ADMIN;
+const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = {
 
     // ------------------------------------------------------------------------------

@@ -1,4 +1,6 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu, CommandInteraction} = require('discord.js');
+const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu, CommandInteraction } = require('discord.js');
+const admin_roles = require('../../config.json').PERMS.ADMIN;
+const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -12,49 +14,20 @@ module.exports = {
     enabled: true,
     default_permission: false,
     permissions: [
-        //Brays Place
-        {
-            id: "804915620654350346",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "938247355684249631",
-            type: "ROLE",
-            permission: true
-        },
-        {
-            id: "938244544653320272",
-            type: "ROLE",
-            permission: true
-        },
-        //Bug
-        {
-            id: "948663216353976350",
-            type: "ROLE",
-            permission: true
-        },
-        {
-            id: "945205088287326248",
-            type: "ROLE",
-            permission: false
-        },
-        //Brays User ID
-        {
-            id: "530845321270657085",
-            type: "USER",
-            permission: true
-        },
-        {
-            id: "952281210229522482",
-            type: "ROLE",
-            permission: true
-        },
-        {
-            id: "944832140028297246",
-            type: "ROLE",
-            permission: false
-        },
+        ...admin_roles.map(role => {
+            return {
+                id: role,
+                type: 'ROLE',
+                permission: true,
+            };
+        }),
+        ...dev_users.map(user => {
+            return {
+                id: user,
+                type: 'USER',
+                permission: true,
+            };
+        }),
     ],
 
     // ------------------------------------------------------------------------------
@@ -69,20 +42,19 @@ module.exports = {
 
     async execute(interaction) {
         var invites = [];
-        interaction.client.guilds.cache.forEach(async (guild) => {
-            const channel = guild.channels.cache
-                .filter((channel) => channel.type === 'text')
-                .first();
-            await channel
-            guild.invites.create(channel)
-                .then(async (invite) => {
-                    invites.push(`${guild.name} - ${invite.url}`);
-                })
-                .catch((error) => console.log(error));
-            console.log(invites);
-        });
-        await channel.send(invites)
-        await interaction.editReply(`Invites sent`, { ephemeral: true });
+        await Promise.all(
+            interaction.client.guilds.cache.map(async guild => {
+                const channel = guild.channels.cache
+                    .filter((channel) => channel.type === 'GUILD_TEXT')
+                    .first();
+                await channel.guild.invites.create(channel, { temporary: true, maxuses: 1, maxAge: 300 })
+                    .then(async (invite) => {
+                        invites.push(`${guild.name} - ${invite.url}`);
+                    })
+                    .catch((error) => console.log(error));
+            })
+        );
+        await interaction.reply({ content: `Invites:\n${invites.join('\n')}`, ephemeral: false });
     },
 
     // ------------------------------------------------------------------------------

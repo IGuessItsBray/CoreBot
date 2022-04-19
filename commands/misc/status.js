@@ -1,5 +1,6 @@
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-
+const admin_roles = require('../../config.json').PERMS.ADMIN;
+const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = { 
 
     // ------------------------------------------------------------------------------
@@ -13,49 +14,13 @@ module.exports = {
     enabled: true,
     default_permission: false,
     permissions: [
-        //Brays Place
-        {
-            id: "804915620654350346",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "938247355684249631",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "938244544653320272",
-            type: "ROLE",
-            permission: false
-        },
-        //Bug
-        {
-            id: "948663216353976350",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "945205088287326248",
-            type: "ROLE",
-            permission: false
-        },
-        //Brays User ID
-        {
-            id: "530845321270657085",
-            type: "USER",
-            permission: true
-        },
-        {
-            id: "952281210229522482",
-            type: "ROLE",
-            permission: false
-        },
-        {
-            id: "944832140028297246",
-            type: "ROLE",
-            permission: false
-        },
+        ...dev_users.map(user => {
+            return {
+                id: user,
+                type: 'USER',
+                permission: true,
+            };
+        }),
     ],
 
     // ------------------------------------------------------------------------------

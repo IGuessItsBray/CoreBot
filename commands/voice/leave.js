@@ -1,3 +1,5 @@
+const admin_roles = require('../../config.json').PERMS.ADMIN;
+const dev_users = require('../../config.json').PERMS.DEVS;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -9,6 +11,22 @@ module.exports = {
     type: 'CHAT_INPUT', // CHAT_INPUT, USER, MESSAGE
     guild_id: [],
     enabled: true,
+    permissions: [
+        ...admin_roles.map(role => {
+            return {
+                id: role,
+                type: 'ROLE',
+                permission: true,
+            };
+        }),
+        ...dev_users.map(user => {
+            return {
+                id: user,
+                type: 'USER',
+                permission: true,
+            };
+        }),
+    ],
 
     // ------------------------------------------------------------------------------
     // Options
