@@ -107,18 +107,19 @@ module.exports = {
 
     async execute(interaction) {
         const seconds = interaction.options.getNumber('seconds');
-        const minutes = interaction.options.getNumber('minutes');
-        const hours = interaction.options.getNumber('hours');
-        const days = interaction.options.getNumber('days');
+        const minutes = (interaction.options.getNumber('minutes') ?? 0) / 60;
+        const hours = (interaction.options.getNumber('hours') ?? 0) / 60 / 60;
+        const days = (interaction.options.getNumber('days') ?? 0) / 60 / 60 / 24;
         await interaction.deferReply({ ephemeral: true });
         const message = interaction.options.getString('message');
         const channel = interaction.options.getChannel('channel') ?? interaction.channel;
         setTimeout(function () {
-           channel.send({ content: message });;
-        }, seconds * 1000);
+            channel.send(`Reminder for: ${interaction.user}:`)
+            channel.send({ content: message });;
+        }, (seconds + minutes + hours + days) * 1000);
 
 
-        await interaction.editReply({ content: 'Message sent', ephemeral: true });
+        await interaction.editReply(`Reminder set: ${message}`, { ephemeral: true });
     },
 
     // ------------------------------------------------------------------------------
