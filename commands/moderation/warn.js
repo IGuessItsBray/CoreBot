@@ -2,6 +2,7 @@ const { MessageEmbed } = require("discord.js");
 const { newWarning } = require('../../db/dbAccess');
 const admin_roles = require('../../config.json').PERMS.ADMIN;
 const dev_users = require('../../config.json').PERMS.DEVS;
+const everyone = require('../../config.json').PERMS.EVERYONE;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -13,13 +14,20 @@ module.exports = {
     type: 'CHAT_INPUT',
     guild_id: [],
     enabled: false,
-    default_permission: false,
+    default_permission: true,
     permissions: [
         ...admin_roles.map(role => {
             return {
                 id: role,
                 type: 'ROLE',
                 permission: true,
+            };
+        }),
+        ...everyone.map(role => {
+            return {
+                id: role,
+                type: 'ROLE',
+                permission: false,
             };
         }),
         ...dev_users.map(user => {

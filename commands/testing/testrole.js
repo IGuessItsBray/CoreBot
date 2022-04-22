@@ -1,6 +1,7 @@
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const admin_roles = require('../../config.json').PERMS.ADMIN;
 const dev_users = require('../../config.json').PERMS.DEVS;
+const everyone = require('../../config.json').PERMS.EVERYONE;
 module.exports = {
 
     // ------------------------------------------------------------------------------

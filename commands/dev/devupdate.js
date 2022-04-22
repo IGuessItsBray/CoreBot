@@ -1,6 +1,7 @@
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu } = require('discord.js');
 const admin_roles = require('../../config.json').PERMS.ADMIN;
 const dev_users = require('../../config.json').PERMS.DEVS;
+const everyone = require('../../config.json').PERMS.EVERYONE;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -15,6 +16,13 @@ module.exports = {
     default_permission: false,
     permissions: [
         ...admin_roles.map(role => {
+            return {
+                id: role,
+                type: 'ROLE',
+                permission: false,
+            };
+        }),
+        ...everyone.map(role => {
             return {
                 id: role,
                 type: 'ROLE',
