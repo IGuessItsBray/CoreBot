@@ -62,7 +62,7 @@ module.exports = {
 
     async execute(interaction, ephemeral = false) {
         const roleset = interaction.options.getString('roleset');
-        if (type === 'color') {
+        if (roleset === 'color') {
             const row = new MessageActionRow()
                 .addComponents(
                     new MessageButton()
@@ -135,7 +135,7 @@ module.exports = {
                 .setFooter({ text: "o/ Hi there!" })
                 .setTimestamp();
             await interaction.reply({ embeds: [embed], components: [row, row2, row3] });
-        } else if (type === 'gender') {
+        } else if (roleset === 'gender') {
             const row = new MessageActionRow()
                 .addComponents(
                     new MessageButton()
@@ -177,7 +177,7 @@ module.exports = {
                 .setFooter({ text: "o/ Hi there!" })
                 .setTimestamp();
             await interaction.reply({ embeds: [embed], components: [row, row2] });
-        } else if (type === 'pronouns') {
+        } else if (roleset === 'pronouns') {
             const row = new MessageActionRow()
                 .addComponents(
                     new MessageButton()
