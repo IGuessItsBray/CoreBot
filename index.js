@@ -91,13 +91,13 @@ require('./db/mongo').initMongo();
 
 //Addons
 client.login(token);
-const buttons = require("./buttons");
+const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
 buttons(client);
 //const joinleave = require("./joinleave");
 //joinleave(client);
 console.log('✅ JoinLeave │ JoinLeave online!');
-const logs = require("./logs");
+const logs = require("./modules/logs");
 logs(client);
 console.log('✅ Logs │ Logs Active!');
 const ctv = require("./modules/ctv");
