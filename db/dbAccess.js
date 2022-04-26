@@ -20,13 +20,16 @@ module.exports = {
 	//getWarning,
 	getWarnings,
 	updateRoleButtons,
-	// getRoleButtons,
+	getRoleButtons,
 	// deleteRoleButtons,
+	getGuildRolebuttons,
 };
 
 // ------------------------------------------------------------------------------
 // Functions
 // ------------------------------------------------------------------------------
+
+//Warnings
 
 async function newWarning(guild, user, mod, reason) {
 
@@ -69,29 +72,58 @@ async function getWarnings(guild, user) {
 	});
 }
 
+//Role Buttons
+
 async function updateRoleButtons(id, guild, embedTitle, embedText, embedFooter, buttons) {
-    if (id && !buttons) throw 'No buttons provided';
+	if (id && !buttons) throw 'No buttons provided';
 
-    id = id ?? (Math.round(Date.now())).toString(36).toUpperCase();
-    buttons = buttons ?? [];
+	id = id ?? (Math.round(Date.now())).toString(36).toUpperCase();
+	buttons = buttons ?? [];
 
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.findOneAndUpdate(
+				{
+					_id: id,
+				},
+				{
+					_id: id,
+					guild: guild?.id ?? guild,
+					embed: {
+						title: embedTitle,
+						text: embedText,
+						footer: embedFooter,
+					},
+					buttons: buttons,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getRoleButtons(id, guild) {
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.findOne({
+				_id: id,
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getGuildRolebuttons(guild) {
     return await mongo().then(async () => {
         try {
-            return await rolebuttonSchema.findOneAndUpdate(
-                {
-                    _id: id,
-                },
-                {
-                    _id: id,
-                    guild: guild?.id ?? guild,
-                    embed: {
-                        title: embedTitle,
-                        text: embedText,
-                        footer: embedFooter,
-                    },
-                    buttons: buttons,
-                },
-                { new: true, upsert: true });
+            return await rolebuttonSchema.find({
+                guild: guild,
+            });
         }
         catch (e) {
             console.error(`dbAccess: ${arguments.callee.name}: ${e}`);

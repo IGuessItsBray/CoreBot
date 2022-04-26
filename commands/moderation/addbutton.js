@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { getRoleButtons } = require('../../db/dbAccess');
 const { updateRoleButtons } = require('../../db/dbAccess');
 const admin_roles = require('../../config.json').PERMS.ADMIN;
 const dev_users = require('../../config.json').PERMS.DEVS;
@@ -9,8 +10,8 @@ module.exports = {
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'updaterolebutton',
-    description: 'Warn a member',
+    name: 'addbutton',
+    description: 'Add a button to the array for roles',
     type: 'CHAT_INPUT',
     guild_id: [],
     enabled: false,
@@ -45,21 +46,39 @@ module.exports = {
 
     options: [
         {
-            name: 'title',
+            name: 'id',
             description: 'The embed title',
             type: 'STRING',
             required: true,
         },
         {
-            name: 'text',
-            description: 'The embed text',
+            name: 'role',
+            description: 'The role to add',
+            type: 'ROLE',
+            required: true,
+        },
+        {
+            name: 'style',
+            description: 'The sytle of the button',
+            choices: [
+                { name: 'Primary', value: 'PRIMARY' },
+                { name: 'Secondary', value: 'SECONDARY' },
+                { name: 'Success', value: 'SUCCESS' },
+                { name: 'Danger', value: 'DANGER' },
+            ],
             type: 'STRING',
             required: true,
         },
         {
-            name: 'footer',
-            description: 'The embed footer',
+            name: 'label',
+            description: 'The label of the button',
             type: 'STRING',
+            required: true,
+        },
+        {
+            name: 'enabled',
+            description: 'Is the button enabled or disabled?',
+            type: 'BOOLEAN',
             required: true,
         },
     ],
@@ -70,13 +89,32 @@ module.exports = {
 
     async execute(interaction, ephemeral = true) {
         const guild = interaction.guild;
-        const embedTitle = interaction.options.getString('title');
-        const embedText = interaction.options.getString('text');
-        const embedFooter = interaction.options.getString('footer');
+        const id = interaction.options.getString('id');
 
-        //asdf
+        // Get the prompt from the database
+        const prompt = await getRoleButtons(id, guild);
+
+        // If the role already exists, overwrite it
+        const buttons = prompt.buttons
+            .filter(b => b.role !== interaction.options.getRole('role').id);
+
+        // Create a 'button' object
+        const newButton = {
+            role: interaction.options.getRole('role').id,
+            style: interaction.options.getString('style'),
+            label: interaction.options.getString('label'),
+            enabled: !interaction.options.getBoolean('enabled'),
+        }
+
         const res =
-            await updateRoleButtons(null, guild, embedTitle, embedText, embedFooter);
+            await updateRoleButtons(
+                id,
+                guild,
+                prompt.embed.title,
+                prompt.embed.text,
+                prompt.embed.footer,
+                [...buttons, newButton]
+            );
 
         await interaction.reply(
             {

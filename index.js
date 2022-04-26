@@ -112,7 +112,6 @@ bot.on('error', (err) => console.log(`${formatDate()} : ${err.stack || err.messa
 bot.on('warn', (msg) => console.log(`${formatDate()} : ${msg}`));
 
 //Modules
-client.login(token);
 const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
 buttons(client);
