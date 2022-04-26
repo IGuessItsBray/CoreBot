@@ -8,6 +8,7 @@ const mongo = require('./mongo').mongoose;
 // ------------------------------------------------------------------------------
 
 const warningSchema = require('./schemas/warningSchema');
+const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -18,6 +19,9 @@ module.exports = {
 	//delWarning,
 	//getWarning,
 	getWarnings,
+	updateRoleButtons,
+	// getRoleButtons,
+	// deleteRoleButtons,
 };
 
 // ------------------------------------------------------------------------------
@@ -63,4 +67,34 @@ async function getWarnings(guild, user) {
 			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
+}
+
+async function updateRoleButtons(id, guild, embedTitle, embedText, embedFooter, buttons) {
+    if (id && !buttons) throw 'No buttons provided';
+
+    id = id ?? (Math.round(Date.now())).toString(36).toUpperCase();
+    buttons = buttons ?? [];
+
+    return await mongo().then(async () => {
+        try {
+            return await rolebuttonSchema.findOneAndUpdate(
+                {
+                    _id: id,
+                },
+                {
+                    _id: id,
+                    guild: guild?.id ?? guild,
+                    embed: {
+                        title: embedTitle,
+                        text: embedText,
+                        footer: embedFooter,
+                    },
+                    buttons: buttons,
+                },
+                { new: true, upsert: true });
+        }
+        catch (e) {
+            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+        }
+    });
 }

@@ -1,6 +1,6 @@
 const fs = require('fs');
-fs.mkdir('./sqlite', { recursive: true }, (err) => { if (err) throw err; });
-const db = require('better-sqlite3')('./sqlite/tags.db', {});
+//fs.mkdir('./sqlite', { recursive: true }, (err) => { if (err) throw err; });
+//const db = require('better-sqlite3')('./sqlite/tags.db', {});
 
 module.exports = {
 	initGuild,
