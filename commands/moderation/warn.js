@@ -73,9 +73,6 @@ module.exports = {
         );
 
         console.log(warning);
-        interaction.client.users.fetch(`${warnedUser}`).then((user) => {
-            user.send(`You have been warned in ${interaction.guild} for ${reason}`);
-           });
         interaction.reply(`Warned ${warnedUser} for ${reason}`)
     },
 
