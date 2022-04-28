@@ -1,15 +1,15 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { getTag, getGuildTags } = require('../../db/dbAccess');
 const { newTag } = require('../../db/dbAccess');
-
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 
 module.exports = {
 	name: 'tag-manager',
 	description: 'Manage tags.',
+	type: OPTION.SUB_COMMAND,
 	enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+	permissions: [FLAGS.SEND_MESSAGES],
 	options: [
 		{
 			name: 'new',
@@ -19,19 +19,19 @@ module.exports = {
 				{
 					name: 'title',
 					description: 'The embed title',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'text',
 					description: 'The embed text',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'footer',
 					description: 'The embed footer',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 			],
@@ -45,7 +45,7 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 			],

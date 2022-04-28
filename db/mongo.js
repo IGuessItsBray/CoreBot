@@ -9,6 +9,7 @@ const { MONGO } = require('../config.json');
 module.exports = {
 	mongoose: getMongo,
 	initMongo,
+	init: initMongo,
 };
 
 // ------------------------------------------------------------------------------

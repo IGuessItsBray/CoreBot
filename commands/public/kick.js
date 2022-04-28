@@ -1,4 +1,6 @@
 const { MessageEmbed } = require("discord.js");
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'kick',
     description: 'Allows the admin or owner to kick the member.',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,13 +21,13 @@ module.exports = {
         {
             name: 'user',
             description: 'The person who you want to kick',
-            type: 'USER',
+            type: OPTION.USER,
             required: true,
         },
         {
             name: 'reason',
             description: 'Reason to kick member',
-            type: 'STRING',
+            type: OPTION.STRING,
             required: true,
         },
     ],

@@ -1,6 +1,5 @@
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
-const everyone = require('../../config.json').PERMS.EVERYONE;
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -11,10 +10,9 @@ module.exports = {
     description: 'Replies with Pong!',
     type: 'CHAT_INPUT',
     guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options

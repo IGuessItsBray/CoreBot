@@ -1,4 +1,6 @@
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'echo',
     description: 'For sending an message from the bot!',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,13 +21,13 @@ module.exports = {
         {
             name: 'message',
             description: 'The message you want to send',
-            type: 'STRING',
+            type: OPTION.STRING,
             required: true,
         },
         {
             name: 'type',
             description: 'The type of message to use',
-            type: 'STRING',
+            type: OPTION.STRING,
             choices: [
                 { name: 'Raw Text', value: 'text' },
                 { name: 'Embed', value: 'embed' },
@@ -38,20 +37,20 @@ module.exports = {
         {
             name: 'channel',
             description: 'The channel you want to send the message in (leave blank for this channel)',
-            type: 'CHANNEL',
+            type: OPTION.CHANNEL,
             channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
             required: false,
         },
         {
             name: 'colour',
             description: 'Embed Colour Hex (Don\'t include #)',
-            type: 'STRING',
+            type: OPTION.STRING,
             required: false,
         },
         {
             name: 'header',
             description: 'Embed Header',
-            type: 'STRING',
+            type: OPTION.STRING,
             required: false,
         },
     ],

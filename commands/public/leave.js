@@ -1,17 +1,16 @@
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'join',
-    description: 'have the bot Join your channel',
-    type: 'CHAT_INPUT', // CHAT_INPUT, USER, MESSAGE
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    name: 'leave',
+    description: 'have the bot Leave your channel',
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -24,18 +23,10 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, ephemeral = true) {
-
-        const member = await interaction.member.fetch(true);
-        const voiceId = member.voice.channelId;
-
-        if(!voiceId) return;
-
-        const voiceChannel = await interaction.client.channels.fetch(voiceId);
-
-        require('../../modules/ctv').joinChannel(voiceChannel);
+        require('../modules/ctv').leaveChannel(interaction.guild);
 
         await interaction.reply({
-            content: '**Joined!**',
+            content: '**Left!**',
             ephemeral,
         });
     },

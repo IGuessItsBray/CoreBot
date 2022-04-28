@@ -1,4 +1,6 @@
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'testrole',
     description: 'Test to ensure the bots role assignment is correctly functioning.',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options

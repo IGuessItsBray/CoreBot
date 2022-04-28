@@ -1,15 +1,16 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { getWarnings } = require('../../db/dbAccess');
 const { newWarning } = require('../../db/dbAccess');
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 
 
 module.exports = {
     name: 'warn-manager',
     description: 'Manage warnings.',
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: OPTION.SUB_COMMAND,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
     options: [
         {
             name: 'new',
@@ -19,13 +20,13 @@ module.exports = {
                 {
                     name: 'user',
                     description: 'The person who you want to ban',
-                    type: 'USER',
+                    type: OPTION.USER,
                     required: true,
                 },
                 {
                     name: 'reason',
                     description: 'Reason to ban member',
-                    type: 'STRING',
+                    type: OPTION.STRING,
                     required: true,
                 },
             ],
@@ -39,13 +40,13 @@ module.exports = {
                 {
                     name: 'user',
                     description: 'The user to check',
-                    type: 'USER',
+                    type: OPTION.USER,
                     required: false,
                 },
                 {
                     name: 'userid',
                     description: 'The userID to check',
-                    type: 'STRING',
+                    type: OPTION.STRING,
                     required: false,
                 },
             ],

@@ -2,15 +2,15 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { getRoleButtons } = require('../../db/dbAccess');
 const { updateRoleButtons } = require('../../db/dbAccess');
 const { getGuildRolebuttons } = require('../../db/dbAccess');
-
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 
 module.exports = {
 	name: 'rolebutton-manager',
 	description: 'Manage role buttons.',
+	type: OPTION.SUB_COMMAND,
 	enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+	permissions: [FLAGS.SEND_MESSAGES],
 	options: [
 		{
 			name: 'update',
@@ -20,19 +20,19 @@ module.exports = {
 				{
 					name: 'title',
 					description: 'The embed title',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'text',
 					description: 'The embed text',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'footer',
 					description: 'The embed footer',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 			],
@@ -46,13 +46,13 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'role',
 					description: 'The role to add',
-					type: 'ROLE',
+					type: OPTION.ROLE,
 					required: true,
 				},
 				{
@@ -64,19 +64,19 @@ module.exports = {
 						{ name: 'Success', value: 'SUCCESS' },
 						{ name: 'Danger', value: 'DANGER' },
 					],
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'label',
 					description: 'The label of the button',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 				{
 					name: 'enabled',
 					description: 'Is the button enabled or disabled?',
-					type: 'BOOLEAN',
+					type: OPTION.BOOLEAN,
 					required: true,
 				},
 			],
@@ -90,7 +90,7 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: 'STRING',
+					type: OPTION.STRING,
 					required: true,
 				},
 			],

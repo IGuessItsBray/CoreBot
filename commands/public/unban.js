@@ -1,4 +1,6 @@
 const { MessageEmbed, User, Client } = require("discord.js");
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'unban',
     description: 'Allows the admin or owner to unban the member.',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,7 +21,7 @@ module.exports = {
         {
             name: 'userid',
             description: 'The ID of the user to unban',
-            type: 'STRING',
+            type: OPTION.STRING,
             required: true,
         },
     ],

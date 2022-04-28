@@ -1,19 +1,16 @@
-const { MessageEmbed } = require('discord.js');
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'commands',
-    description: 'Lists all server commands!',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    name: 'join',
+    description: 'have the bot Join your channel',
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -26,23 +23,19 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, ephemeral = true) {
-        const guildCommands =
-            (await interaction.guild.commands.fetch())
-                .map(command => {
-                    return {
-                        name: command.name,
-                        description: command.description ?? '*No description*',
-                    };
-                });
 
-        const embed = new MessageEmbed();
+        const member = await interaction.member.fetch(true);
+        const voiceId = member.voice.channelId;
 
-        guildCommands.map(command => {
-            embed.addField(command.name, command.description);
-        });
+        if(!voiceId) return;
+
+        const voiceChannel = await interaction.client.channels.fetch(voiceId);
+
+        require('../../modules/ctv').joinChannel(voiceChannel);
 
         await interaction.reply({
-            embeds: [embed],
+            content: '**Joined!**',
+            ephemeral,
         });
     },
 

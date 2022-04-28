@@ -1,4 +1,6 @@
 const { ContextMenuInteraction, MessageEmbed, Intents } = require("discord.js");
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'userinfo',
     description: '',
-    type: 'USER',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.USER,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options

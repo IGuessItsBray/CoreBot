@@ -1,4 +1,5 @@
-const admin_roles = require('../../config.json').PERMS.ADMIN;
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
 	// ------------------------------------------------------------------------------
@@ -10,9 +11,9 @@ module.exports = {
 	type: 'CHAT_INPUT', // CHAT_INPUT, USER, MESSAGE
 	guild_id: [],
 	enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    type: COMMAND.CHAT_INPUT,
+	enabled: true,
+	permissions: [FLAGS.SEND_MESSAGES],
 	// ------------------------------------------------------------------------------
 	// Options
 	// ------------------------------------------------------------------------------

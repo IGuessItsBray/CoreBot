@@ -1,35 +1,31 @@
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
-const everyone = require('../../config.json').PERMS.EVERYONE;
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
-    // ------------------------------------------------------------------------------
-    // Definition
-    // ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
+  // Definition
+  // ------------------------------------------------------------------------------
 
-    name: 'serverinfo',
-    description: 'Gives you the server info',
-    type: 'CHAT_INPUT',
-    guild_id: [],
-    enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+  name: 'serverinfo',
+  description: 'Gives you the server info',
+  type: COMMAND.CHAT_INPUT,
+  enabled: true,
+  permissions: [FLAGS.SEND_MESSAGES],
 
-    // ------------------------------------------------------------------------------
-    // Options
-    // ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
+  // Options
+  // ------------------------------------------------------------------------------
 
-    options: [],
+  options: [],
 
-    // ------------------------------------------------------------------------------
-    // Execution
-    // ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
+  // Execution
+  // ------------------------------------------------------------------------------
 
-    async execute(interaction, ephemeral = false) {
+  async execute(interaction, ephemeral = false) {
 
-        const { guild } = interaction;
+    const { guild } = interaction;
 
     const {
       createdTimestamp,
@@ -70,28 +66,22 @@ module.exports = {
         {
           name: "📔 | CHANNELS",
           value: [
-            `- Text: ${
-              channels.cache.filter((c) => c.type === "GUILD_TEXT").size
+            `- Text: ${channels.cache.filter((c) => c.type === "GUILD_TEXT").size
             }`,
-            `- Voice: ${
-              channels.cache.filter((c) => c.type === "GUILD_VOICE").size
+            `- Voice: ${channels.cache.filter((c) => c.type === "GUILD_VOICE").size
             }`,
-            `- Threads: ${
-              channels.cache.filter(
-                (c) =>
-                  c.type === "GUILD_NEWS_THREAD" &&
-                  "GUILD_PRIVATE_THREAD" &&
-                  "GUILD_PUBLIC_THREAD"
-              ).size
+            `- Threads: ${channels.cache.filter(
+              (c) =>
+                c.type === "GUILD_NEWS_THREAD" &&
+                "GUILD_PRIVATE_THREAD" &&
+                "GUILD_PUBLIC_THREAD"
+            ).size
             }`,
-            `- Categories: ${
-              channels.cache.filter((c) => c.type === "GUILD_CATEGORY").size
+            `- Categories: ${channels.cache.filter((c) => c.type === "GUILD_CATEGORY").size
             }`,
-            `- Stages: ${
-              channels.cache.filter((c) => c.type === "GUILD_STAGE_VOICE").size
+            `- Stages: ${channels.cache.filter((c) => c.type === "GUILD_STAGE_VOICE").size
             }`,
-            `- News: ${
-              channels.cache.filter((c) => c.type === "GUILD_NEWS").size
+            `- News: ${channels.cache.filter((c) => c.type === "GUILD_NEWS").size
             }`,
             `Total: ${channels.cache.size}`,
           ].join("\n"),
@@ -121,5 +111,5 @@ module.exports = {
     interaction.reply({ embeds: [Embed] });
   },
 
-    // ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
 };

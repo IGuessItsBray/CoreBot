@@ -1,4 +1,6 @@
 const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { FLAGS } = require('discord.js').Permissions;
+const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -7,12 +9,9 @@ module.exports = {
 
     name: 'help',
     description: 'Replies with the bots information and commands',
-    type: 'CHAT_INPUT',
-    guild_id: [],
+    type: COMMAND.CHAT_INPUT,
     enabled: true,
-    default_permission: false,
-    default_member_permissions: 0x8,
-    permissions: [],
+    permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -28,7 +27,7 @@ module.exports = {
                 { name: 'Page 3 | ', value: '3' },
                 { name: 'Page 4 | ', value: '4' },
             ],
-            type: 'STRING',
+            type: OPTION.STRING,
             required: false,
         },
     ],
@@ -56,7 +55,6 @@ module.exports = {
                         value: [
                             `Name: <@950525282434048031>`,
                             `Bot Owner: <@530845321270657085>`,
-                            //`Created: <t:${parseInt(target.user.createdTimestamp / 1000)}:R>`,
                             `Description: This bot is a multi-purpose Discord bot, Coded in Discord.js by <@530845321270657085> containing work from <@111592329424470016>`,
                         ].join("\n"),
                     },
@@ -83,7 +81,7 @@ module.exports = {
                     {
                         name: "***Credits***",
                         value: [
-                            `Credits to <@111592329424470016> for ConnectToVoice, Echo and development help`,
+                            `Credits to <@111592329424470016> for development help`,
                             `Credits to Khaaz for Cross Server Chat`,
                             `Credits to FlisherOfatale for audit logs`,
                         ].join("\n"),
@@ -95,8 +93,8 @@ module.exports = {
             interaction.reply({ embeds: [Embed] });
         }
         else if (page === '2') {
-            const guildCommands =
-                (await interaction.guild.commands.fetch())
+            const Commands =
+                (await interaction.client.application.commands.fetch())
                     .map(command => {
                         return {
                             name: command.name,
@@ -106,10 +104,9 @@ module.exports = {
 
             const embed = new MessageEmbed();
 
-            guildCommands.map(command => {
-                embed.setTitle("Commands")
-                embed.setDescription(command.name, command.description);
-                embed.setFooter("CoreBot")
+            Commands.map(command => {
+                embed.setTitle("Commands!")
+                embed.addField(command.name, command.description);
             });
 
             await interaction.reply({
