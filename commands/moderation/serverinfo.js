@@ -13,6 +13,9 @@ module.exports = {
     type: 'CHAT_INPUT',
     guild_id: [],
     enabled: true,
+    default_permission: false,
+    default_member_permissions: 0x8,
+    permissions: [],
 
     // ------------------------------------------------------------------------------
     // Options

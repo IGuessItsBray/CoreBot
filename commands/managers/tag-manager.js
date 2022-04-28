@@ -1,14 +1,15 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { getTag } = require('../../db/dbAccess');
+const { getTag, getGuildTags } = require('../../db/dbAccess');
 const { newTag } = require('../../db/dbAccess');
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
-const everyone = require('../../config.json').PERMS.EVERYONE;
 
 
 module.exports = {
 	name: 'tag-manager',
 	description: 'Manage tags.',
+	enabled: true,
+    default_permission: false,
+    default_member_permissions: 0x8,
+    permissions: [],
 	options: [
 		{
 			name: 'new',
@@ -50,6 +51,13 @@ module.exports = {
 			],
 
 		},
+		{
+			name: 'list',
+			description: 'List all tags!!',
+			type: 1,
+			options: [],
+
+		},
 	],
 	async execute(interaction) {
 		const guild = interaction.guild;
@@ -87,6 +95,13 @@ module.exports = {
 					content: '**Success!**',
 					ephemeral: true,
 				});
+			}
+			case 'list': {
+				const prompts = (await getGuildTags(interaction.guild))
+					.map(tag => `\`${tag._id}\` - ${tag.embed.title}`)
+					.join('\n');
+
+				await interaction.reply(`Tags:\n${prompts}`);
 			}
 		}
 	},

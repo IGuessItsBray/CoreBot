@@ -24,6 +24,7 @@ const reqArray = {
 
 const schema = mongoose.Schema({
     _id: reqString,
+    name: reqString,
     // should always track which guild it belongs to
     guild: reqNum,
     // embed information, I personally like to reserve

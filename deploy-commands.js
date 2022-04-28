@@ -18,13 +18,14 @@ for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
+        command.default_member_permissions = 0x8;
         commands.push(command);
     }
 }
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
-    
+    command.default_member_permissions = 0x8;
 
     //commands.push(command.data.toJSON());
     // replace the above line with the below if you use my format instead of command builders 
@@ -69,19 +70,19 @@ async function registerCommands(guildId = undefined) {
             .then(console.log(` ✅ ${guild.name} ➡️ ${cmdList_filtered.map(c => c.name)}`));
 
         //Set defined command permissions
-        const guildCommands = await guild.commands.fetch();
-        await Promise.all(guildCommands.map(async command => {
-            await command.permissions
+        //const guildCommands = await guild.commands.fetch();
+        //await Promise.all(guildCommands.map(async command => {
+            //await command.permissions
             // Per-Command permissions from command definitions
-            const cmdPerms = commands
-                .filter(c => c.name == command.name)[0].permissions;
-            cmdPerms === undefined ?
-                null :
-                await command.permissions
-                    .add({ command: command.id, permissions: cmdPerms })
-                    .catch(e => {
-                        console.warn(`Loading ${command.name} Permissions in ${guild.name} Failed: \n${e}`);
-                    });
-        }));
+            //const cmdPerms = commands
+                //.filter(c => c.name == command.name)[0].permissions;
+            //cmdPerms === undefined ?
+                //null :
+                //await command.permissions
+                    //.add({ command: command.id, permissions: cmdPerms })
+                    //.catch(e => {
+                        //console.warn(`Loading ${command.name} Permissions in ${guild.name} Failed: \n${e}`);
+                    //});
+        //}));
     }));
 }

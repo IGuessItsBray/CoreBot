@@ -1,5 +1,4 @@
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
+
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -11,9 +10,10 @@ module.exports = {
     type: 'CHAT_INPUT',
     guild_id: [`945205088287326248`],
     enabled: true,
-    default_permission: true,
-    permissions: [
-    ],
+    enabled: true,
+    default_permission: false,
+    default_member_permissions: 0x8,
+    permissions: [],
 
     // ------------------------------------------------------------------------------
     // Options

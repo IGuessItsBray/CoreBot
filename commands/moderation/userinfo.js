@@ -1,7 +1,4 @@
 const { ContextMenuInteraction, MessageEmbed, Intents } = require("discord.js");
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
-const everyone = require('../../config.json').PERMS.EVERYONE;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -13,6 +10,9 @@ module.exports = {
     type: 'USER',
     guild_id: [],
     enabled: true,
+    default_permission: false,
+    default_member_permissions: 0x8,
+    permissions: [],
 
     // ------------------------------------------------------------------------------
     // Options

@@ -13,15 +13,8 @@ module.exports = {
     guild_id: [],
     enabled: true,
     default_permission: false,
-    permissions: [
-        ...dev_users.map(user => {
-            return {
-                id: user,
-                type: 'USER',
-                permission: true,
-            };
-        }),
-    ],
+    default_member_permissions: 0x8,
+    permissions: [],
 
     // ------------------------------------------------------------------------------
     // Options

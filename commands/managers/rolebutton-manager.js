@@ -1,14 +1,16 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { getRoleButtons } = require('../../db/dbAccess');
 const { updateRoleButtons } = require('../../db/dbAccess');
-const admin_roles = require('../../config.json').PERMS.ADMIN;
-const dev_users = require('../../config.json').PERMS.DEVS;
-const everyone = require('../../config.json').PERMS.EVERYONE;
+const { getGuildRolebuttons } = require('../../db/dbAccess');
 
 
 module.exports = {
 	name: 'rolebutton-manager',
 	description: 'Manage role buttons.',
+	enabled: true,
+    default_permission: false,
+    default_member_permissions: 0x8,
+    permissions: [],
 	options: [
 		{
 			name: 'update',
@@ -94,6 +96,13 @@ module.exports = {
 			],
 
 		},
+		{
+			name: 'list',
+			description: 'List all Buttons!!',
+			type: 1,
+			options: [],
+
+		},
 	],
 	async execute(interaction) {
 		const guild = interaction.guild;
@@ -177,6 +186,13 @@ module.exports = {
 					content: '**Success!**',
 					ephemeral: true,
 				});
+			}
+			case 'list': {
+				const prompts = (await getGuildRolebuttons(interaction.guild))
+					.map(rb => `\`${rb._id}\` - ${rb.embed.title} - ${rb.buttons.length} button(s)`)
+					.join('\n');
+
+				await interaction.reply(`Prompts:\n${prompts}`);
 			}
 		}
 	},
