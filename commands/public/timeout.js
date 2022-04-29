@@ -51,7 +51,7 @@ module.exports = {
        // }
         const member = interaction.options.getMember('user')
         try {
-            await member.user.send(`You are banned from **\`${interaction.guild.name}\`** for \`${reason}\`, you can appeal by contacting <@530845321270657085>`).catch(err => { })
+            await member.user.send(`You are timed out from from **\`${interaction.guild.name}\`** for \`${reason}\` for \`${length}\`, you can appeal by contacting <@530845321270657085>`).catch(err => { })
             await member.timeout(length * 60 * 1000, reason );
             await interaction.reply(`${member} timed out by ${interaction.member}`);
         } catch (e) {

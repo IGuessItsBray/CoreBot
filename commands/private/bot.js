@@ -15,7 +15,7 @@ const reloadCommands = {
 	},
 	execute: async function (interaction) {
 		// Retrieve the client
-		const client = require('../../index2.js').client;
+		const client = require('../../index.js').client;
 
 		// Re-Read command files
 		const {

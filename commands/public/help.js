@@ -103,7 +103,7 @@ module.exports = {
                     });
 
             const embed = new MessageEmbed();
-
+            console.log(Commands)
             Commands.map(command => {
                 embed.setTitle("Commands!")
                 embed.addField(command.name, command.description);
