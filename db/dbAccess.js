@@ -8,6 +8,8 @@ const mongo = require('./mongo').mongoose;
 // ------------------------------------------------------------------------------
 
 const warningSchema = require('./schemas/warningSchema');
+const rolebuttonSchema = require('./schemas/rolebuttonSchema');
+const tagSchema = require('./schemas/tagSchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -18,11 +20,21 @@ module.exports = {
 	//delWarning,
 	//getWarning,
 	getWarnings,
+	updateRoleButtons,
+	getRoleButtons,
+	// deleteRoleButtons,
+	getGuildRolebuttons,
+	newTag,
+	//delTag,
+	getTag,
+	getGuildTags,
 };
 
 // ------------------------------------------------------------------------------
 // Functions
 // ------------------------------------------------------------------------------
+
+//Warnings
 
 async function newWarning(guild, user, mod, reason) {
 
@@ -63,4 +75,119 @@ async function getWarnings(guild, user) {
 			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
+}
+
+//Role Buttons
+
+async function updateRoleButtons(id, guild, embedTitle, embedText, embedFooter, buttons) {
+	if (id && !buttons) throw 'No buttons provided';
+
+	id = id ?? (Math.round(Date.now())).toString(36).toUpperCase();
+	buttons = buttons ?? [];
+
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.findOneAndUpdate(
+				{
+					_id: id,
+				},
+				{
+					_id: id,
+					guild: guild?.id ?? guild,
+					embed: {
+						title: embedTitle,
+						text: embedText,
+						footer: embedFooter,
+					},
+					buttons: buttons,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getRoleButtons(id, guild) {
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.findOne({
+				_id: id,
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getGuildRolebuttons(guild) {
+    return await mongo().then(async () => {
+        try {
+            return await rolebuttonSchema.find({
+                guild: guild,
+            });
+        }
+        catch (e) {
+            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+        }
+    });
+}
+
+//Tags
+async function newTag(id, guild, embedTitle, embedText, embedFooter, buttons) {
+
+	id = id ?? (Math.round(Date.now())).toString(36).toUpperCase();
+	buttons = buttons ?? [];
+
+	return await mongo().then(async () => {
+		try {
+			return await tagSchema.findOneAndUpdate(
+				{
+					_id: id,
+				},
+				{
+					_id: id,
+					guild: guild?.id ?? guild,
+					embed: {
+						title: embedTitle,
+						text: embedText,
+						footer: embedFooter,
+					},
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getTag(id, guild) {
+	return await mongo().then(async () => {
+		try {
+			return await tagSchema.findOne({
+				_id: id,
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getGuildTags(guild) {
+    return await mongo().then(async () => {
+        try {
+            return await tagSchema.find({
+                guild: guild,
+            });
+        }
+        catch (e) {
+            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+        }
+    });
 }
