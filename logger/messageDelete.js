@@ -1,27 +1,26 @@
+const fn = require('../util/genUtils')
 module.exports = {
 
     // ------------------------------------------------------------------------------
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'emojiCreate Example',
-    type: 'emojiCreate',
+    name: 'messageDelete Example',
+    type: 'messageDelete',
 
     // ------------------------------------------------------------------------------
     // Execution
     // ------------------------------------------------------------------------------
     async execute(channel) {
-        guild.fetchAuditLogs(CHANNEL_CREATE)
-            .then(audit => console.log(audit.entries.first()))
-            .catch(console.error);
         const fetchedLogs = await channel.guild.fetchAuditLogs({
-            type: "EMOJI_CREATE",
+            type: "MESSAGE_DELETE",
             limit: 1
         });
         const log = fetchedLogs.entries.first();
+        const time = fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch('955266949447811072');
-        await sendchannel.send(`**EMOJI:** Emoji <#${target.id}> \`${target.name}\`| Added by <@${executor.id}> | time`);
+        await sendchannel.send(`**MESSAGE:** Message  ${target.name}| Deleted by <@${executor.id}> | ${time}`);
     },
 
     // ------------------------------------------------------------------------------

@@ -21,7 +21,7 @@ module.exports = {
         const log = fetchedLogs.entries.first();
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch('955266949447811072');
-        await sendchannel.send(`**EMOJI:** Emoji <#${target.id}> \`${target.name}\`| Added by <@${executor.id}> | time`);
+        await sendchannel.send(`**EMOJI:** Emoji <#${target.id}> \`${target.name}\`| Added by <@${executor.id}> | ${time}`);
     },
 
     // ------------------------------------------------------------------------------
