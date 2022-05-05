@@ -1,27 +1,29 @@
+const fn = require('../util/genUtils')
 module.exports = {
 
     // ------------------------------------------------------------------------------
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'emojiCreate Example',
-    type: 'emojiCreate',
+    name: 'stageInstanceCreate Example',
+    type: 'stageInstanceCreate',
 
     // ------------------------------------------------------------------------------
     // Execution
     // ------------------------------------------------------------------------------
-    async execute(channel) {
-        guild.fetchAuditLogs(CHANNEL_CREATE)
-            .then(audit => console.log(audit.entries.first()))
-            .catch(console.error);
+    async execute(channel, message) {
         const fetchedLogs = await channel.guild.fetchAuditLogs({
-            type: "EMOJI_CREATE",
+            type: "STAGE_INSTANCE_CREATE",
             limit: 1
         });
         const log = fetchedLogs.entries.first();
+        const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch('955266949447811072');
-        await sendchannel.send(`**EMOJI:** Emoji <#${target.id}> \`${target.name}\`| Added by <@${executor.id}> | time`);
+        await sendchannel.send({
+            content: `**STAGE:** Stage \`${channel.channel}\` created | The topic is \`${channel.topic}\` | ${time}`,
+            allowedMentions: { parse: [] },
+        });
     },
 
     // ------------------------------------------------------------------------------

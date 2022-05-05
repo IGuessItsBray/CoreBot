@@ -20,7 +20,10 @@ module.exports = {
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch('955266949447811072');
-        await sendchannel.send(`**CHANNEL:** Channel <#${target.id}> \`${target.name}\`| Deleted by <@${executor.id}> | ${time}`);
+        await sendchannel.send({
+            content: `**CHANNEL:** Channel <#${target.id}> \`${target.name}\`| Deleted by <@${executor.id}> | ${time}`,
+            allowedMentions: { parse: [] },
+        });
     },
 
     // ------------------------------------------------------------------------------

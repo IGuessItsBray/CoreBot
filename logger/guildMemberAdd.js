@@ -13,14 +13,17 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(channel) {
         const fetchedLogs = await channel.guild.fetchAuditLogs({
-            type: "EMOJI_CREATE",
+            type: "GUILD_MEMBER_ADD",
             limit: 1
         });
         const log = fetchedLogs.entries.first();
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch('955266949447811072');
-        await sendchannel.send(`**MEMBER:** Member <@${target.id}> \`${target.name}\` | ${time}`);
+        await sendchannel.send({
+            content: `**MEMBER:** Member <@${channel.id}> \`${channel.displayName}\` joined | ${time}`,
+            allowedMentions: { parse: [] },
+        });
     },
 
     // ------------------------------------------------------------------------------
