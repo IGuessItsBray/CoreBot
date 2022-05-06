@@ -10,6 +10,7 @@ const mongo = require('./mongo').mongoose;
 const warningSchema = require('./schemas/warningSchema');
 const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 const tagSchema = require('./schemas/tagSchema');
+const setupSchema = require('./schemas/setupSchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -28,6 +29,7 @@ module.exports = {
 	//delTag,
 	getTag,
 	getGuildTags,
+	updateGuild
 };
 
 // ------------------------------------------------------------------------------
@@ -124,16 +126,16 @@ async function getRoleButtons(id, guild) {
 }
 
 async function getGuildRolebuttons(guild) {
-    return await mongo().then(async () => {
-        try {
-            return await rolebuttonSchema.find({
-                guild: guild,
-            });
-        }
-        catch (e) {
-            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.find({
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
 
 //Tags
@@ -180,14 +182,37 @@ async function getTag(id, guild) {
 }
 
 async function getGuildTags(guild) {
-    return await mongo().then(async () => {
-        try {
-            return await tagSchema.find({
-                guild: guild,
-            });
-        }
-        catch (e) {
-            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await tagSchema.find({
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+// ------------------------------------------------------------------------------
+// Server Setup
+// ------------------------------------------------------------------------------
+
+//Audit logs
+
+async function updateGuild(guildId, logChannel) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					logChannel: logChannel,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
