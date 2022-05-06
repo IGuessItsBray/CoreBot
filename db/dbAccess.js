@@ -19,17 +19,21 @@ const setupSchema = require('./schemas/setupSchema');
 module.exports = {
 	newWarning,
 	//delWarning,
-	//getWarning,
 	getWarnings,
 	updateRoleButtons,
 	getRoleButtons,
-	// deleteRoleButtons,
+	//delRoleButtons,
 	getGuildRolebuttons,
 	newTag,
 	//delTag,
 	getTag,
 	getGuildTags,
-	updateGuild
+	updateGuild,
+	getLogChannel,
+	updateCrossChat,
+	getCrossChatChannel,
+	updateJLChannel,
+	getJLChannel,
 };
 
 // ------------------------------------------------------------------------------
@@ -210,6 +214,48 @@ async function updateGuild(guildId, logChannel) {
 					logChannel: logChannel,
 				},
 				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getLogChannel(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//CrossChat
+async function updateCrossChat(guildId, crosschatChannel) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					crosschatChannel: crosschatChannel,
+					token: token,
+					whid: whid
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getCrossChatChannel(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);

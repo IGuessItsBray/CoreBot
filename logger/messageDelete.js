@@ -1,6 +1,6 @@
 const fn = require('../util/genUtils')
+const { getLogChannel } = require('../db/dbAccess');
 module.exports = {
-
     // ------------------------------------------------------------------------------
     // Definition
     // ------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ module.exports = {
         const log = fetchedLogs.entries.first();
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
-        const sendchannel = await channel.client.channels.fetch('955266949447811072');
+        const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
         await sendchannel.send({
             content: `**MESSAGE:** Message \`${channel.content}\` sent by ${channel.member} in ${channel.channel}| Deleted by <@${executor.id}> | ${time}`,
             allowedMentions: { parse: [] },

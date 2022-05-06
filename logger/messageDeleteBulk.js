@@ -1,4 +1,5 @@
 const fn = require('../util/genUtils')
+const { getLogChannel } = require('../db/dbAccess');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ module.exports = {
         messageDeleted.setMilliseconds(0);
         logCreated.setMilliseconds(0);
         if (logCreated == messageDeleted) {
-            const sendchannel = await channel.client.channels.fetch('955266949447811072');
+            const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
             await sendchannel.send({
                 content: `**MESSAGE:** Multiple messages \`${channel.content}\` sent by ${channel.member} in ${channel.channel}| Deleted by <@${executor.id}> | ${time}`,
                 allowedMentions: { parse: [] },
