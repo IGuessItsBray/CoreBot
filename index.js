@@ -34,6 +34,15 @@ client.login(token);
 
 client.once('ready', () => {
 	console.info(`Ready & Running as ${client.user.tag}`);
+	client.user.setPresence({
+		activities: [
+			{
+				type: 'WATCHING',
+				name: `${client.guilds.cache.size} Discord Servers`
+			},
+		],
+		status: 'online'
+	});
 });
 
 // ------------------------------------------------------------------------------
