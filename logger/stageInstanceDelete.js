@@ -1,5 +1,6 @@
 const fn = require('../util/genUtils')
 const { getLogChannel } = require('../db/dbAccess');
+const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -21,8 +22,13 @@ module.exports = {
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
+        const embed = new MessageEmbed()
+        .setColor('#2f3136')
+        .setDescription(`**STAGE:** Stage \`${channel.channel}\` ended | ${time}
+        Topic: 
+        \`\`\`${channel.topic}\`\`\``)
         await sendchannel.send({
-            content: `**STAGE:** Stage ${channel.channel} ended | The topic was \`${channel.topic}\` | ${time}`,
+            embeds: [ embed ],
             allowedMentions: { parse: [] },
         });
     },

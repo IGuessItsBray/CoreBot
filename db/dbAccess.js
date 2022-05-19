@@ -32,8 +32,6 @@ module.exports = {
 	getLogChannel,
 	updateCrossChat,
 	getCrossChatChannel,
-	updateJLChannel,
-	getJLChannel,
 };
 
 // ------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 const fn = require('../util/genUtils')
 const { getLogChannel } = require('../db/dbAccess');
+const axios = require('axios');
+const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 module.exports = {
     // ------------------------------------------------------------------------------
     // Definition
@@ -20,8 +22,21 @@ module.exports = {
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
+        const PKTOKEN = require('../config.json').PKTOKEN;
+        if (PKTOKEN) {
+            try {
+                const requestConfig = { headers: { 'Authorization': PKTOKEN } };
+                const res = await axios.get(`https://api.pluralkit.me/v2/messages/${channel.id}`, requestConfig);
+                if (res?.status === 200) return;
+            }
+            catch { undefined; }
+        }
+        const embed = new MessageEmbed()
+        .setColor('#2f3136')
+        .setDescription(`**MESSAGE DELETED:** Sent by ${channel.member} in ${channel.channel} | ${time}
+        \`\`\`${channel.content}\`\`\``)
         await sendchannel.send({
-            content: `**MESSAGE:** Message \`${channel.content}\` sent by ${channel.member} in ${channel.channel}| Deleted by <@${executor.id}> | ${time}`,
+            embeds: [ embed ],
             allowedMentions: { parse: [] },
         });
     },

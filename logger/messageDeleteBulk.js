@@ -1,5 +1,6 @@
 const fn = require('../util/genUtils')
 const { getLogChannel } = require('../db/dbAccess');
+const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -26,8 +27,12 @@ module.exports = {
         logCreated.setMilliseconds(0);
         if (logCreated == messageDeleted) {
             const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
+            const embed = new MessageEmbed()
+                .setColor('#2f3136')
+                .setDescription(`**MULTIPLE MESSAGES DELETED:** Sent by ${channel.member} in ${channel.channel} | ${time}
+        \`\`\`${channel.content}\`\`\``)
             await sendchannel.send({
-                content: `**MESSAGE:** Multiple messages \`${channel.content}\` sent by ${channel.member} in ${channel.channel}| Deleted by <@${executor.id}> | ${time}`,
+                embeds: [embed],
                 allowedMentions: { parse: [] },
             });
         }
