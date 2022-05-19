@@ -30,8 +30,6 @@ module.exports = {
 	getGuildTags,
 	updateGuild,
 	getLogChannel,
-	updateCrossChat,
-	getCrossChatChannel,
 };
 
 // ------------------------------------------------------------------------------
@@ -220,37 +218,6 @@ async function updateGuild(guildId, logChannel) {
 }
 
 async function getLogChannel(guildId) {
-	return await mongo().then(async () => {
-		try {
-			return await setupSchema.findOne({ _id: guildId });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-
-//CrossChat
-async function updateCrossChat(guildId, crosschatChannel) {
-	return await mongo().then(async () => {
-		try {
-			return await setupSchema.findOneAndUpdate(
-				{ _id: guildId },
-				{
-					_id: guildId,
-					crosschatChannel: crosschatChannel,
-					token: token,
-					whid: whid
-				},
-				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-
-async function getCrossChatChannel(guildId) {
 	return await mongo().then(async () => {
 		try {
 			return await setupSchema.findOne({ _id: guildId });
