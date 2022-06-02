@@ -92,6 +92,7 @@ module.exports = {
 					description: 'The embed title',
 					type: OPTION.STRING,
 					required: true,
+					autocomplete: true
 				},
 			],
 
@@ -127,9 +128,13 @@ module.exports = {
 
 				await interaction.reply(
 					{
-						content: `Out:\`\`\`json\n${res}\`\`\``,
+						content: `New embed created!
+						ID: ${res._id}
+						Title: ${res.embedTitle}`,
+						ephemeral: true
 					}
 				);
+				break;
 			}
 			case 'addbuttons': {
 				// Get the prompt from the database
@@ -159,9 +164,14 @@ module.exports = {
 
 				await interaction.reply(
 					{
-						content: `Out:\`\`\`json\n${res}\`\`\``,
+						content: `Buttons added!
+						ID: ${res._id}
+						Title: ${res.embed.title}
+						Role: <@&${res.buttons.role}>`,
+						ephemeral: true
 					}
 				);
+				break;
 			}
 			case 'send': {
 				embed.setTitle(prompt.embed.title);
@@ -186,6 +196,7 @@ module.exports = {
 					content: '**Success!**',
 					ephemeral: true,
 				});
+				break;
 			}
 			case 'list': {
 				const prompts = (await getGuildRolebuttons(interaction.guild))
@@ -194,6 +205,7 @@ module.exports = {
 
 				await interaction.reply(`Prompts:\n${prompts}`);
 			}
+			break;
 		}
 	},
 }

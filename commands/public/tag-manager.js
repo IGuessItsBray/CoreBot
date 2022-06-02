@@ -47,6 +47,7 @@ module.exports = {
 					description: 'The embed title',
 					type: OPTION.STRING,
 					required: true,
+					autocomplete: true
 				},
 			],
 
@@ -80,9 +81,13 @@ module.exports = {
 
 				await interaction.reply(
 					{
-						content: `Out:\`\`\`json\n${res}\`\`\``,
+						content: `New Tag created!
+						ID: ${res._id}
+						Title: ${res.embed.title}`,
+						ephemeral: true
 					}
 				);
+				break;
 			}
 			case 'send': {
 				embed.setTitle(prompt.embed.title);
@@ -95,6 +100,7 @@ module.exports = {
 					content: '**Success!**',
 					ephemeral: true,
 				});
+				break;
 			}
 			case 'list': {
 				const prompts = (await getGuildTags(interaction.guild))
@@ -102,6 +108,7 @@ module.exports = {
 					.join('\n');
 
 				await interaction.reply(`Tags:\n${prompts}`);
+				break;
 			}
 		}
 	},
