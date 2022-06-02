@@ -38,10 +38,10 @@ module.exports = {
         const pass = interaction.options.getString('password');
         if (verify.password == pass) {
             interaction.member.roles.add(verify.addRole);
-            interaction.reply(verify.successMessage)
+            interaction.reply({ ephemeral: true, content:verify.successMessage})
         }
         if (verify.password !== pass) {
-            interaction.reply(verify.failMessage)
+            interaction.reply({ ephemeral: true, content:verify.failMessage})
         }
     },
 
