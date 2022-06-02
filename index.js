@@ -11,10 +11,10 @@ const client =
 	new Client({
 		intents: [
 			Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_BANS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_VOICE_STATES,
+			Intents.FLAGS.GUILDS,
+			Intents.FLAGS.GUILD_BANS,
+			Intents.FLAGS.GUILD_MESSAGES,
+			Intents.FLAGS.GUILD_VOICE_STATES,
 		],
 		partials: [
 			'MESSAGE',
@@ -29,6 +29,8 @@ module.exports = { client };
 
 require('./db/mongo').init();
 require('./init/initCommands').init(client);
+require('./init/initEvents').init(client);
+require('./init/initLogs').init(client);
 
 client.login(token);
 
@@ -52,11 +54,5 @@ client.once('ready', () => {
 const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
 buttons(client);
-//const joinleave = require("./modules/joinleave");
-//joinleave(client);
-console.log('✅ JoinLeave │ JoinLeave online!');
-const logs = require("./modules/logs");
-logs(client);
-console.log('✅ Logs │ Logs Active!');
 const ctv = require("./modules/ctv");
 // ------------------------------------------------------------------------------
