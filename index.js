@@ -50,7 +50,6 @@ client.once('ready', () => {
 // ------------------------------------------------------------------------------
 // Addons
 // ------------------------------------------------------------------------------
-
 //Modules
 const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
