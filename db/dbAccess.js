@@ -11,6 +11,7 @@ const warningSchema = require('./schemas/warningSchema');
 const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 const tagSchema = require('./schemas/tagSchema');
 const setupSchema = require('./schemas/setupSchema');
+const verifySchema = require('./schemas/verifySchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
