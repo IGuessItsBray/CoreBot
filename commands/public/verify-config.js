@@ -61,12 +61,17 @@ module.exports = {
         const failmsg = interaction.options.getString('failmessage');
         const role = interaction.options.getRole('role');
         const channel = interaction.options.getChannel('channel');
-        interaction.reply(`
+        if(channel) await setVerifyChannel(interaction.guild.id, channel.id)
+        if(role) await setVerifyRoleAdd(interaction.guild.id, role.id)
+        if(failmsg) await setVerifyFailMessage(interaction.guild.id, failmsg)
+        if(passmsg) await setVerifySuccessMessage(interaction.guild.id, passmsg)
+        if(password) await setVerifyPassword(interaction.guild.id, password)
+        interaction.reply({ ephemeral: true, content:`Verify information set - please take note of the password!
         Channel: ${channel}
         Password: ${password}
         Pass: ${passmsg}
         Fail: ${failmsg}
-        Role: ${role}`)
+        Role to add: ${role}`})
     },
 
     // ------------------------------------------------------------------------------

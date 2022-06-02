@@ -203,7 +203,7 @@ async function getGuildTags(guild) {
 //Verify
 
 //Fail msg
-async function setVerifyFailMessage(guildId, message) {
+async function setVerifyFailMessage(guildId, failMessage) {
     return await mongo().then(async () => {
         try {
             return await verifySchema.findOneAndUpdate(
@@ -211,7 +211,7 @@ async function setVerifyFailMessage(guildId, message) {
                     guildId: guildId,
                 },
                 {
-                    failMessage: message,
+                    failMessage: failMessage,
                 },
                 { new: true, upsert: true },
             );
@@ -223,7 +223,7 @@ async function setVerifyFailMessage(guildId, message) {
 }
 
 //Success Msg
-async function setVerifySuccessMessage(guildId, message) {
+async function setVerifySuccessMessage(guildId, successMessage) {
     return await mongo().then(async () => {
         try {
             return await verifySchema.findOneAndUpdate(
@@ -231,7 +231,7 @@ async function setVerifySuccessMessage(guildId, message) {
                     guildId: guildId,
                 },
                 {
-                    successMessage: message,
+                    successMessage: successMessage,
                 },
                 { new: true, upsert: true },
             );
@@ -243,7 +243,7 @@ async function setVerifySuccessMessage(guildId, message) {
 }
 
 //Password
-async function setVerifyPassword(guildId, message) {
+async function setVerifyPassword(guildId, password) {
     return await mongo().then(async () => {
         try {
             return await verifySchema.findOneAndUpdate(
@@ -263,7 +263,7 @@ async function setVerifyPassword(guildId, message) {
 }
 
 //Role
-async function setVerifyRoleAdd(guildId, message) {
+async function setVerifyRoleAdd(guildId, role) {
     return await mongo().then(async () => {
         try {
             return await verifySchema.findOneAndUpdate(
@@ -271,7 +271,7 @@ async function setVerifyRoleAdd(guildId, message) {
                     guildId: guildId,
                 },
                 {
-                    role: role,
+                    addRole: role,
                 },
                 { new: true, upsert: true },
             );
@@ -283,7 +283,7 @@ async function setVerifyRoleAdd(guildId, message) {
 }
 
 //Channel
-async function setVerifyChannel(guildId, message) {
+async function setVerifyChannel(guildId, channel) {
     return await mongo().then(async () => {
         try {
             return await verifySchema.findOneAndUpdate(
@@ -291,7 +291,7 @@ async function setVerifyChannel(guildId, message) {
                     guildId: guildId,
                 },
                 {
-                    channel: channel,
+                    channelId: channel,
                 },
                 { new: true, upsert: true },
             );
