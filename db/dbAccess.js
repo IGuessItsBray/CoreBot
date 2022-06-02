@@ -10,6 +10,7 @@ const mongo = require('./mongo').mongoose;
 const warningSchema = require('./schemas/warningSchema');
 const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 const tagSchema = require('./schemas/tagSchema');
+const setupSchema = require('./schemas/setupSchema');
 const verifySchema = require('./schemas/verifySchema');
 
 // ------------------------------------------------------------------------------
@@ -19,17 +20,17 @@ const verifySchema = require('./schemas/verifySchema');
 module.exports = {
 	newWarning,
 	//delWarning,
-	//getWarning,
 	getWarnings,
 	updateRoleButtons,
 	getRoleButtons,
-	// deleteRoleButtons,
+	//delRoleButtons,
 	getGuildRolebuttons,
 	newTag,
 	//delTag,
 	getTag,
 	getGuildTags,
-	//Verification
+	updateGuild,
+	getLogChannel,
 	getVerifyConfig,
 	setVerifyChannel,
 	setVerifyPassword,
@@ -132,16 +133,16 @@ async function getRoleButtons(id, guild) {
 }
 
 async function getGuildRolebuttons(guild) {
-    return await mongo().then(async () => {
-        try {
-            return await rolebuttonSchema.find({
-                guild: guild,
-            });
-        }
-        catch (e) {
-            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await rolebuttonSchema.find({
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
 
 //Tags
@@ -188,118 +189,153 @@ async function getTag(id, guild) {
 }
 
 async function getGuildTags(guild) {
-    return await mongo().then(async () => {
-        try {
-            return await tagSchema.find({
-                guild: guild,
-            });
-        }
-        catch (e) {
-            console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await tagSchema.find({
+				guild: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
+
+// ------------------------------------------------------------------------------
+// Server Setup
+// ------------------------------------------------------------------------------
+
+//Audit logs
+
+async function updateGuild(guildId, logChannel) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					logChannel: logChannel,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getLogChannel(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await setupSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
 
 //Verify
 
 //Fail msg
 async function setVerifyFailMessage(guildId, failMessage) {
-    return await mongo().then(async () => {
-        try {
-            return await verifySchema.findOneAndUpdate(
-                {
-                    guildId: guildId,
-                },
-                {
-                    failMessage: failMessage,
-                },
-                { new: true, upsert: true },
-            );
-        }
-        catch (e) {
-            console.error(`dbAccess: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await verifySchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					failMessage: failMessage,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
 }
 
 //Success Msg
 async function setVerifySuccessMessage(guildId, successMessage) {
-    return await mongo().then(async () => {
-        try {
-            return await verifySchema.findOneAndUpdate(
-                {
-                    guildId: guildId,
-                },
-                {
-                    successMessage: successMessage,
-                },
-                { new: true, upsert: true },
-            );
-        }
-        catch (e) {
-            console.error(`dbAccess: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await verifySchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					successMessage: successMessage,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
 }
 
 //Password
 async function setVerifyPassword(guildId, password) {
-    return await mongo().then(async () => {
-        try {
-            return await verifySchema.findOneAndUpdate(
-                {
-                    guildId: guildId,
-                },
-                {
-                    password: password,
-                },
-                { new: true, upsert: true },
-            );
-        }
-        catch (e) {
-            console.error(`dbAccess: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await verifySchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					password: password,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
 }
 
 //Role
 async function setVerifyRoleAdd(guildId, role) {
-    return await mongo().then(async () => {
-        try {
-            return await verifySchema.findOneAndUpdate(
-                {
-                    guildId: guildId,
-                },
-                {
-                    addRole: role,
-                },
-                { new: true, upsert: true },
-            );
-        }
-        catch (e) {
-            console.error(`dbAccess: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await verifySchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					addRole: role,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
 }
 
 //Channel
 async function setVerifyChannel(guildId, channel) {
-    return await mongo().then(async () => {
-        try {
-            return await verifySchema.findOneAndUpdate(
-                {
-                    guildId: guildId,
-                },
-                {
-                    channelId: channel,
-                },
-                { new: true, upsert: true },
-            );
-        }
-        catch (e) {
-            console.error(`dbAccess: ${e}`);
-        }
-    });
+	return await mongo().then(async () => {
+		try {
+			return await verifySchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					channelId: channel,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
 }
 
 //Get Config

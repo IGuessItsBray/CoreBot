@@ -3,6 +3,7 @@
 // ------------------------------------------------------------------------------
 module.exports = {
 	getAppFacts,
+	getDateAndTime
 };
 
 // ------------------------------------------------------------------------------
@@ -24,3 +25,34 @@ async function getAppFacts(client) {
 		adminUsers,
 	};
 }
+
+async function getDateAndTime(dateValue, style) {
+	// get the "smart" discord time for either a specificed time, or right now
+		try {
+			let now = '';
+			if (dateValue) {
+				now = Math.floor(dateValue / 1000.0);
+			}
+			else {
+				now = Math.floor(new Date().getTime() / 1000.0);
+			}
+			let time = '';
+			switch (style) {
+				case 'Full D/T':
+					time = `<t:${now}:F>`;
+					break;
+				case 'Short D/T':
+					time = `<t:${now}:f>`;
+					break;
+				case 'Relative':
+					time = `<t:${now}:R>`;
+					break;
+				default:
+					time = `<t:${now}:R>`;
+			}
+			return time;
+		}
+		catch {
+			console.log('error getting time');
+		}
+	};
