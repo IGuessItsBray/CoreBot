@@ -51,7 +51,7 @@ module.exports = {
         }
         const member = interaction.options.getMember('user')
         try {
-            await member.user.send(`You are banned from **\`${interaction.guild.name}\`** for \`${reason}\`, you can appeal by contacting <@530845321270657085>`).catch(err => { })
+            await member.user.send(`You are banned from **\`${interaction.guild.name}\`** for \`${reason}\`, you can appeal by contacting server staff!`).catch(err => { })
             await member.ban({ days: length, reason: reason });
             await interaction.reply(`${member} banned by ${interaction.member}`);
         } catch (e) {
