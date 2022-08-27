@@ -12,6 +12,8 @@ const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 const tagSchema = require('./schemas/tagSchema');
 const setupSchema = require('./schemas/setupSchema');
 const verifySchema = require('./schemas/verifySchema');
+const messageCreateSchema = require('./schemas/messageCreateSchema');
+const userCountsSchema = require('./schemas/userCountsSchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -37,6 +39,11 @@ module.exports = {
 	setVerifySuccessMessage,
 	setVerifyFailMessage,
 	setVerifyRoleAdd,
+	updateMessageLog,
+	setDeletedMessageLog,
+	findMessageLog,
+	addToUser,
+	findUserCount,
 };
 
 // ------------------------------------------------------------------------------
@@ -344,6 +351,117 @@ async function getVerifyConfig(guild) {
 		try {
 			return await verifySchema.findOne({
 				guildId: guild,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//Message Logger (Not deleted)
+async function updateMessageLog(messageObj) {
+	const {
+		guild,
+		channel,
+		author,
+		content,
+		mentions,
+		createdAt,
+		editedAt,
+		attachments,
+		url,
+		id,
+	} = messageObj;
+
+	return await mongo().then(async () => {
+		try {
+			return await messageCreateSchema.findOneAndUpdate(
+				{ messageId: id },
+				{
+					guild: guild.id,
+					channel: channel.id,
+					user: author.id,
+					content: content,
+					userMentions: mentions.users.map(u => u.id ?? u),
+					roleMentions: mentions.roles.map(r => r.id ?? r),
+					timestamp: createdAt,
+					edited: editedAt ? true : false,
+					editedTimestamp: editedAt,
+					deleted: false,
+					attachments: attachments.map(a => a.url ?? a),
+					messageLink: url,
+					messageId: id,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//Message Logger (deleted)
+async function setDeletedMessageLog(messageObj) {
+	const {
+		id,
+	} = messageObj;
+
+	return await mongo().then(async () => {
+		try {
+			return await messageCreateSchema.findOneAndUpdate(
+				{ messageId: id },
+				{
+					deleted: true,
+				},
+				{ upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function findMessageLog(user) {
+	return await mongo().then(async () => {
+		try {
+			return await messageCreateSchema.find({
+				user: user,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//Message/Char counter
+async function addToUser(userId, guildId, messageInc, characterInc) {
+	return await mongo().then(async () => {
+		try {
+			return await userCountsSchema.findOneAndUpdate(
+				{
+					'user': userId,
+					'guild': guildId,
+				},
+				{
+					$inc: {
+						'messages': messageInc,
+						'characters': characterInc,
+					},
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function findUserCount(userId, guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await userCountsSchema.findOne({
+				'user': userId,
+				'guild': guildId,
 			});
 		}
 		catch (e) {

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------
 
 const config = require('./config.json');
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed } = require('discord.js');
 const { token } = require('./config.json');
 
 const client =
@@ -45,6 +45,13 @@ client.once('ready', () => {
 		],
 		status: 'online'
 	});
+	const embed = new MessageEmbed()
+		.setColor('#2f3136')
+		.setAuthor('Status Update')
+		.setDescription('<@955267092800733214> is online! <:ONLINE:960716360416124990> ')
+		.setFooter({ text: "Corebot" })
+		.setTimestamp();
+	client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
 });
 
 // ------------------------------------------------------------------------------

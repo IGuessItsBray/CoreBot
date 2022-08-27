@@ -1,7 +1,7 @@
 const { MessageEmbed, Collection } = require('discord.js');
 const { OPTION } = require('../../util/enum').Types;
 const cmdUtils = require('../../util/commandUtils');
-const { updateGuild, updateCrossChat } = require('../../db/dbAccess');
+const { updateGuild, joinChannel, joinMessage } = require('../../db/dbAccess');
 
 // ------------------------------------------------------------------------------
 // Set audit log channel
