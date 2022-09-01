@@ -1,6 +1,6 @@
 const fn = require('../util/genUtils')
 const { updateMessageLog } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, MessageEmbed, Intents, MessageReaction } = require("discord.js");
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -23,6 +23,7 @@ module.exports = {
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         await updateMessageLog(message);
+        
     },
 
     // ------------------------------------------------------------------------------

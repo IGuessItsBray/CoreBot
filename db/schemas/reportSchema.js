@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const schemaName = 'crosschat';
+const schemaName = 'report';
 
 const reqString = {
 	type: String,
@@ -7,10 +7,8 @@ const reqString = {
 };
 
 const schema = mongoose.Schema({
-	guildId: reqString,
+    _id: reqString,
 	channelId: reqString,
-	webhookId: reqString,
-	webhookToken: reqString,
 });
 
 module.exports = mongoose.model(schemaName, schema, schemaName);

@@ -14,6 +14,8 @@ const setupSchema = require('./schemas/setupSchema');
 const verifySchema = require('./schemas/verifySchema');
 const messageCreateSchema = require('./schemas/messageCreateSchema');
 const userCountsSchema = require('./schemas/userCountsSchema');
+const crosschatSchema = require('./schemas/crosschatSchema');
+const reportSchema = require('./schemas/reportSchema');
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -44,6 +46,16 @@ module.exports = {
 	findMessageLog,
 	addToUser,
 	findUserCount,
+	//----
+	//CrossChat
+	//----
+	setCrossChatChannel,
+	getCrossChatChannel,
+	//----
+	//Reports
+	//----
+	setReportChannel,
+	getReportChannel,
 };
 
 // ------------------------------------------------------------------------------
@@ -466,6 +478,71 @@ async function findUserCount(userId, guildId) {
 		}
 		catch (e) {
 			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//----------
+//Crosschat
+//----------
+async function setCrossChatChannel(guildId, channel, whId, whToken) {
+	return await mongo().then(async () => {
+		try {
+			return await crosschatSchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					channelId: channel,
+					webhookId: whId,
+					webhookToken: whToken,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getCrossChatChannel() {
+	return await mongo().then(async () => {
+		try {
+			return await crosschatSchema.find({});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//-----------
+//Reporting
+//-----------
+async function setReportChannel(guildId, channelId) {
+	return await mongo().then(async () => {
+		try {
+			return await reportSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					channelId: channelId,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getReportChannel(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await reportSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }

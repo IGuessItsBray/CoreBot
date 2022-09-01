@@ -41,6 +41,12 @@ module.exports = {
             ],
             required: true,
         },
+        {
+            name: 'ephemeral',
+            description: 'Is the message ephemeral?',
+            type: OPTION.BOOLEAN,
+            required: true,
+        },
     ],
 
     // ------------------------------------------------------------------------------
@@ -49,19 +55,20 @@ module.exports = {
 
     async execute(interaction, client, ephemeral = true) {
         const user = interaction.options.getMember('user');
+        const ephemeralSetting = interaction.options.getBoolean('ephemeral');
         const type = interaction.options.getString('type');
         const dateStamp2 = Math.floor(interaction.client.readyAt.getTime() / 1000.0);
         const { characters, messages } = await findUserCount(user.id, interaction.guild.id);
         const id = user.id
         const url = 'http://10.0.0.57:9090/api/v1/query?query=';
-		const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
-		const res = await axios.get(`${url}${query}`);
+        const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
+        const res = await axios.get(`${url}${query}`);
 
-		const formattedRes = res.data.data.result.map(row => {
-			//const date = new Date(Date.now() - row.value[1] * 1000);
-			const dateStamp = Math.floor(date.getTime() / 1000.0);
-			return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
-		}).join('\n');
+        const formattedRes = res.data.data.result.map(row => {
+            const date = new Date(Date.now() - row.value[1] * 1000);
+            const dateStamp = Math.floor(date.getTime() / 1000.0);
+            return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
+        }).join('\n');
         if (type === 'gen') {
             if (id === "950525282434048031") {
                 const target = await interaction.guild.members.fetch(user);
@@ -100,13 +107,13 @@ module.exports = {
                     .addField("Discord User Since", `<t:${parseInt(target.user.createdTimestamp / 1000)}:R>`, true)
                     .addField("Characters", `${characters}`, true)
                     .addField("Messages", `${messages}`, true)
-                    .addField(`Status: ${formattedRes}`)
+                    .addField("Status:", `${formattedRes}`)
                     .addField("Uptime:", `Online since <t:${dateStamp2}:R><t:${dateStamp2}:D>`)
 
 
                 interaction.reply({
                     embeds: [Response],
-                    ephemeral: true
+                    ephemeral: ephemeralSetting
                 })
             }
             else if (id !== "950525282434048031") {
@@ -150,7 +157,7 @@ module.exports = {
 
                 interaction.reply({
                     embeds: [Response],
-                    ephemeral: true
+                    ephemeral: ephemeralSetting
                 })
 
             }
@@ -171,7 +178,11 @@ module.exports = {
                 Buffer.from(messagesFormatted.join('\n')),
                 `FETCHED-MESSAGES.txt`,
             );
-            await interaction.reply({ embeds: [embed], files: [file] });
+            await interaction.reply({
+                embeds: [embed],
+                files: [file],
+                ephemeral: ephemeralSetting
+            });
 
         } else if (type === 'pun') {
             await interaction.reply('Coming Soon!');
