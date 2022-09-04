@@ -21,7 +21,8 @@ module.exports = {
         {
             name: 'number',
             description: '1-100',
-            type: OPTION.INTEGER
+            type: OPTION.INTEGER,
+            required: true
         }
     ],
 

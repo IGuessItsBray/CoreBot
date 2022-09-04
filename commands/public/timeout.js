@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { FLAGS } = require('discord.js').Permissions;
+const { addPunishments } = require('../../db/dbAccess');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -54,6 +55,20 @@ module.exports = {
             await member.user.send(`You are timed out from from **\`${interaction.guild.name}\`** for \`${reason}\` for \`${length}\`, you can appeal by contacting <@530845321270657085>`).catch(err => { })
             await member.timeout(length * 60 * 1000, reason );
             await interaction.reply(`${member} timed out by ${interaction.member}`);
+            const type = "timeout"
+            const staffUser = interaction.member.id
+            const guildId = interaction.guild.id
+            const user = member.id
+            const message = reason
+            const timestamp = interaction.createdTimestamp
+            addPunishments(
+                guildId,
+                user,
+                type,
+                message,
+                timestamp,
+                staffUser
+            )
         } catch (e) {
             console.error(e);
             await interaction.reply('failure, see console');

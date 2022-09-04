@@ -27,6 +27,7 @@ module.exports = {
             const webhook = await message.client.fetchWebhook(cc.webhookId, cc.webhookToken)
             await webhook.edit({ name: `${guild} | ${user}`, avatar: avatar });
             await webhook.send({ content: content });
+            
         });
     },
 

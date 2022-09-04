@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { FLAGS } = require('discord.js').Permissions;
+const { addPunishments } = require('../../db/dbAccess');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -45,15 +46,30 @@ module.exports = {
     async execute(interaction, client, ephemeral = true) {
         const reason = interaction.options.getString('reason');
         const length = interaction.options.getNumber('length');
+        const member = interaction.options.getMember('user')
+        const guildId = interaction.guild.id
+        const user = member.id
+        const message = reason
+        const staffUser = interaction.member
+        const timestamp = interaction.createdTimestamp
         if(!interaction.member.permissions.has("BAN_MEMBERS")){
             await interaction.reply({ content: "You do not have the correct permissions to use this command.", ephemeral: true })
             return
         }
-        const member = interaction.options.getMember('user')
         try {
             await member.user.send(`You are banned from **\`${interaction.guild.name}\`** for \`${reason}\`, you can appeal by contacting server staff!`).catch(err => { })
             await member.ban({ days: length, reason: reason });
             await interaction.reply(`${member} banned by ${interaction.member}`);
+            const type = "ban"
+                    const staffUser = interaction.member.id
+                    addPunishments(
+                        guildId,
+                        user,
+                        type,
+                        message,
+                        timestamp,
+                        staffUser
+                    )
         } catch (e) {
             console.error(e);
             await interaction.reply('failure, see console');

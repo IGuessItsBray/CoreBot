@@ -16,34 +16,57 @@ const messageCreateSchema = require('./schemas/messageCreateSchema');
 const userCountsSchema = require('./schemas/userCountsSchema');
 const crosschatSchema = require('./schemas/crosschatSchema');
 const reportSchema = require('./schemas/reportSchema');
-
+const punishmentSchema = require('./schemas/punishmentSchema');
+const joinSchema = require('./schemas/joinSchema');
+const leaveSchema = require('./schemas/leaveSchema');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
 
 module.exports = {
+	//----
+	//Warnings
+	//----
 	newWarning,
 	//delWarning,
 	getWarnings,
+	//----
+	//Role Buttons
+	//----
 	updateRoleButtons,
 	getRoleButtons,
 	//delRoleButtons,
 	getGuildRolebuttons,
+	//----
+	//Tags
+	//----
 	newTag,
 	//delTag,
 	getTag,
 	getGuildTags,
+	//----
+	//Logs
+	//----
 	updateGuild,
 	getLogChannel,
+	//----
+	//Verify
+	//----
 	getVerifyConfig,
 	setVerifyChannel,
 	setVerifyPassword,
 	setVerifySuccessMessage,
 	setVerifyFailMessage,
 	setVerifyRoleAdd,
+	//----
+	//Message Log
+	//----
 	updateMessageLog,
 	setDeletedMessageLog,
 	findMessageLog,
+	//----
+	//Message Count
+	//----
 	addToUser,
 	findUserCount,
 	//----
@@ -56,6 +79,19 @@ module.exports = {
 	//----
 	setReportChannel,
 	getReportChannel,
+	//----
+	//Punishment Tracker
+	//----
+	addPunishments,
+	getPunishments,
+	//----
+	//Join/leave
+	//----
+	setJoin,
+	getJoin,
+	setLeave,
+	getLeave,
+
 };
 
 // ------------------------------------------------------------------------------
@@ -540,6 +576,98 @@ async function getReportChannel(guildId) {
 	return await mongo().then(async () => {
 		try {
 			return await reportSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Punishment Tracking
+//-----------
+async function addPunishments(guild, user, type, message, timestamp, staffUser) {
+	return await mongo().then(async () => {
+		try {
+			return await punishmentSchema.create(
+				{
+					guild: guild,
+					user: user,
+					type: type,
+					message: message,
+					timestamp: timestamp,
+					staffUser: staffUser
+				},
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getPunishments(user) {
+	return await mongo().then(async () => {
+		try {
+			return await punishmentSchema.find({
+				//guild: guild,
+				user: user,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Join/Leave
+//-----------
+async function setJoin(guildId, channel, message) {
+	return await mongo().then(async () => {
+		try {
+			return await joinSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					channel: channel,
+					message: message,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setLeave(guildId, channel, message) {
+	return await mongo().then(async () => {
+		try {
+			return await leaveSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					channel: channel,
+					message: message,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getJoin(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await joinSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getLeave(guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await leaveSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);

@@ -38,7 +38,9 @@ require('./init/initLogs').init(client);
 client.login(token);
 
 client.once('ready', () => {
-	console.info(`Ready & Running as ${client.user.tag}`);
+	console.info(`
+	Ready & Running as ${client.user.tag}
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${client.users.cache.size} Users`);
 	//const version = require(config.version);
 	const status = [
 		`CB v3.0.0`,

@@ -1,16 +1,18 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { getWarnings } = require('../../db/dbAccess');
 const { newWarning } = require('../../db/dbAccess');
+const { addPunishments } = require('../../db/dbAccess');
+const fn = require('../../util/genUtils')
 const { FLAGS } = require('discord.js').Permissions;
-const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
+const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 
 
 module.exports = {
     name: 'warn-manager',
     description: 'Manage warnings.',
     type: OPTION.SUB_COMMAND,
-	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+    enabled: true,
+    permissions: [FLAGS.SEND_MESSAGES],
     options: [
         {
             name: 'new',
@@ -68,9 +70,22 @@ module.exports = {
                     interaction.user,
                     reason
                 );
-
-                console.log(warning);
+                //console.log(warning);
                 interaction.reply(`Warned ${warnedUser} for ${reason}`)
+                const type = "warning"
+                const staffUser = interaction.member.id
+                const guildId = interaction.guild.id
+                const user = warnedUser.id
+                const message = reason
+                const timestamp = interaction.createdTimestamp
+                addPunishments(
+                    guildId,
+                    user,
+                    type,
+                    message,
+                    timestamp,
+                    staffUser
+                )
             }
             case 'view': {
                 const userId =

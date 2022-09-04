@@ -108,7 +108,9 @@ module.exports = {
                     -Fixed glitch with info where it wouldnt properly show badges
                     -Readded dev team badge emotes to dev server
                     -Reopened the support server
-                    -Added 10sec changing status` },
+                    -Added 10sec changing status
+                    -Added /feedback for sending bot feedback
+                    -Moved /verify_config to /serversetup verify_config` },
                 )
                 //.setImage('attachment://Logo.png')
                 .setTimestamp()
