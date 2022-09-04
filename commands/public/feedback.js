@@ -55,7 +55,7 @@ ${message}
             .setTimestamp();
         await channel.send({
             embeds: [embed],
-            files: [{ attachment: image.url }]
+            files: image ? [{ attachment: image.url }] : undefined,
         });
         await interaction.editReply({ content: 'Thanks! Your feedback has been sent to the dev team!', ephemeral: true });
     },
