@@ -22,12 +22,12 @@ module.exports = {
         const user = message.author.tag;
         const avatar = message.author.avatarURL();
         const content = message.content;
+        const id = message.id
         webhooks.forEach(async cc => {
             if (!content || content === '') return;
             const webhook = await message.client.fetchWebhook(cc.webhookId, cc.webhookToken)
             await webhook.edit({ name: `${guild} | ${user}`, avatar: avatar });
             await webhook.send({ content: content });
-            
         });
     },
 

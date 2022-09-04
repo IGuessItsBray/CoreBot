@@ -92,7 +92,7 @@ module.exports = {
                 .addFields(
                     { name: 'New Features:', value: '\u200B' },
                     { name: 'React to report', value: 'React to any message with "🚫" to report it to server staff. Server staff can run /serversetting set_report_channel to set the channel, and then can kick/ban/timeout/warn the offending user!', inline: true },
-                    { name: 'CrossChat v2', value: 'CrossChat is now part of CoreBot itself. Server staff can run /serversetup set_crosschat_channel to set the channel! All messages sent in this channel will be sent to all other crosschat channels.', inline: true },
+                    { name: 'CrossChat v2', value: 'CrossChat is now part of CoreBot itself. Server staff can run /serversetup set_crosschat_channel to set the channel! All messages sent in this channel will be sent to all other crosschat channels! At this time, message edit and attatchments are not functional, but will be in a later version!', inline: true },
                     { name: 'Join/Leave alerts!', value: 'Server staff must run /serversetup set_welcome_info to set the channel and the message for join, and optionally /serversetup set_leave_info for users who leave', inline: true },
                 )
                 .addFields(
@@ -115,7 +115,8 @@ module.exports = {
                 //.setImage('attachment://Logo.png')
                 .setTimestamp()
                 .setFooter({ text: 'CoreBot', iconURL: 'attachment://Logo.png' });
-            await interaction.reply({ embeds: [embed3], files: [file] });
+                interaction.channel.send({ embeds: [embed3], files: [file] });
+            await interaction.reply("Sent!");
 
         }
     },
