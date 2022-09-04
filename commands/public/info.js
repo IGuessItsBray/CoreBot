@@ -61,15 +61,15 @@ module.exports = {
         const dateStamp2 = Math.floor(interaction.client.readyAt.getTime() / 1000.0);
         const { characters, messages } = await findUserCount(user.id, interaction.guild.id);
         const id = user.id
-        //const url = 'http://10.0.0.57:9090/api/v1/query?query=';
-        //const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
-        //const res = await axios.get(`${url}${query}`);
+        const url = 'http://10.0.0.57:9090/api/v1/query?query=';
+        const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
+        const res = await axios.get(`${url}${query}`);
         const guild = interaction.guild
-        //const formattedRes = res.data.data.result.map(row => {
-            //const date = new Date(Date.now() - row.value[1] * 1000);
-            //const dateStamp = Math.floor(date.getTime() / 1000.0);
-            //return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
-        //}).join('\n');
+        const formattedRes = res.data.data.result.map(row => {
+            const date = new Date(Date.now() - row.value[1] * 1000);
+            const dateStamp = Math.floor(date.getTime() / 1000.0);
+            return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
+        }).join('\n');
         if (type === 'gen') {
             if (id === "950525282434048031") {
                 const target = await interaction.guild.members.fetch(user);
