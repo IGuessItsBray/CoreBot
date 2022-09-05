@@ -27,6 +27,7 @@ module.exports = {
                 { name: 'v1', value: '1' },
                 { name: 'v2', value: '2' },
                 { name: 'v3', value: '3' },
+                { name: 'v4', value: '4' },
             ],
             required: true,
         },
@@ -103,7 +104,8 @@ module.exports = {
                 )
                 .addFields(
                     { name: '\u200B', value: '\u200B' },
-                    { name: 'Changes', value: `
+                    {
+                        name: 'Changes', value: `
                     -Fixed dev server bug where it said "CoreBot | testing has started" instead of "CoreBot has started"
                     -Fixed glitch with info where it wouldnt properly show badges
                     -Readded dev team badge emotes to dev server
@@ -115,7 +117,39 @@ module.exports = {
                 //.setImage('attachment://Logo.png')
                 .setTimestamp()
                 .setFooter({ text: 'CoreBot', iconURL: 'attachment://Logo.png' });
-                interaction.channel.send({ embeds: [embed3], files: [file] });
+            interaction.channel.send({ embeds: [embed3], files: [file] });
+            await interaction.reply("Sent!");
+        } else if (version === '3') {
+            const file = new MessageAttachment('./assets/Logo.png');
+            const embed3 = new MessageEmbed()
+                .setColor(0x0099FF)
+                .setTitle('CoreBot v3')
+                .setURL('https://github.com/IGuessItsBray/CoreBot')
+                .setAuthor({ name: 'Updates!', iconURL: 'attachment://Logo.png', url: 'https://github.com/IGuessItsBray/CoreBot' })
+                .setDescription('CoreBot v3 update logs!')
+                .setThumbnail('attachment://Logo.png')
+                .addFields(
+                    { name: 'New Features:', value: '\u200B' },
+                    { name: '', value: '', inline: true },
+                    { name: '', value: '', inline: true },
+                    { name: '', value: '', inline: true },
+                )
+                .addFields(
+                    { name: '\u200B', value: '\u200B' },
+                    { name: '', value: '', inline: true },
+                    { name: '', value: '', inline: true },
+                    { name: '', value: '', inline: true },
+                )
+                .addFields(
+                    { name: '\u200B', value: '\u200B' },
+                    {
+                        name: 'Changes', value: `
+                    ` },
+                )
+                //.setImage('attachment://Logo.png')
+                .setTimestamp()
+                .setFooter({ text: 'CoreBot', iconURL: 'attachment://Logo.png' });
+            interaction.channel.send({ embeds: [embed3], files: [file] });
             await interaction.reply("Sent!");
 
         }

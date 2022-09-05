@@ -19,6 +19,10 @@ const reportSchema = require('./schemas/reportSchema');
 const punishmentSchema = require('./schemas/punishmentSchema');
 const joinSchema = require('./schemas/joinSchema');
 const leaveSchema = require('./schemas/leaveSchema');
+const modmailSchema = require('./schemas/modmailSchema');
+const modmailIDschema = require('./schemas/modmailIDSchema')
+const modmailMsgLoggerSchema = require('./schemas/modmailMsgLoggerSchema')
+const mediaChannelSchema = require('./schemas/mediaChannelSchema')
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -91,7 +95,23 @@ module.exports = {
 	getJoin,
 	setLeave,
 	getLeave,
-
+	//----
+	//Modmail
+	//----
+	getModmailChannel,
+	updateModmailChannel,
+	getModmailGuild,
+	updateModmailGuild,
+	//----
+	//ModMail Message Log
+	//----
+	updateMMMessageLog,
+	findMMMessageLog,
+	//----
+	//Media Channel
+	//----
+	setMediaChannel,
+	getMediaChannel,
 };
 
 // ------------------------------------------------------------------------------
@@ -668,6 +688,138 @@ async function getLeave(guildId) {
 	return await mongo().then(async () => {
 		try {
 			return await leaveSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Modmail
+//-----------
+async function updateModmailChannel(guildId, modMailChannel) {
+	return await mongo().then(async () => {
+		try {
+			return await modmailSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					_id: guildId,
+					modMailChannel: modMailChannel,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getModmailChannel(guildId) {
+	return await mongo().then(async () => {
+		//console.log("Function LOG")
+		//console.log(guildId)
+		try {
+			return await modmailSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function updateModmailGuild(UserId, guildId) {
+	return await mongo().then(async () => {
+		try {
+			return await modmailIDschema.findOneAndUpdate(
+				{ _id: UserId },
+				{
+					_id: UserId,
+					guildId: guildId,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getModmailGuild(UserId) {
+	return await mongo().then(async () => {
+		//console.log("Function LOG")
+		//console.log(guildId)
+		try {
+			return await modmailIDschema.findOne({
+				_id: UserId,
+			});
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Modmail Msg Logger
+//-----------
+//Message Logger (Not deleted)
+async function updateMMMessageLog(guild, UserId, UserName, message, type, timestamp, id) {
+
+	return await mongo().then(async () => {
+		try {
+			return await modmailMsgLoggerSchema.create(
+				{
+					guild: guild,
+					UserId: UserId,
+					UserName: UserName,
+					message: message,
+					type: type,
+					timestamp: timestamp,
+					id: id
+				});
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+
+async function findMMMessageLog(id) {
+	return await mongo().then(async () => {
+		try {
+			return await modmailMsgLoggerSchema.find({
+				id: id
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Media Channel
+//-----------
+async function setMediaChannel(guild, channel) {
+	return await mongo().then(async () => {
+		try {
+			return await mediaChannelSchema.findOneAndUpdate(
+				{ _id: guild },
+				{
+					_id: guild,
+					channel: channel,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getMediaChannel(guild) {
+	return await mongo().then(async () => {
+		try {
+			return await mediaChannelSchema.findOne({ _id: guild });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);

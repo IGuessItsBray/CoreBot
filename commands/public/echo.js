@@ -53,6 +53,12 @@ module.exports = {
             type: OPTION.STRING,
             required: false,
         },
+        {
+            name: 'image',
+            description: 'Any images',
+            type: OPTION.ATTACHMENT,
+            required: false,
+        },
     ],
 
     // ------------------------------------------------------------------------------
@@ -66,10 +72,11 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
         const message = interaction.options.getString('message');
         const channel = interaction.options.getChannel('channel') ?? interaction.channel;
+        const image = interaction.options.getAttachment('image');
     
         if (type === 'text') {
     
-            await channel.send({ content: message });
+            await channel.send({ content: message, files: image ? [{ attachment: image.url }] : undefined, });
     
         } else if (type === 'embed') {
     
@@ -79,7 +86,7 @@ module.exports = {
                 .setDescription(message)
                 .setFooter({ text: "Corebot" })
                 .setTimestamp();
-            await channel.send({ embeds: [ embed ] });
+            await channel.send({ embeds: [ embed ], files: image ? [{ attachment: image.url }] : undefined, });
     
         }
     

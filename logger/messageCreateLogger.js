@@ -14,6 +14,7 @@ module.exports = {
     // Execution
     // ------------------------------------------------------------------------------
     async execute(message) {
+        if (message.channel.type == 'DM') return;
         const fetchedLogs = await message.guild.fetchAuditLogs({
             type: "MESSAGE_CREATE",
             limit: 1

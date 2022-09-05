@@ -15,7 +15,8 @@ const client =
 			Intents.FLAGS.GUILD_BANS,
 			Intents.FLAGS.GUILD_MESSAGES,
 			Intents.FLAGS.GUILD_VOICE_STATES,
-			Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+			Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Intents.FLAGS.DIRECT_MESSAGES,
 		],
 		partials: [
 			'MESSAGE',
@@ -80,6 +81,9 @@ const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
 buttons(client);
 const ctv = require("./modules/ctv");
+
+const discordModals = require('discord-modals');
+discordModals(client);
 // ------------------------------------------------------------------------------
 // Text Spam
 //-------------------------------------------------------------------------------

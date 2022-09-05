@@ -1,7 +1,7 @@
 const { MessageEmbed, Collection } = require('discord.js');
 const { OPTION } = require('../../util/enum').Types;
 const cmdUtils = require('../../util/commandUtils');
-const { updateGuild, setCrossChatChannel, setReportChannel, setJoin, setLeave, setVerifyChannel, setVerifyPassword, setVerifySuccessMessage, setVerifyFailMessage, setVerifyRoleAdd } = require('../../db/dbAccess');
+const { updateGuild, setCrossChatChannel, setReportChannel, setJoin, setLeave, setVerifyChannel, setVerifyPassword, setVerifySuccessMessage, setVerifyFailMessage, setVerifyRoleAdd, updateModmailChannel, setMediaChannel } = require('../../db/dbAccess');
 
 // ------------------------------------------------------------------------------
 // Set audit log channel
@@ -233,7 +233,32 @@ const setVerifyConfig = {
     },
 
 };
+// ------------------------------------------------------------------------------
+// Set Modmail Channel
+// ------------------------------------------------------------------------------
+const setModmailChannel = {
+    options: {
+        name: 'set_modmail_channel',
+        description: 'Set the hub for modmail Threads',
+        type: OPTION.SUB_COMMAND,
+        options: [
+            {
+                name: 'channel',
+                description: 'The channel to set',
+                type: OPTION.CHANNEL,
+                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                required: true,
+            },
+        ],
+    },
+    execute: async function (interaction) {
+        const channelId = interaction.options.getChannel('channel').id
+        const guildId = interaction.guild.id
+        await updateModmailChannel(guildId, channelId)
+        await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
+    },
+};
 // ------------------------------------------------------------------------------
 // Command Execution
 // ------------------------------------------------------------------------------
@@ -259,7 +284,8 @@ module.exports = {
         setReportingChannel.options,
         setJoinInfo.options,
         setLeaveInfo.options,
-        setVerifyConfig.options
+        setVerifyConfig.options,
+        setModmailChannel.options
     ],
 
     // ------------------------------------------------------------------------------
@@ -288,6 +314,9 @@ module.exports = {
                 break;
             case setVerifyConfig.options.name:
                 setVerifyConfig.execute(interaction);
+                break;
+            case setModmailChannel.options.name:
+                setModmailChannel.execute(interaction);
                 break;
         }
     },
