@@ -14,6 +14,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(modmail) {
         if (modmail.channel.type == 'DM') {
+            if (modmail.content === "!newthread") return;
             if (modmail.isButton() && modmail.customId.startsWith('nt')) {
                 const guilds = [];
             for (const [, guild] of modmail.client.guilds.cache) {

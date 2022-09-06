@@ -15,6 +15,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(modal) {
         if (modal.customId.startsWith('info')) {
+            if (modal.content === "!newthread") return;
             const reason = modal.getTextInputValue('ctr');
             const UserId = modal.user.id;
             const guild = await getModmailGuild(UserId)

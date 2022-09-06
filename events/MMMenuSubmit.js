@@ -15,6 +15,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(modmail) {
         if (modmail.channel.type == 'DM') {
+            if (modmail.content === "!newthread") return;
             if (modmail.isSelectMenu() && modmail.customId.startsWith('server')) {
                 const UserId = modmail.user.id
                 const guildId = modmail.values[0]

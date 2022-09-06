@@ -16,6 +16,7 @@ module.exports = {
     async execute(modmail) {
         if (modmail.author.bot) return;
         if (modmail.channel.type == 'DM') {
+            if (modmail.content === "!newthread") return;
             const UserId = modmail.author.id;
             const guild = await getModmailGuild(UserId)
             const guildId = guild.guildId
@@ -37,25 +38,31 @@ module.exports = {
                     const embed = new MessageEmbed()
                         .setAuthor({
                             name: `${modmail.author.tag}`,
-                            iconURL: `${modmail.author.avatarURL()}`
+                            //iconURL: `${modmail.author.avatarURL()}`
                         })
                         .setDescription(`${cleanContent}`)
                         .setFooter({ text: "Corebot ModMail" })
                         .setTimestamp();
                     const attachments = modmail.attachments.map(a => { return { attachment: a.url } });
-                    const newMessage = await mediaChannel.send({
-                        files: attachments.length > 0 ? attachments : undefined,
-                    });
-                    const urls = newMessage.attachments.map(a => a.url).join('\n');
-                    const message = `${cleanContent}\n${urls}`
-                    await existingThread.send({
-                        content: message,
-                        embeds: [embed]
-                    });
-
+                    if (modmail.attachments.size !== 0) {
+                        const newMessage = await mediaChannel.send({
+                            files: attachments.length > 0 ? attachments : undefined,
+                        });
+                        const urls = newMessage.attachments.map(a => a.url).join('\n');
+                        const message = `${cleanContent}\n${urls}`
+                        await existingThread.send({
+                            content: urls,
+                            embeds: [embed]
+                        });
+                    } else {
+                        await existingThread.send({
+                            embeds: [embed]
+                        });
+                    }
                     const guild = guildId
                     const UserId = modmail.author.id
                     const UserName = modmail.author.tag
+                    const message = cleanContent
                     const type = "DM Msg"
                     const timestamp = modmail.createdAt
                     const thread = channel.threads.cache.find(x => x.name === UserId);
