@@ -94,6 +94,38 @@ client.once('ready', () => {
 				status: 'online'
 			});
 		}, 10000);
+		
+		const embed = new MessageEmbed()
+			.setColor('#2f3136')
+			.setAuthor('Status Update')
+			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
+			.setFooter({ text: "Corebot" })
+			.setTimestamp();
+		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
+	}
+	if (client.user.id === "1019253573139316776") {
+		const status = [
+			`CB Beta v3.0.0`,
+			"Not prod lol",
+			"Made with ♥️",
+			"Built on DJS13, not 14",
+			"Updates daily!",
+			`${client.guilds.cache.size} Discord Servers`
+		];
+		setInterval(() => {
+			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
+			const newActivity = status[randomIndex];
+			client.user.setPresence({
+				activities: [
+					{
+						type: 'WATCHING',
+						name: newActivity
+					},
+				],
+				status: 'online'
+			});
+		}, 10000);
+		
 		const embed = new MessageEmbed()
 			.setColor('#2f3136')
 			.setAuthor('Status Update')
