@@ -24,6 +24,8 @@
     "eris": "^0.16.1",
     "express": "^4.17.3",
     "ffmpeg": "^0.0.4",
-    "mongoose": "^6.2.10"
+    "moment": "^2.29.4",
+    "mongoose": "^6.2.10",
+    "node-schedule": "^2.1.0"
   }
 }
