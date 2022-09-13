@@ -126,12 +126,12 @@ module.exports = {
                 .setTitle('CoreBot v3')
                 .setURL('https://github.com/IGuessItsBray/CoreBot')
                 .setAuthor({ name: 'Updates!', iconURL: 'attachment://Logo.png', url: 'https://github.com/IGuessItsBray/CoreBot' })
-                .setDescription('CoreBot v3 update logs!')
+                .setDescription('CoreBot v4 update logs!')
                 .setThumbnail('attachment://Logo.png')
                 .addFields(
                     { name: 'New Features:', value: '\u200B' },
-                    { name: '', value: '', inline: true },
-                    { name: '', value: '', inline: true },
+                    { name: 'Remind', value: '', inline: true },
+                    { name: 'Echo v2', value: '', inline: true },
                     { name: '', value: '', inline: true },
                 )
                 .addFields(

@@ -28,10 +28,11 @@ function init(client) {
 		if (!interaction.isCommand() && !interaction.isContextMenu()) return;
 		const guild = interaction.guild;
 		const user = interaction.user;
+		const channel = interaction.channel
 		const subcommand = interaction.options._subcommand ?? '';
 
 		try {
-			console.log(`${guild.id}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`);
+			console.log(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`);
 			await client
 				.commands[interaction.commandName]
 				.execute(interaction);

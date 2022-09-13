@@ -16,7 +16,7 @@ const client =
 			Intents.FLAGS.GUILD_MESSAGES,
 			Intents.FLAGS.GUILD_VOICE_STATES,
 			Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Intents.FLAGS.DIRECT_MESSAGES,
+			Intents.FLAGS.DIRECT_MESSAGES,
 		],
 		partials: [
 			'MESSAGE',
@@ -43,34 +43,66 @@ client.once('ready', () => {
 	Ready & Running as ${client.user.tag}
 	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${client.users.cache.size} Users`);
 	//const version = require(config.version);
-	const status = [
-		`CB v3.0.0`,
-		"also checkout CBMusic!",
-		"Made with ♥️",
-		"Built on DJS13",
-		"Hi Seth!",
-		`Watching ${client.guilds.cache.size} Discord Servers`
-	];
-	setInterval(() => {
-		const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
-		const newActivity = status[randomIndex];
-		client.user.setPresence({
-			activities: [
-				{
-					type: 'WATCHING',
-					name: newActivity
-				},
-			],
-			status: 'online'
-		});
-	}, 10000);
-	const embed = new MessageEmbed()
-		.setColor('#2f3136')
-		.setAuthor('Status Update')
-		.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
-		.setFooter({ text: "Corebot" })
-		.setTimestamp();
-	client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
+	if (client.user.id === "955267092800733214") {
+		const status = [
+			`Dev build`,
+			"Not a production version",
+			"Made with ♥️",
+			"Unstable!",
+			"I probably crashed lol"
+		];
+		setInterval(() => {
+			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
+			const newActivity = status[randomIndex];
+			client.user.setPresence({
+				activities: [
+					{
+						type: 'WATCHING',
+						name: newActivity
+					},
+				],
+				status: 'online'
+			});
+		}, 10000);
+		const embed = new MessageEmbed()
+			.setColor('#2f3136')
+			.setAuthor('Status Update')
+			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
+			.setFooter({ text: "Corebot" })
+			.setTimestamp();
+		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
+	}
+	if (client.user.id === "950525282434048031") {
+		const status = [
+			`CB v3.0.0`,
+			"also checkout CBMusic!",
+			"Made with ♥️",
+			"Built on DJS13",
+			"Hi Seth!",
+			`${client.guilds.cache.size} Discord Servers`
+		];
+		setInterval(() => {
+			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
+			const newActivity = status[randomIndex];
+			client.user.setPresence({
+				activities: [
+					{
+						type: 'WATCHING',
+						name: newActivity
+					},
+				],
+				status: 'online'
+			});
+		}, 10000);
+		const embed = new MessageEmbed()
+			.setColor('#2f3136')
+			.setAuthor('Status Update')
+			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
+			.setFooter({ text: "Corebot" })
+			.setTimestamp();
+		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
+	}
+
 });
 
 // ------------------------------------------------------------------------------
