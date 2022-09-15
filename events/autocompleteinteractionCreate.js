@@ -1,6 +1,8 @@
 const fn = require('../util/genUtils')
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 const { getGuildTags, getGuildRolebuttons } = require('../db/dbAccess');
+const scheduler = require('../modules/scheduler');
+const moment = require('moment');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -43,6 +45,25 @@ module.exports = {
                 };
             }).filter(rb => rb.name.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(rbMapped.slice(0, 25))
+        }
+        if (interaction.commandName === 'remind') {
+            const jobs = (await scheduler.listJobs())
+                .filter(j =>
+                    j.file === '../commands/public/remind' &&
+                    j.func === 'doRemind' &&
+                    j.args[0] === interaction.guild.id &&
+                    j.args[2] === interaction.user.id,
+                );
+            const remindersOptions = jobs.map(j => {
+                const time = moment(new Date(j.intv));
+                const name = `${time.fromNow(true)}: ${j.args[3]}`;
+                return {
+                    name: `${name.length >= 32 ? name.substring(0, 29) + '...' : name}`,
+                    value: j._id,
+                    fullMessage: j.args[3],
+                };
+            }).filter(o => o.fullMessage.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(remindersOptions.slice(0, 25));
         }
     },
 

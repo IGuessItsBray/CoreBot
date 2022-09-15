@@ -148,6 +148,7 @@ const ctv = require("./modules/ctv");
 
 const discordModals = require('discord-modals');
 discordModals(client);
+require('./modules/scheduler').resumeJobs();
 // ------------------------------------------------------------------------------
 // Text Spam
 //-------------------------------------------------------------------------------

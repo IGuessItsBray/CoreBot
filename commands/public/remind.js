@@ -121,7 +121,21 @@ module.exports = {
 
             }
             case 'list': {
-
+                const jobs = (await scheduler.listJobs())
+                    .filter(jobs =>
+                        jobs.file === '../commands/public/remind' &&
+                        jobs.func === 'doRemind' &&
+                        jobs.args[0] === interaction.guild.id &&
+                        jobs.args[2] === interaction.user.id,
+                    );
+                const reminders = await Promise.all(jobs.map(async j => {
+                    const time = `<t:${Math.floor(new Date(j.intv).getTime() / 1000.0)}:R>`;
+                    const channel = await interaction.client.channels.fetch(j.args[1]);
+                    const message = j.args[3];
+                    return `${channel}${time} ➜ ${message}`;
+                }));
+                await interaction.editReply({ content: `**Reminders:**\n${reminders.length ? reminders.join('\n') : '*You have no reminders set*'}` });
+                return;
             }
             case 'add': {
                 const message = interaction.options.getString('message');
