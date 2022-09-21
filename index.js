@@ -65,7 +65,7 @@ client.once('ready', () => {
 			"Made with ♥️",
 			"Unstable!",
 			"I probably crashed lol",
-			`Serving ${totalUsers}`
+			`Serving ${totalUsers} users!`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
@@ -95,7 +95,7 @@ client.once('ready', () => {
 			"Made with ♥️",
 			"Built on DJS13",
 			"Hi Seth!",
-			`Serving ${totalUsers}`
+			`Serving ${totalUsers} users!`
 			`${client.guilds.cache.size} Discord Servers`
 		];
 		setInterval(() => {
@@ -128,7 +128,7 @@ client.once('ready', () => {
 			"Built on DJS13, not 14",
 			"Updates daily!",
 			`${client.guilds.cache.size} Discord Servers`,
-			`Serving ${totalUsers}`
+			`Serving ${totalUsers} users!`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);

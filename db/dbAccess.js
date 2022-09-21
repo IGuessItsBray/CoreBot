@@ -20,7 +20,7 @@ const punishmentSchema = require('./schemas/punishmentSchema');
 const joinSchema = require('./schemas/joinSchema');
 const leaveSchema = require('./schemas/leaveSchema');
 const modmailSchema = require('./schemas/modmailSchema');
-const modmailIDschema = require('./schemas/modmailIDSchema')
+const modmailIDschema = require('./schemas/modmailIDschema')
 const modmailMsgLoggerSchema = require('./schemas/modmailMsgLoggerSchema')
 const mediaChannelSchema = require('./schemas/mediaChannelSchema')
 // ------------------------------------------------------------------------------
