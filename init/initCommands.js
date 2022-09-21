@@ -32,10 +32,15 @@ function init(client) {
 		const subcommand = interaction.options._subcommand ?? '';
 
 		try {
-			console.log(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`);
-			await client
-				.commands[interaction.commandName]
-				.execute(interaction);
+			if (interaction.channel.type == 'DM') {
+				console.log(`DM: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`)
+			}
+			else {
+				console.log(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`);
+				await client
+					.commands[interaction.commandName]
+					.execute(interaction);
+			}
 		}
 		catch (error) {
 			console.error(error);

@@ -12,6 +12,10 @@
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "@discordjs/voice": "github:discordjs/voice",
+    "@twurple/api": "^5.2.4",
+    "@twurple/auth": "^5.2.4",
+    "@twurple/eventsub": "^5.2.4",
+    "@twurple/eventsub-ngrok": "^5.2.4",
     "axios": "^0.27.2",
     "colors": "^1.4.0",
     "discord-api-types": "^0.28.0",
@@ -26,6 +30,7 @@
     "ffmpeg": "^0.0.4",
     "moment": "^2.29.4",
     "mongoose": "^6.2.10",
-    "node-schedule": "^2.1.0"
+    "node-schedule": "^2.1.0",
+    "twitch-channel": "^1.0.1"
   }
 }

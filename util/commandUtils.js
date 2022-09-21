@@ -58,7 +58,7 @@ function readFiles() {
 					?? new Permissions(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
-					?? false,
+					?? true,
 			};
 		}
 		catch (e) {

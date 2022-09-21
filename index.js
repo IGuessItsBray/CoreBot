@@ -39,9 +39,24 @@ require('./init/initLogs').init(client);
 client.login(token);
 
 client.once('ready', () => {
+	const guilds = client.guilds.cache;
+	var totalUsers = 0;
+
+	guilds.forEach((guild) => {
+		totalUsers += guild.memberCount;
+	});
+
 	console.info(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${client.users.cache.size} Users`);
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`);
+	console.log(`
+ ------------------------------------------------------
+| 					${client.user.tag}				   |
+|	Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001	|
+|	      For help, contact @Bray#1051                 |
+|	Support server: (https://discord.gg/GAAj6DDrCJ)	   |
+ ------------------------------------------------------
+`)
 	//const version = require(config.version);
 	if (client.user.id === "955267092800733214") {
 		const status = [
@@ -49,7 +64,8 @@ client.once('ready', () => {
 			"Not a production version",
 			"Made with ♥️",
 			"Unstable!",
-			"I probably crashed lol"
+			"I probably crashed lol",
+			`Serving ${totalUsers}`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
@@ -79,6 +95,7 @@ client.once('ready', () => {
 			"Made with ♥️",
 			"Built on DJS13",
 			"Hi Seth!",
+			`Serving ${totalUsers}`
 			`${client.guilds.cache.size} Discord Servers`
 		];
 		setInterval(() => {
@@ -94,7 +111,7 @@ client.once('ready', () => {
 				status: 'online'
 			});
 		}, 10000);
-		
+
 		const embed = new MessageEmbed()
 			.setColor('#2f3136')
 			.setAuthor('Status Update')
@@ -110,7 +127,8 @@ client.once('ready', () => {
 			"Made with ♥️",
 			"Built on DJS13, not 14",
 			"Updates daily!",
-			`${client.guilds.cache.size} Discord Servers`
+			`${client.guilds.cache.size} Discord Servers`,
+			`Serving ${totalUsers}`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
@@ -125,7 +143,7 @@ client.once('ready', () => {
 				status: 'online'
 			});
 		}, 10000);
-		
+
 		const embed = new MessageEmbed()
 			.setColor('#2f3136')
 			.setAuthor('Status Update')
@@ -144,19 +162,11 @@ client.once('ready', () => {
 const buttons = require("./modules/buttons");
 console.log('✅ Buttons │ Buttons online!');
 buttons(client);
+//const twitchAlerts = require("./modules/twitchAlerts");
+//console.log('✅ Twitch Alerts │ TWAL online!');
+//twitchAlerts(client);
 const ctv = require("./modules/ctv");
-
 const discordModals = require('discord-modals');
 discordModals(client);
 require('./modules/scheduler').resumeJobs();
-// ------------------------------------------------------------------------------
-// Text Spam
-//-------------------------------------------------------------------------------
-console.log(`
- ------------------------------------------------------
-| 					CoreBot							   |
-|	Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001	|
-|	      For help, contact @Bray#1051                 |
-|	Support server: (https://discord.gg/GAAj6DDrCJ)	   |
- ------------------------------------------------------
-`)
+console.log('✅ Reminders │ Remind online!');
