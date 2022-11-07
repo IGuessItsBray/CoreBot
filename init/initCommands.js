@@ -16,11 +16,10 @@ function init(client) {
 	const {
 		publicCommands,
 		privateCommands,
-		proxyCommands
 	} = cmdUtils.readFiles();
 
 	client.commands = new Collection();
-	for (const command of [...publicCommands, ...privateCommands, ...proxyCommands]) {
+	for (const command of [...publicCommands, ...privateCommands]) {
 		if (!command.enabled) continue;
 		client.commands[command.name] = command;
 	}
