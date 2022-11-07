@@ -35,7 +35,6 @@ require('./db/mongo').init();
 require('./init/initCommands').init(client);
 require('./init/initEvents').init(client);
 require('./init/initLogs').init(client);
-require('./init/initProxy').init(client);
 
 client.login(token);
 
