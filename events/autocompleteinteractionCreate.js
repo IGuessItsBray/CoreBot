@@ -1,6 +1,6 @@
 const fn = require('../util/genUtils')
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
-const { getGuildTags, getGuildRolebuttons } = require('../db/dbAccess');
+const { getGuildTags, getGuildRolebuttons, getMembers } = require('../db/dbAccess');
 const scheduler = require('../modules/scheduler');
 const moment = require('moment');
 module.exports = {
@@ -17,6 +17,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(interaction) {
         const guild = interaction.guild.id;
+        const uid = interaction.user.id
         if (!interaction.isAutocomplete()) return;
         const focusedValue = interaction.options.getFocused();
         if (interaction.commandName === 'test') {
@@ -64,6 +65,56 @@ module.exports = {
                 };
             }).filter(o => o.fullMessage.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(remindersOptions.slice(0, 25));
+        }
+        if (interaction.commandName === 'set-pronouns') {
+            const member = await getMembers(uid)
+            const memberMapped = member.map(member => {
+                return {
+                    name: member.name.slice(0, 30),
+                    value: member._id
+                };
+            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(memberMapped.slice(0, 25))
+        }
+        if (interaction.commandName === 'set-proxy') {
+            const member = await getMembers(uid)
+            const memberMapped = member.map(member => {
+                return {
+                    name: member.name.slice(0, 30),
+                    value: member._id
+                };
+            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(memberMapped.slice(0, 25))
+        }
+        if (interaction.commandName === 'set-avatar') {
+            const member = await getMembers(uid)
+            const memberMapped = member.map(member => {
+                return {
+                    name: member.name.slice(0, 30),
+                    value: member._id
+                };
+            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(memberMapped.slice(0, 25))
+        }
+        if (interaction.commandName === 'proxy-info') {
+            const member = await getMembers(uid)
+            const memberMapped = member.map(member => {
+                return {
+                    name: member.name.slice(0, 30),
+                    value: member._id
+                };
+            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(memberMapped.slice(0, 25))
+        }
+        if (interaction.commandName === 'set-color') {
+            const member = await getMembers(uid)
+            const memberMapped = member.map(member => {
+                return {
+                    name: member.name.slice(0, 30),
+                    value: member._id
+                };
+            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(memberMapped.slice(0, 25))
         }
     },
 

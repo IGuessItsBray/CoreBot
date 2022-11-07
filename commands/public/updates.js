@@ -132,7 +132,7 @@ module.exports = {
                     { name: 'New Features:', value: '\u200B' },
                     { name: 'Remind', value: '', inline: true },
                     { name: 'Echo v2', value: '', inline: true },
-                    { name: '', value: '', inline: true },
+                    { name: 'Proxy', value: '', inline: true },
                 )
                 .addFields(
                     { name: '\u200B', value: '\u200B' },

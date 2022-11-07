@@ -23,6 +23,9 @@ const modmailSchema = require('./schemas/modmailSchema');
 const modmailIDschema = require('./schemas/modmailIDschema')
 const modmailMsgLoggerSchema = require('./schemas/modmailMsgLoggerSchema')
 const mediaChannelSchema = require('./schemas/mediaChannelSchema')
+const proxySchema = require('./schemas/proxySchema')
+const proxyUserSettings = require('./schemas/proxyUserSettings')
+const proxyCountsSchema = require('./schemas/proxyCountsSchema');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -112,6 +115,25 @@ module.exports = {
 	//----
 	setMediaChannel,
 	getMediaChannel,
+	//----
+	//Proxying
+	//----
+	createMember,
+	setAvatar,
+	setPronouns,
+	setProxy,
+	getMembers,
+	getMember, 
+	setColor,
+	getUserProxies, 
+	getMemberByProxy,
+	setAP,
+	getAP,
+	getMemberByID,
+	setLastUsed,
+	getLastUsed,
+	addToProxy,
+	findProxyCount,
 };
 
 // ------------------------------------------------------------------------------
@@ -823,6 +845,247 @@ async function getMediaChannel(guild) {
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+//-----------
+//Proxying
+//-----------
+async function createMember(name, userID) {
+	const id = (Math.round(Date.now())).toString(36).toUpperCase();
+	const date = Date.now();
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					_id: id,
+					name: name,
+					userID: userID,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setPronouns(id, pronouns) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					_id: id,
+					pronouns: pronouns,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setProxy(id, proxy) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					_id: id,
+					proxy: proxy,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setAvatar(id, avatar) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					_id: id,
+					avatar: avatar,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setColor(id, avatar) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					_id: id,
+					color: color,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getMembers(userID) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.find({
+				userID: userID,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getMember(id) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOne({
+				id: id,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getMemberByProxy(proxy) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOne({
+				proxy: proxy,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getUserProxies(uid) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.find({
+				uid: uid,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setAP(userID, ap) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyUserSettings.findOneAndUpdate(
+				{
+					userID: userID,
+				},
+				{
+					userID: userID,
+					ap: ap,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getAP(userID) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyUserSettings.findOne({
+				userID: userID
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function getMemberByID(_id) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOne({
+				_id: _id,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setLastUsed(userID, lastUsed) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyUserSettings.findOneAndUpdate(
+				{
+					userID: userID,
+				},
+				{
+					userID: userID,
+					lastUsed: lastUsed,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getLastUsed(userID) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyUserSettings.findOne({
+				userID: userID
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function addToProxy(proxy, messageInc, characterInc) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyCountsSchema.findOneAndUpdate(
+				{
+					'proxy': proxy,
+				},
+				{
+					$inc: {
+						'messages': messageInc,
+						'characters': characterInc,
+					},
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function findProxyCount(proxy) {
+	return await mongo().then(async () => {
+		try {
+			return await proxyCountsSchema.findOne({
+				'proxy': proxy,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }

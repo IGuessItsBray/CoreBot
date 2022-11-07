@@ -35,6 +35,7 @@ require('./db/mongo').init();
 require('./init/initCommands').init(client);
 require('./init/initEvents').init(client);
 require('./init/initLogs').init(client);
+require('./init/initProxy').init(client);
 
 client.login(token);
 
@@ -57,7 +58,6 @@ client.once('ready', () => {
 |	Support server: (https://discord.gg/GAAj6DDrCJ)	   |
  ------------------------------------------------------
 `)
-	//const version = require(config.version);
 	if (client.user.id === "955267092800733214") {
 		const status = [
 			`Dev build`,
