@@ -1,5 +1,5 @@
 const fn = require('../util/genUtils')
-const { getCrossChatChannel } = require('../db/dbAccess');
+const { getServerSettings } = require('../db/dbAccess');
 const { CommandInteraction, MessageEmbed, Intents, WebhookClient } = require("discord.js");
 module.exports = {
 
@@ -14,7 +14,7 @@ module.exports = {
     // Execution
     // ------------------------------------------------------------------------------
     async execute(message) {
-        const webhooks = await getCrossChatChannel();
+        const webhooks = await (await getServerSettings()).ccChannel();
         if (message.webhookId) return;
         const webhookChannels = webhooks.map(w => w.channelId);
         if (!webhookChannels.includes(message.channel.id)) return;

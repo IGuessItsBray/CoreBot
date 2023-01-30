@@ -1,5 +1,5 @@
-const fn = require('../util/genUtils')
-const { getModmailChannel } = require('../db/dbAccess');
+const fn = require('../../util/genUtils')
+const { getModmailChannel } = require('../../db/dbAccess');
 const { MessageEmbed, MessageActionRow, MessageSelectMenu, Message, MessageButton } = require('discord.js');
 module.exports = {
     // ------------------------------------------------------------------------------

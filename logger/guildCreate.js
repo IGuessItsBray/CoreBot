@@ -1,5 +1,5 @@
 const fn = require('../util/genUtils')
-const { getLogChannel } = require('../db/dbAccess');
+const { getServerSettings } = require('../db/dbAccess');
 const { CommandInteraction, MessageEmbed, Intents, MessageActionRow, MessageButton } = require("discord.js");
 module.exports = {
 

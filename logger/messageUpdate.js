@@ -1,5 +1,5 @@
 const fn = require('../util/genUtils')
-const { getLogChannel } = require('../db/dbAccess');
+const { getServerSettings } = require('../db/dbAccess');
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 module.exports = {
 
@@ -21,7 +21,10 @@ module.exports = {
         const log = fetchedLogs.entries.first();
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
-        const sendchannel = await oldMessage.client.channels.fetch((await getLogChannel(oldMessage.guild.id)).logChannel);
+        const guildId = oldMessage.guild.id
+        const rawDB = await getServerSettings(guildId)
+        const data = rawDB.logChannel
+        const sendchannel = await oldMessage.guild.channels.fetch(data)
         const embed = new MessageEmbed()
             .setColor('#2f3136')
             .setDescription(`**MESSAGE:** Message sent by ${oldMessage.member} in ${oldMessage.channel}| *Edited;*

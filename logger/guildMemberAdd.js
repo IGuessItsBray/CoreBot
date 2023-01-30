@@ -1,5 +1,5 @@
 const fn = require('../util/genUtils')
-const { getLogChannel } = require('../db/dbAccess');
+const { getServerSettings } = require('../db/dbAccess');
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
 
 const badges = require('../config.json').emotes;
@@ -24,7 +24,7 @@ module.exports = {
         const log = fetchedLogs.entries.first();
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
-        const sendchannel = await channel.client.channels.fetch((await getLogChannel(channel.guild.id)).logChannel);
+          const sendchannel = await channel.client.channels.fetch((await getServerSettings(channel.guild.id)).logChannel);
         const embed = new MessageEmbed()
         .setColor('#2f3136')
         .setDescription(`**MEMBER:** Member joined | ${time}

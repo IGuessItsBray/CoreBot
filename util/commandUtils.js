@@ -7,8 +7,12 @@ const fs = require('fs');
 const { Permissions } = require('discord.js');
 const { FLAGS } = require('discord.js').Permissions;
 
-const publicPath = './commands/public/';
-const privatePath = './commands/private/';
+const helpPath = './commands/help/';
+const miscPath = './commands/misc/';
+const modPath = './commands/moderation/';
+const proxyPath = './commands/proxy/';
+const staffPath = './commands/staff/';
+const mailPath = './commands/modmail/';
 
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -30,14 +34,19 @@ function readFiles() {
 	const defaultMemberPermissions = new Permissions([FLAGS.ADMINISTRATOR]);
 
 	// public = global, private = support/dev guild only
-	const publicJsFiles = fs.readdirSync(publicPath).filter(f => f.endsWith('.js'));
-	const privateJsFiles = fs.readdirSync(privatePath).filter(f => f.endsWith('.js'));
+	const helpJsFiles = fs.readdirSync(helpPath).filter(f => f.endsWith('.js'));
+	const miscJsFiles = fs.readdirSync(miscPath).filter(f => f.endsWith('.js'));
+	const modJsFiles = fs.readdirSync(modPath).filter(f => f.endsWith('.js'));
+	const proxyJsFiles = fs.readdirSync(proxyPath).filter(f => f.endsWith('.js'));
+	const privateJsFiles = fs.readdirSync(staffPath).filter(f => f.endsWith('.js'));
+	const mmJsFiles = fs.readdirSync(mailPath).filter(f => f.endsWith('.js'));
 
-	const publicCommands = publicJsFiles.map(cf => {
+
+	const helpCommands = helpJsFiles.map(cf => {
 		try {
 			// remove the require cache for the command module
-			delete require.cache[require.resolve(`.${publicPath}${cf}`)];
-			const command = require(`.${publicPath}${cf}`);
+			delete require.cache[require.resolve(`.${helpPath}${cf}`)];
+			const command = require(`.${helpPath}${cf}`);
 
 			// check if the command is enabled or not
 			if (!command.enabled) return;
@@ -67,12 +76,147 @@ function readFiles() {
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
 
+	const miscCommands = miscJsFiles.map(cf => {
+		try {
+			// remove the require cache for the command module
+			delete require.cache[require.resolve(`.${miscPath}${cf}`)];
+			const command = require(`.${miscPath}${cf}`);
+
+			// check if the command is enabled or not
+			if (!command.enabled) return;
+
+			// figure out the default permissions
+			// use the 'permissions' property if it exists
+			const setMemberPermissions =
+				command.permissions || defaultMemberPermissions;
+			// delete the permissions property becauase it causes issues in
+			// the api's current state if left.
+			delete command.permissions;
+
+			// add perms & return the command
+			return {
+				...command,
+				default_member_permissions:
+					command.default_member_permissions
+					?? new Permissions(setMemberPermissions),
+				dm_permission:
+					command.dm_permission
+					?? true,
+			};
+		}
+		catch (e) {
+			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+		}
+		// filter out any undefined/disabled commands
+	}).filter(c => c);
+
+	const modCommands = modJsFiles.map(cf => {
+		try {
+			// remove the require cache for the command module
+			delete require.cache[require.resolve(`.${modPath}${cf}`)];
+			const command = require(`.${modPath}${cf}`);
+
+			// check if the command is enabled or not
+			if (!command.enabled) return;
+
+			// figure out the default permissions
+			// use the 'permissions' property if it exists
+			const setMemberPermissions =
+				command.permissions || defaultMemberPermissions;
+			// delete the permissions property becauase it causes issues in
+			// the api's current state if left.
+			delete command.permissions;
+
+			// add perms & return the command
+			return {
+				...command,
+				default_member_permissions:
+					command.default_member_permissions
+					?? new Permissions(setMemberPermissions),
+				dm_permission:
+					command.dm_permission
+					?? true,
+			};
+		}
+		catch (e) {
+			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+		}
+		// filter out any undefined/disabled commands
+	}).filter(c => c);
+
+	const proxyCommands = proxyJsFiles.map(cf => {
+		try {
+			// remove the require cache for the command module
+			delete require.cache[require.resolve(`.${proxyPath}${cf}`)];
+			const command = require(`.${proxyPath}${cf}`);
+
+			// check if the command is enabled or not
+			if (!command.enabled) return;
+
+			// figure out the default permissions
+			// use the 'permissions' property if it exists
+			const setMemberPermissions =
+				command.permissions || defaultMemberPermissions;
+			// delete the permissions property becauase it causes issues in
+			// the api's current state if left.
+			delete command.permissions;
+
+			// add perms & return the command
+			return {
+				...command,
+				default_member_permissions:
+					command.default_member_permissions
+					?? new Permissions(setMemberPermissions),
+				dm_permission:
+					command.dm_permission
+					?? true,
+			};
+		}
+		catch (e) {
+			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+		}
+		// filter out any undefined/disabled commands
+	}).filter(c => c);
+
+	const mmCommands = mmJsFiles.map(cf => {
+		try {
+			// remove the require cache for the command module
+			delete require.cache[require.resolve(`.${mailPath}${cf}`)];
+			const command = require(`.${mailPath}${cf}`);
+
+			// check if the command is enabled or not
+			if (!command.enabled) return;
+
+			// figure out the default permissions
+			// use the 'permissions' property if it exists
+			const setMemberPermissions =
+				command.permissions || defaultMemberPermissions;
+			// delete the permissions property becauase it causes issues in
+			// the api's current state if left.
+			delete command.permissions;
+
+			// add perms & return the command
+			return {
+				...command,
+				default_member_permissions:
+					command.default_member_permissions
+					?? new Permissions(setMemberPermissions),
+				dm_permission:
+					command.dm_permission
+					?? true,
+			};
+		}
+		catch (e) {
+			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+		}
+		// filter out any undefined/disabled commands
+	}).filter(c => c);
 
 	const privateCommands = privateJsFiles.map(cf => {
 		try {
 			// remove the require cache for the command module
-			delete require.cache[require.resolve(`.${privatePath}${cf}`)];
-			const command = require(`.${privatePath}${cf}`);
+			delete require.cache[require.resolve(`.${staffPath}${cf}`)];
+			const command = require(`.${staffPath}${cf}`);
 
 			// check if the command is enabled or not
 			if (!command.enabled) return;
@@ -100,8 +244,12 @@ function readFiles() {
 	}).filter(c => c);
 
 	return {
-		publicCommands,
+		helpCommands,
+		miscCommands,
+		modCommands,
+		proxyCommands,
 		privateCommands,
+		mmCommands,
 	};
 }
 
@@ -115,8 +263,12 @@ function deploy(log = false) {
 	const rest = new REST({ version: '9' }).setToken(token);
 
 	const {
-		publicCommands,
+		helpCommands,
+		miscCommands,
+		modCommands,
+		proxyCommands,
 		privateCommands,
+		mmCommands,
 	} = readFiles();
 
 	// Register support/dev guild commands
@@ -128,7 +280,15 @@ function deploy(log = false) {
 	// running this more than once will cause commands to be overwritten and dissapear
 	// multiple groups/arrays can be passed in using an array & the spread operator
 	// example: { body: [...commandArr1, ...commandArr2,...commandArr3] }
-	rest.put(Routes.applicationCommands(self), { body: publicCommands })
+	rest.put(Routes.applicationCommands(self), {
+		body: [
+			...helpCommands,
+			...miscCommands,
+			...modCommands,
+			...proxyCommands,
+			...mmCommands
+		]
+	})
 		.then(res => { if (log) commandTable(res, '🌎'); })
 		.catch(console.error);
 }

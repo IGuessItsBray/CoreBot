@@ -26,7 +26,8 @@ const setAuditLogChannel = {
     execute: async function (interaction) {
         const channelId = interaction.options.getChannel('channel').id
         const guildId = interaction.guild.id
-        await updateGuild(guildId, channelId)
+        const name = interaction.guild.name
+        await updateGuild(guildId, channelId, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
     },
@@ -56,6 +57,7 @@ const setCcChannel = {
     execute: async function (interaction) {
         const channel = interaction.options.getChannel('channel')
         const channelId = interaction.options.getChannel('channel').id
+        const name = interaction.guild.name
         const guildId = interaction.guild.id
         const webhook = await channel.createWebhook('CoreBot | CrossChat', {
             avatar: 'https://cdn.discordapp.com/attachments/968344820970029136/1014940658009653248/Screen_Shot_2022-04-07_at_3.51.20_PM.png',
@@ -64,7 +66,7 @@ const setCcChannel = {
 
         const whToken = webhook.token
 
-        await setCrossChatChannel(guildId, channelId, whId, whToken)
+        await setCrossChatChannel(guildId, channelId, whId, whToken, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
     },
@@ -93,7 +95,8 @@ const setReportingChannel = {
     execute: async function (interaction) {
         const channelId = interaction.options.getChannel('channel').id
         const guildId = interaction.guild.id
-        await setReportChannel(guildId, channelId)
+        const name = interaction.guild.name
+        await setReportChannel(guildId, channelId, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
     },
@@ -129,7 +132,8 @@ const setJoinInfo = {
         const channel = interaction.options.getChannel('channel').id
         const guildId = interaction.guild.id
         const message = interaction.options.getString('message')
-        await setJoin(guildId, channel, message)
+        const name = interaction.guild.name
+        await setJoin(guildId, channel, message, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
     },
@@ -165,7 +169,8 @@ const setLeaveInfo = {
         const channel = interaction.options.getChannel('channel').id
         const guildId = interaction.guild.id
         const message = interaction.options.getString('message')
-        await setLeave(guildId, channel, message)
+        const name = interaction.guild.name
+        await setLeave(guildId, channel, message, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
 
     },
@@ -220,11 +225,12 @@ const setVerifyConfig = {
         const failmsg = interaction.options.getString('failmessage');
         const role = interaction.options.getRole('role');
         const channel = interaction.options.getChannel('channel');
-        if (channel) await setVerifyChannel(interaction.guild.id, channel.id)
-        if (role) await setVerifyRoleAdd(interaction.guild.id, role.id)
-        if (failmsg) await setVerifyFailMessage(interaction.guild.id, failmsg)
-        if (passmsg) await setVerifySuccessMessage(interaction.guild.id, passmsg)
-        if (password) await setVerifyPassword(interaction.guild.id, password)
+        const name = interaction.guild.name
+        if (channel) await setVerifyChannel(interaction.guild.id, channel.id, name)
+        if (role) await setVerifyRoleAdd(interaction.guild.id, role.id, name)
+        if (failmsg) await setVerifyFailMessage(interaction.guild.id, failmsg, name)
+        if (passmsg) await setVerifySuccessMessage(interaction.guild.id, passmsg, name)
+        if (password) await setVerifyPassword(interaction.guild.id, password, name)
         interaction.editReply({
             ephemeral: true, content: `Verify information set - please take note of the password!
         Channel: ${channel}
@@ -254,8 +260,15 @@ const setModmailChannel = {
     execute: async function (interaction) {
         const channelId = interaction.options.getChannel('channel').id
         const guildId = interaction.guild.id
-        await updateModmailChannel(guildId, channelId)
+        const name = interaction.guild.name
+        await updateModmailChannel(guildId, channelId, name)
         await interaction.editReply({ content: 'Channel set!', ephemeral: true });
+        const channel = await interaction.guild.channels.fetch(channelId)
+        channel.permissionOverwrites.create(channel.guild.roles.everyone, {
+            VIEW_CHANNEL: true,
+            SEND_MESSAGES: false,
+            READ_MESSAGE_HISTORY: false,
+        });
 
     },
 };

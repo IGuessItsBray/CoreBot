@@ -13,13 +13,24 @@ module.exports = {
 // ------------------------------------------------------------------------------
 
 function init(client) {
-	const {
-		publicCommands,
+	const { 
+		helpCommands,
+		miscCommands,
+		modCommands,
+		proxyCommands,
 		privateCommands,
+		mmCommands,
 	} = cmdUtils.readFiles();
 
 	client.commands = new Collection();
-	for (const command of [...publicCommands, ...privateCommands]) {
+	for (const command of [
+		...helpCommands,
+		...miscCommands,
+		...modCommands,
+		...proxyCommands,
+		...mmCommands,
+		...privateCommands
+	]) {
 		if (!command.enabled) continue;
 		client.commands[command.name] = command;
 	}

@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const { FLAGS } = require('discord.js').Permissions;
 const { addPunishments } = require('../../db/dbAccess');
-const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
+const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -11,8 +11,8 @@ module.exports = {
     name: 'ban',
     description: 'Allows the admin or owner to ban the member.',
     type: COMMAND.CHAT_INPUT,
-	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+    enabled: true,
+    permissions: [FLAGS.SEND_MESSAGES],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -52,7 +52,7 @@ module.exports = {
         const message = reason
         const staffUser = interaction.member
         const timestamp = interaction.createdTimestamp
-        if(!interaction.member.permissions.has("BAN_MEMBERS")){
+        if (!interaction.member.permissions.has("BAN_MEMBERS")) {
             await interaction.reply({ content: "You do not have the correct permissions to use this command.", ephemeral: true })
             return
         }
@@ -61,15 +61,15 @@ module.exports = {
             await member.ban({ days: length, reason: reason });
             await interaction.reply(`${member} banned by ${interaction.member}`);
             const type = "ban"
-                    const staffUser = interaction.member.id
-                    addPunishments(
-                        guildId,
-                        user,
-                        type,
-                        message,
-                        timestamp,
-                        staffUser
-                    )
+            const staffUser = interaction.member.id
+            addPunishments(
+                guildId,
+                user,
+                type,
+                message,
+                timestamp,
+                staffUser
+            )
         } catch (e) {
             console.error(e);
             await interaction.reply('failure, see console');

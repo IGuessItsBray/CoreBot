@@ -10,22 +10,13 @@ const mongo = require('./mongo').mongoose;
 const warningSchema = require('./schemas/warningSchema');
 const rolebuttonSchema = require('./schemas/rolebuttonSchema');
 const tagSchema = require('./schemas/tagSchema');
-const setupSchema = require('./schemas/setupSchema');
-const verifySchema = require('./schemas/verifySchema');
 const messageCreateSchema = require('./schemas/messageCreateSchema');
 const userCountsSchema = require('./schemas/userCountsSchema');
-const crosschatSchema = require('./schemas/crosschatSchema');
-const reportSchema = require('./schemas/reportSchema');
 const punishmentSchema = require('./schemas/punishmentSchema');
-const joinSchema = require('./schemas/joinSchema');
-const leaveSchema = require('./schemas/leaveSchema');
-const modmailSchema = require('./schemas/modmailSchema');
-const modmailIDschema = require('./schemas/modmailIDschema')
-const modmailMsgLoggerSchema = require('./schemas/modmailMsgLoggerSchema')
 const mediaChannelSchema = require('./schemas/mediaChannelSchema')
 const proxySchema = require('./schemas/proxySchema')
-const proxyUserSettings = require('./schemas/proxyUserSettings')
-const proxyCountsSchema = require('./schemas/proxyCountsSchema');
+const serverSettingsSchema = require('./schemas/serverSettingsSchema');
+const userSchema = require('./schemas/userSchema');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -55,11 +46,9 @@ module.exports = {
 	//Logs
 	//----
 	updateGuild,
-	getLogChannel,
 	//----
 	//Verify
 	//----
-	getVerifyConfig,
 	setVerifyChannel,
 	setVerifyPassword,
 	setVerifySuccessMessage,
@@ -80,12 +69,10 @@ module.exports = {
 	//CrossChat
 	//----
 	setCrossChatChannel,
-	getCrossChatChannel,
 	//----
 	//Reports
 	//----
 	setReportChannel,
-	getReportChannel,
 	//----
 	//Punishment Tracker
 	//----
@@ -95,16 +82,10 @@ module.exports = {
 	//Join/leave
 	//----
 	setJoin,
-	getJoin,
 	setLeave,
-	getLeave,
 	//----
 	//Modmail
-	//----
-	getModmailChannel,
 	updateModmailChannel,
-	getModmailGuild,
-	updateModmailGuild,
 	//----
 	//ModMail Message Log
 	//----
@@ -120,20 +101,12 @@ module.exports = {
 	//----
 	createMember,
 	setAvatar,
-	setPronouns,
-	setProxy,
-	getMembers,
-	getMember, 
-	setColor,
-	getUserProxies, 
-	getMemberByProxy,
-	setAP,
-	getAP,
-	getMemberByID,
-	setLastUsed,
-	getLastUsed,
-	addToProxy,
-	findProxyCount,
+	setTags,
+
+	getServerSettings,
+
+	setUserMMChannel,
+	getUserMMChannel,
 };
 
 // ------------------------------------------------------------------------------
@@ -304,14 +277,15 @@ async function getGuildTags(guild) {
 
 //Audit logs
 
-async function updateGuild(guildId, logChannel) {
+async function updateGuild(guildId, logChannel, name) {
 	return await mongo().then(async () => {
 		try {
-			return await setupSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
 					_id: guildId,
 					logChannel: logChannel,
+					name: name,
 				},
 				{ new: true, upsert: true });
 		}
@@ -321,10 +295,10 @@ async function updateGuild(guildId, logChannel) {
 	});
 }
 
-async function getLogChannel(guildId) {
+async function getServerSettings(guildId) {
 	return await mongo().then(async () => {
 		try {
-			return await setupSchema.findOne({ _id: guildId });
+			return await serverSettingsSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -336,15 +310,14 @@ async function getLogChannel(guildId) {
 //Verify
 
 //Fail msg
-async function setVerifyFailMessage(guildId, failMessage) {
+async function setVerifyFailMessage(guildId, failMessage, name) {
 	return await mongo().then(async () => {
 		try {
-			return await verifySchema.findOneAndUpdate(
-				{
-					guildId: guildId,
-				},
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
 					failMessage: failMessage,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -356,15 +329,14 @@ async function setVerifyFailMessage(guildId, failMessage) {
 }
 
 //Success Msg
-async function setVerifySuccessMessage(guildId, successMessage) {
+async function setVerifySuccessMessage(guildId, successMessage, name) {
 	return await mongo().then(async () => {
 		try {
-			return await verifySchema.findOneAndUpdate(
-				{
-					guildId: guildId,
-				},
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
 					successMessage: successMessage,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -376,15 +348,14 @@ async function setVerifySuccessMessage(guildId, successMessage) {
 }
 
 //Password
-async function setVerifyPassword(guildId, password) {
+async function setVerifyPassword(guildId, password, name) {
 	return await mongo().then(async () => {
 		try {
-			return await verifySchema.findOneAndUpdate(
-				{
-					guildId: guildId,
-				},
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
 					password: password,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -396,15 +367,14 @@ async function setVerifyPassword(guildId, password) {
 }
 
 //Role
-async function setVerifyRoleAdd(guildId, role) {
+async function setVerifyRoleAdd(guildId, role, name) {
 	return await mongo().then(async () => {
 		try {
-			return await verifySchema.findOneAndUpdate(
-				{
-					guildId: guildId,
-				},
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
 					addRole: role,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -416,15 +386,14 @@ async function setVerifyRoleAdd(guildId, role) {
 }
 
 //Channel
-async function setVerifyChannel(guildId, channel) {
+async function setVerifyChannel(guildId, channel, name) {
 	return await mongo().then(async () => {
 		try {
-			return await verifySchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
-					guildId: guildId,
-				},
-				{
-					channelId: channel,
+					verifyChannelId: channel,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -435,19 +404,6 @@ async function setVerifyChannel(guildId, channel) {
 	});
 }
 
-//Get Config
-async function getVerifyConfig(guild) {
-	return await mongo().then(async () => {
-		try {
-			return await verifySchema.findOne({
-				guildId: guild,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
 //Message Logger (Not deleted)
 async function updateMessageLog(messageObj) {
 	const {
@@ -563,17 +519,16 @@ async function findUserCount(userId, guildId) {
 //----------
 //Crosschat
 //----------
-async function setCrossChatChannel(guildId, channel, whId, whToken) {
+async function setCrossChatChannel(guildId, channel, whId, whToken, name) {
 	return await mongo().then(async () => {
 		try {
-			return await crosschatSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
-					guildId: guildId,
-				},
-				{
-					channelId: channel,
+					ccChannelId: channel,
 					webhookId: whId,
 					webhookToken: whToken,
+					name: name,
 				},
 				{ new: true, upsert: true },
 			);
@@ -583,41 +538,21 @@ async function setCrossChatChannel(guildId, channel, whId, whToken) {
 		}
 	});
 }
-async function getCrossChatChannel() {
-	return await mongo().then(async () => {
-		try {
-			return await crosschatSchema.find({});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
 
 //-----------
 //Reporting
 //-----------
-async function setReportChannel(guildId, channelId) {
+async function setReportChannel(guildId, channelId, name) {
 	return await mongo().then(async () => {
 		try {
-			return await reportSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
 					_id: guildId,
-					channelId: channelId,
+					reportChannelId: channelId,
+					name: name,
 				},
 				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-
-async function getReportChannel(guildId) {
-	return await mongo().then(async () => {
-		try {
-			return await reportSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -662,15 +597,16 @@ async function getPunishments(user) {
 //-----------
 //Join/Leave
 //-----------
-async function setJoin(guildId, channel, message) {
+async function setJoin(guildId, channel, message, name) {
 	return await mongo().then(async () => {
 		try {
-			return await joinSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
 					_id: guildId,
-					channel: channel,
-					message: message,
+					joinChannel: channel,
+					joinMessage: message,
+					name: name,
 				},
 				{ new: true, upsert: true });
 		}
@@ -679,37 +615,18 @@ async function setJoin(guildId, channel, message) {
 		}
 	});
 }
-async function setLeave(guildId, channel, message) {
+async function setLeave(guildId, channel, message, name) {
 	return await mongo().then(async () => {
 		try {
-			return await leaveSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
 					_id: guildId,
-					channel: channel,
-					message: message,
+					leaveChannel: channel,
+					leaveMessage: message,
+					name: name,
 				},
 				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getJoin(guildId) {
-	return await mongo().then(async () => {
-		try {
-			return await joinSchema.findOne({ _id: guildId });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getLeave(guildId) {
-	return await mongo().then(async () => {
-		try {
-			return await leaveSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -719,14 +636,15 @@ async function getLeave(guildId) {
 //-----------
 //Modmail
 //-----------
-async function updateModmailChannel(guildId, modMailChannel) {
+async function updateModmailChannel(guildId, modMailChannel, name) {
 	return await mongo().then(async () => {
 		try {
-			return await modmailSchema.findOneAndUpdate(
+			return await serverSettingsSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
 					_id: guildId,
 					modMailChannel: modMailChannel,
+					name: name,
 				},
 				{ new: true, upsert: true });
 		}
@@ -736,50 +654,39 @@ async function updateModmailChannel(guildId, modMailChannel) {
 	});
 }
 
-async function getModmailChannel(guildId) {
-	return await mongo().then(async () => {
-		//console.log("Function LOG")
-		//console.log(guildId)
-		try {
-			return await modmailSchema.findOne({ _id: guildId });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-
-async function updateModmailGuild(UserId, guildId) {
+async function setUserMMChannel(guildId, userId, name, channelId, reason) {
 	return await mongo().then(async () => {
 		try {
-			return await modmailIDschema.findOneAndUpdate(
-				{ _id: UserId },
+			return await userSchema.findOneAndUpdate(
+				{ _id: guildId },
 				{
-					_id: UserId,
-					guildId: guildId,
+					_id: guildId,
+					userId: userId,
+					name: name,
+					channelId: channelId,
+					reason: reason
 				},
-				{ new: true, upsert: true });
+				{ new: true, upsert: true },
+			);
 		}
 		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+			console.error(`dbAccess: ${e}`);
 		}
 	});
 }
-
-async function getModmailGuild(UserId) {
+async function getUserMMChannel(userId) {
 	return await mongo().then(async () => {
-		//console.log("Function LOG")
-		//console.log(guildId)
 		try {
-			return await modmailIDschema.findOne({
-				_id: UserId,
+			return await userSchema.findOne({
+				userId: userId,
 			});
 		}
 		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }
+
 //-----------
 //Modmail Msg Logger
 //-----------
@@ -851,7 +758,7 @@ async function getMediaChannel(guild) {
 //-----------
 //Proxying
 //-----------
-async function createMember(name, userID) {
+async function createMember(owner, name, desc, pronouns) {
 	const id = (Math.round(Date.now())).toString(36).toUpperCase();
 	const date = Date.now();
 	return await mongo().then(async () => {
@@ -860,24 +767,12 @@ async function createMember(name, userID) {
 				{ _id: id },
 				{
 					_id: id,
+					owner: owner,
 					name: name,
-					userID: userID,
-				},
-				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function setPronouns(id, pronouns) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.findOneAndUpdate(
-				{ _id: id },
-				{
-					_id: id,
+					//tags: tags,
+					desc: desc,
 					pronouns: pronouns,
+					//avatar: avatar,
 				},
 				{ new: true, upsert: true });
 		}
@@ -886,29 +781,15 @@ async function setPronouns(id, pronouns) {
 		}
 	});
 }
-async function setProxy(id, proxy) {
+
+async function setAvatar(avatar) {
+	const id = (Math.round(Date.now())).toString(36).toUpperCase();
+	const date = Date.now();
 	return await mongo().then(async () => {
 		try {
 			return await proxySchema.findOneAndUpdate(
 				{ _id: id },
 				{
-					_id: id,
-					proxy: proxy,
-				},
-				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function setAvatar(id, avatar) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.findOneAndUpdate(
-				{ _id: id },
-				{
-					_id: id,
 					avatar: avatar,
 				},
 				{ new: true, upsert: true });
@@ -918,174 +799,21 @@ async function setAvatar(id, avatar) {
 		}
 	});
 }
-async function setColor(id, avatar) {
+
+async function setTags(tags) {
+	const id = (Math.round(Date.now())).toString(36).toUpperCase();
+	const date = Date.now();
 	return await mongo().then(async () => {
 		try {
 			return await proxySchema.findOneAndUpdate(
 				{ _id: id },
 				{
-					_id: id,
-					color: color,
+					tags: tags,
 				},
 				{ new: true, upsert: true });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getMembers(userID) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.find({
-				userID: userID,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getMember(id) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.findOne({
-				id: id,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getMemberByProxy(proxy) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.findOne({
-				proxy: proxy,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getUserProxies(uid) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.find({
-				uid: uid,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function setAP(userID, ap) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyUserSettings.findOneAndUpdate(
-				{
-					userID: userID,
-				},
-				{
-					userID: userID,
-					ap: ap,
-				},
-				{ new: true, upsert: true },
-			);
-		}
-		catch (e) {
-			console.error(`dbAccess: ${e}`);
-		}
-	});
-}
-async function getAP(userID) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyUserSettings.findOne({
-				userID: userID
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function getMemberByID(_id) {
-	return await mongo().then(async () => {
-		try {
-			return await proxySchema.findOne({
-				_id: _id,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function setLastUsed(userID, lastUsed) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyUserSettings.findOneAndUpdate(
-				{
-					userID: userID,
-				},
-				{
-					userID: userID,
-					lastUsed: lastUsed,
-				},
-				{ new: true, upsert: true },
-			);
-		}
-		catch (e) {
-			console.error(`dbAccess: ${e}`);
-		}
-	});
-}
-async function getLastUsed(userID) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyUserSettings.findOne({
-				userID: userID
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-async function addToProxy(proxy, messageInc, characterInc) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyCountsSchema.findOneAndUpdate(
-				{
-					'proxy': proxy,
-				},
-				{
-					$inc: {
-						'messages': messageInc,
-						'characters': characterInc,
-					},
-				},
-				{ new: true, upsert: true });
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
-		}
-	});
-}
-
-async function findProxyCount(proxy) {
-	return await mongo().then(async () => {
-		try {
-			return await proxyCountsSchema.findOne({
-				'proxy': proxy,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }

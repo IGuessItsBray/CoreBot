@@ -25,6 +25,8 @@ const client =
 		],
 	});
 
+
+
 module.exports = { client };
 
 // ------------------------------------------------------------------------------
@@ -95,7 +97,7 @@ client.once('ready', () => {
 			"Built on DJS13",
 			"Hi Seth!",
 			`Serving ${totalUsers} users!`
-			`${client.guilds.cache.size} Discord Servers`
+				`${client.guilds.cache.size} Discord Servers`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
@@ -164,8 +166,7 @@ buttons(client);
 //const twitchAlerts = require("./modules/twitchAlerts");
 //console.log('✅ Twitch Alerts │ TWAL online!');
 //twitchAlerts(client);
-const ctv = require("./modules/ctv");
 const discordModals = require('discord-modals');
 discordModals(client);
-require('./modules/scheduler').resumeJobs();
+//require('./modules/scheduler').resumeJobs();
 console.log('✅ Reminders │ Remind online!');
