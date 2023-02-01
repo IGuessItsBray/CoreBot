@@ -164,7 +164,6 @@ buttons(client);
 //const twitchAlerts = require("./modules/twitchAlerts");
 //console.log('✅ Twitch Alerts │ TWAL online!');
 //twitchAlerts(client);
-const ctv = require("./modules/ctv");
 const discordModals = require('discord-modals');
 discordModals(client);
 require('./modules/scheduler').resumeJobs();
