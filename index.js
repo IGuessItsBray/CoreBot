@@ -58,6 +58,12 @@ client.once('ready', () => {
  ------------------------------------------------------
 `)
 	if (client.user.id === "955267092800733214") {
+		const guilds = client.guilds.cache;
+		var totalUsers = 0;
+	
+		guilds.forEach((guild) => {
+			totalUsers += guild.memberCount;
+		});
 		const status = [
 			`Dev build`,
 			"Not a production version",
@@ -67,6 +73,7 @@ client.once('ready', () => {
 			`Serving ${totalUsers} users!`
 		];
 		setInterval(() => {
+			
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
 			const newActivity = status[randomIndex];
 			client.user.setPresence({
@@ -88,6 +95,12 @@ client.once('ready', () => {
 		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
 	}
 	if (client.user.id === "950525282434048031") {
+		const guilds = client.guilds.cache;
+		var totalUsers = 0;
+	
+		guilds.forEach((guild) => {
+			totalUsers += guild.memberCount;
+		});
 		const status = [
 			`CB v3.0.0`,
 			"also checkout CBMusic!",
@@ -120,6 +133,12 @@ client.once('ready', () => {
 		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
 	}
 	if (client.user.id === "1019253573139316776") {
+		const guilds = client.guilds.cache;
+		var totalUsers = 0;
+	
+		guilds.forEach((guild) => {
+			totalUsers += guild.memberCount;
+		});
 		const status = [
 			`CB Beta v3.0.0`,
 			"Not prod lol",
