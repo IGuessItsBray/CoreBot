@@ -17,6 +17,8 @@ const mediaChannelSchema = require('./schemas/mediaChannelSchema')
 const proxySchema = require('./schemas/proxySchema')
 const serverSettingsSchema = require('./schemas/serverSettingsSchema');
 const userSchema = require('./schemas/userSchema');
+const mmSchema = require('./schemas/modMailSchema');
+const userMmSchema = require('./schemas/userMmSchema');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -85,12 +87,13 @@ module.exports = {
 	setLeave,
 	//----
 	//Modmail
-	updateModmailChannel,
-	//----
-	//ModMail Message Log
-	//----
-	updateMMMessageLog,
-	findMMMessageLog,
+	setMmCatagory,
+	setMmChannel,
+	getMmCatagory,
+	getMmChannel,
+	setMmInfo,
+	getMmInfo,
+	deleteMmInfo,
 	//----
 	//Media Channel
 	//----
@@ -105,8 +108,18 @@ module.exports = {
 
 	getServerSettings,
 
-	setUserMMChannel,
-	getUserMMChannel,
+	//----
+	//User
+	//----
+	//NupdateMessageLog,
+	//NsetDeletedMessageLog,
+	//NfindMessageLog,
+	//NaddPunishment,
+	//NgetPunishment,
+	//NaddMmThread,
+	//NgetMmThread,
+	//NaddToUser,
+	//NfindUserCount,
 };
 
 // ------------------------------------------------------------------------------
@@ -636,15 +649,30 @@ async function setLeave(guildId, channel, message, name) {
 //-----------
 //Modmail
 //-----------
-async function updateModmailChannel(guildId, modMailChannel, name) {
+async function setMmCatagory(guildId, catagory) {
 	return await mongo().then(async () => {
 		try {
-			return await serverSettingsSchema.findOneAndUpdate(
+			return await mmSchema.findOneAndUpdate(
 				{ _id: guildId },
 				{
-					_id: guildId,
-					modMailChannel: modMailChannel,
-					name: name,
+					guildId: guildId,
+					catagory: catagory,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function setMmChannel(guildId, channel) {
+	return await mongo().then(async () => {
+		try {
+			return await mmSchema.findOneAndUpdate(
+				{ _id: guildId },
+				{
+					guildId: guildId,
+					channel: channel,
 				},
 				{ new: true, upsert: true });
 		}
@@ -654,56 +682,34 @@ async function updateModmailChannel(guildId, modMailChannel, name) {
 	});
 }
 
-async function setUserMMChannel(guildId, userId, name, channelId, reason) {
+async function getMmCatagory(guildId) {
 	return await mongo().then(async () => {
 		try {
-			return await userSchema.findOneAndUpdate(
-				{ _id: guildId },
-				{
-					_id: guildId,
-					userId: userId,
-					name: name,
-					channelId: channelId,
-					reason: reason
-				},
-				{ new: true, upsert: true },
-			);
+			return await mmSchema.findOne({ _id: guildId });
 		}
 		catch (e) {
-			console.error(`dbAccess: ${e}`);
-		}
-	});
-}
-async function getUserMMChannel(userId) {
-	return await mongo().then(async () => {
-		try {
-			return await userSchema.findOne({
-				userId: userId,
-			});
-		}
-		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }
 
-//-----------
-//Modmail Msg Logger
-//-----------
-//Message Logger (Not deleted)
-async function updateMMMessageLog(guild, UserId, UserName, message, type, timestamp, id) {
-
+async function getMmChannel(guildId) {
 	return await mongo().then(async () => {
 		try {
-			return await modmailMsgLoggerSchema.create(
-				{
-					guild: guild,
-					UserId: UserId,
-					UserName: UserName,
-					message: message,
-					type: type,
-					timestamp: timestamp,
-					id: id
+			return await mmSchema.findOne({ _id: guildId });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getMmInfo(guildId, userId) {
+	return await mongo().then(async () => {
+		try {
+			return await userMmSchema.findOne({
+				 guildId,
+				 userId,
 				});
 		}
 		catch (e) {
@@ -712,16 +718,37 @@ async function updateMMMessageLog(guild, UserId, UserName, message, type, timest
 	});
 }
 
-
-async function findMMMessageLog(id) {
+async function deleteMmInfo(guildId, userId, channelId) {
 	return await mongo().then(async () => {
 		try {
-			return await modmailMsgLoggerSchema.find({
-				id: id
-			});
+			return await userMmSchema.findOneAndDelete({
+				 guildId,
+				 userId,
+				 channelId,
+				});
 		}
 		catch (e) {
-			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function setMmInfo(guildId, userId, channelId, reason) {
+	const id = (Math.round(Date.now())).toString(36).toUpperCase();
+	return await mongo().then(async () => {
+		try {
+			return await userMmSchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					guildId: guildId,
+					userId: userId,
+					channelId: channelId,
+					reason: reason
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }

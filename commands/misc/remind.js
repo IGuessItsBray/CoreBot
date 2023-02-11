@@ -123,7 +123,7 @@ module.exports = {
             case 'list': {
                 const jobs = (await scheduler.listJobs())
                     .filter(jobs =>
-                        jobs.file === '../commands/public/remind' &&
+                        jobs.file === '../commands/misc/remind' &&
                         jobs.func === 'doRemind' &&
                         jobs.args[0] === interaction.guild.id &&
                         jobs.args[2] === interaction.user.id,
@@ -170,7 +170,7 @@ module.exports = {
 
                 const date = start.toDate();
                 await scheduler.scheduleJob(
-                    '../commands/public/remind',
+                    '../commands/misc/remind',
                     'doRemind',
                     [guild.id, channel.id, sender.id, message],
                     date);
@@ -236,7 +236,7 @@ module.exports = {
             const dFormat = `<t:${Math.floor(date.getTime() / 1000.0)}:R>`;
 
             await scheduler.scheduleJob(
-                '../commands/public/remind',
+                '../commands/misc/remind',
                 'doRemind',
                 [
                     guild.id,
@@ -257,7 +257,7 @@ module.exports = {
             const dFormat = `<t:${Math.floor(date.getTime() / 1000.0)}:R>`;
 
             await scheduler.scheduleJob(
-                '../commands/public/remind',
+                '../commands/misc/remind',
                 'doRemind',
                 [
                     guild.id,

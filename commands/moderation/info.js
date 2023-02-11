@@ -2,7 +2,7 @@ const { MessageEmbed } = require("discord.js");
 const { FLAGS } = require('discord.js').Permissions;
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 const badges = require('../../config.json').emotes;
-const { dev, tester, networkadmin } = require('../../config.json');
+const config = require('../../config.json');
 const { findMessageLog } = require('../../db/dbAccess');
 const { findUserCount } = require('../../db/dbAccess');
 const { getPunishments } = require('../../db/dbAccess');
@@ -61,15 +61,23 @@ module.exports = {
         const dateStamp2 = Math.floor(interaction.client.readyAt.getTime() / 1000.0);
         const { characters, messages } = await findUserCount(user.id, interaction.guild.id);
         const id = user.id
-        const url = 'http://10.0.0.57:9090/api/v1/query?query=';
-        const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
-        const res = await axios.get(`${url}${query}`);
+        const homeGuild = await interaction.client.guilds.fetch(config.HOME);
+        const dev = (await homeGuild.members.fetch())
+            .filter(m => m.roles.cache.has("968346275881832569")).map(u => u.id);
+            
+        const networkadmin = (await homeGuild.members.fetch())
+            .filter(m => m.roles.cache.has("990956030290718751")).map(u => u.id);
+        const tester = (await homeGuild.members.fetch())
+            .filter(m => m.roles.cache.has("1022142081323511899")).map(u => u.id);
+        //const url = 'http://10.0.0.202:9090/api/v1/query?query=';
+        //const query = encodeURIComponent('pm2_up{name!~"pm2-metrics",name!~"MC.*"}');
+        //const res = await axios.get(`${url}${query}`);
         const guild = interaction.guild
-        const formattedRes = res.data.data.result.map(row => {
-            const date = new Date(Date.now() - row.value[1] * 1000);
-            const dateStamp = Math.floor(date.getTime() / 1000.0);
-            return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
-        }).join('\n');
+        //const formattedRes = res.data.data.result.map(row => {
+            //const date = new Date(Date.now() - row.value[1] * 1000);
+            //const dateStamp = Math.floor(date.getTime() / 1000.0);
+            //return `${row.metric.group} online since <t:${dateStamp}:R><t:${dateStamp}:D><:ONLINE:960716360416124990>`;
+        //}).join('\n');
         if (type === 'gen') {
             if (id === "950525282434048031") {
                 const target = await interaction.guild.members.fetch(user);
@@ -108,8 +116,8 @@ module.exports = {
                     .addField("Discord User Since", `<t:${parseInt(target.user.createdTimestamp / 1000)}:R>`, true)
                     .addField("Characters", `${characters}`, true)
                     .addField("Messages", `${messages}`, true)
-                    .addField("Status:", `${formattedRes}`)
-                    .addField("Uptime:", `Online since <t:${dateStamp2}:R><t:${dateStamp2}:D>`)
+                    //.addField("Status:", `${formattedRes}`)
+                    //.addField("Uptime:", `Online since <t:${dateStamp2}:R><t:${dateStamp2}:D>`)
 
 
                 interaction.reply({
@@ -120,6 +128,7 @@ module.exports = {
             else if (id !== "950525282434048031") {
                 const target = await interaction.guild.members.fetch(user);
                 const flags = target.user?.flags?.toArray() ?? [];
+                console.log(dev)
                 let flagString = '';
                 if (dev.includes(target.user.id)) {
                     flagString += '<:CBDeveloper:1012934220030693376>';

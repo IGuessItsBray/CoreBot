@@ -15,7 +15,7 @@ module.exports = {
 		if (!interaction.isButton()) return;
 
 		if (interaction.customId.startsWith('r')) {
-			require('../commands/public/remind').buttonHandling(interaction);
+			require('../commands/misc/remind').buttonHandling(interaction);
 		}
 	},
 

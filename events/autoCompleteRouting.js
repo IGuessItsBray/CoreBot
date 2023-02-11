@@ -17,7 +17,7 @@ module.exports = {
 		if (interaction.type !== InteractionType.ApplicationCommandAutocomplete) return;
 
 		if (interaction.commandName === 'remind') {
-			require('../commands/public/remind').autoComplete(interaction);
+			require('../commands/misc/remind').autoComplete(interaction);
 		}
 	},
 

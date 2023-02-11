@@ -50,7 +50,7 @@ module.exports = {
         if (interaction.commandName === 'remind') {
             const jobs = (await scheduler.listJobs())
                 .filter(j =>
-                    j.file === '../commands/public/remind' &&
+                    j.file === '../commands/misc/remind' &&
                     j.func === 'doRemind' &&
                     j.args[0] === interaction.guild.id &&
                     j.args[2] === interaction.user.id,
