@@ -1,6 +1,7 @@
 const fn = require('../util/genUtils')
 const { updateMessageLog } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents, MessageReaction } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents, MessageReaction } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -8,15 +9,15 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     name: 'messageCreate Logger',
-    type: 'messageCreate',
+    type: 'MessageCreate',
 
     // ------------------------------------------------------------------------------
     // Execution
     // ------------------------------------------------------------------------------
     async execute(message) {
-        if (message.channel.type == 'DM') return;
+        if (message.channel.type == "DM") return;
         const fetchedLogs = await message.guild.fetchAuditLogs({
-            type: "MESSAGE_CREATE",
+            type: AuditLogEvent.MessageCreate,
             limit: 1
         });
         //console.log(message)

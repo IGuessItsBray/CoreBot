@@ -1,12 +1,12 @@
-const { MessageEmbed } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 const badges = require('../../config.json').emotes;
 const config = require('../../config.json');
 const { findMessageLog } = require('../../db/dbAccess');
 const { findUserCount } = require('../../db/dbAccess');
 const { getPunishments } = require('../../db/dbAccess');
-const { MessageAttachment } = require('discord.js');
+const { AttachmentBuilder } = require('discord.js');
 const axios = require('axios');
 module.exports = {
 
@@ -16,9 +16,9 @@ module.exports = {
 
     name: 'info',
     description: 'gets the info of a user',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -34,7 +34,7 @@ module.exports = {
         {
             name: 'type',
             description: 'The type of info to generate',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             choices: [
                 { name: 'General', value: 'gen' },
                 { name: 'Messages', value: 'msg' },
@@ -99,12 +99,13 @@ module.exports = {
                     catch { undefined; }
                 });
                 if (flags.length <= 0 || flagString.length <= 0) flagString += 'None';
-                const Response = new MessageEmbed()
+                const Response = new EmbedBuilder()
                     .setColor("AQUA")
-                    .setAuthor(target.user.tag, target.user.avatarURL({
+                    .setAuthor({ iconURL: target.user.avatarURL({
                         dynamic: true,
                         size: 512
-                    }))
+                    }), name: `${target.user.tag}` })
+                    
                     .setThumbnail(target.user.avatarURL({
                         dynamic: true,
                         size: 512
@@ -146,12 +147,12 @@ module.exports = {
                     catch { undefined; }
                 });
                 if (flags.length <= 0 || flagString.length <= 0) flagString += 'None';
-                const Response = new MessageEmbed()
+                const Response = new EmbedBuilder()
                     .setColor("AQUA")
-                    .setAuthor(target.user.tag, target.user.avatarURL({
+                    .setAuthor({ iconURL: target.user.avatarURL({
                         dynamic: true,
                         size: 512
-                    }))
+                    }), name: `${target.user.tag}` })
                     .setThumbnail(target.user.avatarURL({
                         dynamic: true,
                         size: 512
@@ -174,9 +175,9 @@ module.exports = {
 
         } else if (type === 'msg') {
             //console.log(messages)
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor('#2f3136')
-                .setAuthor(`${user.user.username}#${user.user.discriminator}'s messages`)
+                .setAuthor({ name: `${user.user.username}#${user.user.discriminator}'s messages` })
                 .setDescription(`Messages from ${user}`)
                 .setFooter({ text: "Corebot" })
                 .setTimestamp();
@@ -184,7 +185,7 @@ module.exports = {
             const messagesFormatted = messages.map(m =>
                 `${m.timestamp.toLocaleString()} #${interaction.client.channels.resolve(m.channel).name}: ${m.content.replaceAll('\n', ' ')}`,
             );
-            const file = new MessageAttachment(
+            const file = new AttachmentBuilder(
                 Buffer.from(messagesFormatted.join('\n')),
                 `FETCHED-MESSAGES.txt`,
             );
@@ -195,9 +196,9 @@ module.exports = {
             });
 
         } else if (type === 'pun') {
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor('#2f3136')
-                .setAuthor(`${user.user.username}#${user.user.discriminator}'s punishments`)
+                .setAuthor({ name: `${user.user.username}#${user.user.discriminator}'s messages` })
                 .setDescription(`Punishments for ${user}`)
                 .setFooter({ text: "Corebot" })
                 .setTimestamp();
@@ -207,7 +208,7 @@ module.exports = {
 Action taken by: ${interaction.client.users.resolve(p.staffUser)?.tag ?? id}`,
             );
             console.log(punishments)
-            const file = new MessageAttachment(
+            const file = new AttachmentBuilder(
                 Buffer.from(punishmentsFormatted.join('\n')),
                 `FETCHED-PUNISHMENTS.txt`,
             );

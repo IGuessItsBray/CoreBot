@@ -1,5 +1,5 @@
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ChannelType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
   name: 'serverinfo',
   description: 'Gives you the server info',
-  type: COMMAND.CHAT_INPUT,
+  type: ApplicationCommandType.ChatInput,
   enabled: true,
-  permissions: [FLAGS.SEND_MESSAGES],
+  permissions: [PermissionFlagsBits.SendMessages],
 
   // ------------------------------------------------------------------------------
   // Options
@@ -38,7 +38,7 @@ module.exports = {
       stickers,
     } = guild;
 
-    const Embed = new MessageEmbed()
+    const Embed = new EmbedBuilder()
       .setColor("PURPLE")
       .setAuthor({
         name: guild.name,
@@ -66,7 +66,7 @@ module.exports = {
         {
           name: "📔 | CHANNELS",
           value: [
-            `- Text: ${channels.cache.filter((c) => c.type === "GUILD_TEXT").size
+            `- Text: ${channels.cache.filter((c) => c.type === ChannelType.GuildText).size
             }`,
             `- Voice: ${channels.cache.filter((c) => c.type === "GUILD_VOICE").size
             }`,

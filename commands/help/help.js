@@ -1,5 +1,5 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'help',
     description: 'Replies with the bots information and commands',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -27,7 +27,7 @@ module.exports = {
                 { name: 'Page 3 | ', value: '3' },
                 { name: 'Page 4 | ', value: '4' },
             ],
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: false,
         },
     ],
@@ -42,7 +42,7 @@ module.exports = {
 
             const { guild } = interaction;
             const target = await interaction.guild.members.fetch(interaction.targetId);
-            const Embed = new MessageEmbed()
+            const Embed = new EmbedBuilder()
                 .setColor("RANDOM")
                 .setAuthor({
                     name: "Help and Info!",
@@ -102,7 +102,7 @@ module.exports = {
                         };
                     });
 
-            const embed = new MessageEmbed();
+            const embed = new EmbedBuilder();
             console.log(Commands)
             Commands.map(command => {
                 embed.setTitle("Commands!")

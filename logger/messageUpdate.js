@@ -1,6 +1,7 @@
 const fn = require('../util/genUtils')
 const { getServerSettings } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -14,8 +15,10 @@ module.exports = {
     // Execution
     // ------------------------------------------------------------------------------
     async execute(oldMessage, newMessage) {
+        //console.log(oldMessage)
+        //console.log(newMessage)
         const fetchedLogs = await oldMessage.guild.fetchAuditLogs({
-            type: "MESSAGE_UPDATE",
+            type: AuditLogEvent.MessageUpdate,
             limit: 1
         });
         const log = fetchedLogs.entries.first();
@@ -25,7 +28,7 @@ module.exports = {
         const rawDB = await getServerSettings(guildId)
         const data = rawDB.logChannel
         const sendchannel = await oldMessage.guild.channels.fetch(data)
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor('#2f3136')
             .setDescription(`**MESSAGE:** Message sent by ${oldMessage.member} in ${oldMessage.channel}| *Edited;*
         \`\`\`${oldMessage.content}\`\`\`

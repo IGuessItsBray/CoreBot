@@ -4,24 +4,25 @@
 // ------------------------------------------------------------------------------
 
 const config = require('./config.json');
-const { Client, Intents, MessageEmbed } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
 
 const client =
 	new Client({
 		intents: [
-			Intents.FLAGS.GUILD_MEMBERS,
-			Intents.FLAGS.GUILDS,
-			Intents.FLAGS.GUILD_BANS,
-			Intents.FLAGS.GUILD_MESSAGES,
-			Intents.FLAGS.GUILD_VOICE_STATES,
-			Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-			Intents.FLAGS.DIRECT_MESSAGES,
+			GatewayIntentBits.GuildMembers,
+			GatewayIntentBits.Guilds,
+			GatewayIntentBits.GuildBans,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.GuildVoiceStates,
+			GatewayIntentBits.GuildMessageReactions,
+			GatewayIntentBits.DirectMessages,
+			GatewayIntentBits.MessageContent,
 		],
 		partials: [
-			'MESSAGE',
-			'CHANNEL',
-			'REACTION',
+			Partials.Message,
+			Partials.Channel,
+			Partials.Reaction,
 		],
 	});
 
@@ -81,9 +82,9 @@ client.once('ready', () => {
 				status: 'online'
 			});
 		}, 10000);
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor('#2f3136')
-			.setAuthor('Status Update')
+			.setAuthor({ name: 'Status Update' })
 			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
 			.setFooter({ text: "Corebot" })
 			.setTimestamp();
@@ -113,9 +114,9 @@ client.once('ready', () => {
 			});
 		}, 10000);
 
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor('#2f3136')
-			.setAuthor('Status Update')
+			.setAuthor({ name: 'Status Update' })
 			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
 			.setFooter({ text: "Corebot" })
 			.setTimestamp();
@@ -145,9 +146,9 @@ client.once('ready', () => {
 			});
 		}, 10000);
 
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor('#2f3136')
-			.setAuthor('Status Update')
+			.setAuthor({ name: 'Status Update' })
 			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
 			.setFooter({ text: "Corebot" })
 			.setTimestamp();
@@ -166,7 +167,5 @@ buttons(client);
 //const twitchAlerts = require("./modules/twitchAlerts");
 //console.log('✅ Twitch Alerts │ TWAL online!');
 //twitchAlerts(client);
-const discordModals = require('discord-modals');
-discordModals(client);
 //require('./modules/scheduler').resumeJobs();
 console.log('✅ Reminders │ Remind online!');

@@ -1,6 +1,6 @@
-const { CommandInteraction, MessageEmbed, Intents, MessageActionRow, MessageButton, MessageAttachment } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents, ActionRowBuilder, ButtonBuilder, AttachmentBuilder, ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
 const { version } = require("mongoose");
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -10,9 +10,9 @@ module.exports = {
 
     name: 'updates',
     description: 'shows the update logs!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,7 +22,7 @@ module.exports = {
         {
             name: 'version',
             description: 'Select the version to view the update logs',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             choices: [
                 { name: 'v1', value: '1' },
                 { name: 'v2', value: '2' },
@@ -40,8 +40,8 @@ module.exports = {
     async execute(interaction, ephemeral = false) {
         const version = interaction.options.getString('version');
         if (version === '1') {
-            const file = new MessageAttachment('./assets/Logo.png');
-            const embed1 = new MessageEmbed()
+            const file = new AttachmentBuilder('./assets/Logo.png');
+            const embed1 = new EmbedBuilder()
                 .setColor(0x0099FF)
                 .setTitle('CoreBot v1')
                 .setURL('https://github.com/IGuessItsBray/CoreBot')
@@ -61,8 +61,8 @@ module.exports = {
             await interaction.reply({ embeds: [embed1], files: [file] });
 
         } else if (version === '2') {
-            const file = new MessageAttachment('./assets/Logo.png');
-            const embed1 = new MessageEmbed()
+            const file = new AttachmentBuilder('./assets/Logo.png');
+            const embed1 = new EmbedBuilder()
                 .setColor(0x0099FF)
                 .setTitle('CoreBot v1')
                 .setURL('https://github.com/IGuessItsBray/CoreBot')
@@ -82,8 +82,8 @@ module.exports = {
             await interaction.reply({ embeds: [embed1], files: [file] });
 
         } else if (version === '3') {
-            const file = new MessageAttachment('./assets/Logo.png');
-            const embed3 = new MessageEmbed()
+            const file = new AttachmentBuilder('./assets/Logo.png');
+            const embed3 = new EmbedBuilder()
                 .setColor(0x0099FF)
                 .setTitle('CoreBot v3')
                 .setURL('https://github.com/IGuessItsBray/CoreBot')
@@ -120,8 +120,8 @@ module.exports = {
             interaction.channel.send({ embeds: [embed3], files: [file] });
             await interaction.reply("Sent!");
         } else if (version === '3') {
-            const file = new MessageAttachment('./assets/Logo.png');
-            const embed3 = new MessageEmbed()
+            const file = new AttachmentBuilder('./assets/Logo.png');
+            const embed3 = new EmbedBuilder()
                 .setColor(0x0099FF)
                 .setTitle('CoreBot v3')
                 .setURL('https://github.com/IGuessItsBray/CoreBot')

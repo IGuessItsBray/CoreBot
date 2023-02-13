@@ -1,5 +1,5 @@
 const fn = require('../util/genUtils')
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
 const { getGuildTags, getGuildRolebuttons, getMembers } = require('../db/dbAccess');
 const scheduler = require('../modules/scheduler');
 const moment = require('moment');

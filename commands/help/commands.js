@@ -1,5 +1,5 @@
-const { MessageEmbed } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, ApplicationCommandType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'commands',
     description: 'Lists all server commands!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -33,7 +33,7 @@ module.exports = {
                     };
                 });
 
-        const embed = new MessageEmbed();
+        const embed = new EmbedBuilder();
 
         guildCommands.map(command => {
             embed.addField(command.name, command.description);

@@ -1,8 +1,7 @@
 const { time } = require("@discordjs/builders");
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { Modal, TextInputComponent, SelectMenuComponent, showModal } = require('discord-modals');
 const { setMmCatagory, setMmLogChannel, setMmChannel } = require('../../db/dbAccess');
 module.exports = {
 
@@ -12,9 +11,9 @@ module.exports = {
 
     name: 'sendbutton',
     description: 'Send the start modmail button!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -35,18 +34,18 @@ module.exports = {
 
     async execute(interaction, client, ephemeral = true) {
         const channel = interaction.options.getChannel('channel') ?? interaction.channel;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor("#3a32a8")
-            .setAuthor("Modmail!")
+            .setAuthor({ name: 'Modmail' })
             .setDescription("Press this button to open a modmail thread!")
-            .setFooter("Corebot")
+            .setFooter({ text: `CoreBot` })
             .setTimestamp();
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('newTicket')
                     .setLabel('Open a thread!')
-                    .setStyle('PRIMARY'),
+                    .setStyle(ButtonStyle.Primary),
             );
         await channel.send({ embeds: [embed], components: [row] });
         interaction.reply({ content: 'Message sent', ephemeral: true })

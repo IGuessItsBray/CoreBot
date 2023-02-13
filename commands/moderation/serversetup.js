@@ -1,4 +1,4 @@
-const { MessageEmbed, Collection } = require('discord.js');
+const { EmbedBuilder, Collection, ApplicationCommandType, ApplicationCommandOptionType, ChannelType } = require('discord.js');
 const { OPTION } = require('../../util/enum').Types;
 const cmdUtils = require('../../util/commandUtils');
 const { updateGuild, setCrossChatChannel, setReportChannel, setJoin, setLeave, setVerifyChannel, setVerifyPassword, setVerifySuccessMessage, setVerifyFailMessage, setVerifyRoleAdd, updateModmailChannel, setMediaChannel } = require('../../db/dbAccess');
@@ -17,7 +17,7 @@ const setAuditLogChannel = {
                 name: 'channel',
                 description: 'The channel to set the logs to',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildPublicThread, ChannelType.PrivateThread, ChannelType.PublicThread],
                 required: true,
             },
         ],
@@ -48,7 +48,7 @@ const setCcChannel = {
                 name: 'channel',
                 description: 'The channel to set the logs to',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildNews, 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
                 required: true,
             },
         ],
@@ -86,7 +86,7 @@ const setReportingChannel = {
                 name: 'channel',
                 description: 'The channel to set the reports to',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildPublicThread, ChannelType.PrivateThread, ChannelType.PublicThread],
                 required: true,
             },
         ],
@@ -116,13 +116,13 @@ const setJoinInfo = {
                 name: 'channel',
                 description: 'The channel to set join messages to',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildPublicThread, ChannelType.PrivateThread, ChannelType.PublicThread],
                 required: true,
             },
             {
                 name: 'message',
                 description: 'The message to send when a user joins',
-                type: OPTION.STRING,
+                type: ApplicationCommandOptionType.String,
                 required: true,
             },
         ],
@@ -153,13 +153,13 @@ const setLeaveInfo = {
                 name: 'channel',
                 description: 'The channel to set leave messages to',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildPublicThread, ChannelType.PrivateThread, ChannelType.PublicThread],
                 required: true,
             },
             {
                 name: 'message',
                 description: 'The message to send when a user leaves',
-                type: OPTION.STRING,
+                type: ApplicationCommandOptionType.String,
                 required: true,
             },
         ],
@@ -195,7 +195,7 @@ const setVerifyConfig = {
             {
                 name: 'password',
                 description: 'The password (write it down)',
-                type: OPTION.STRING,
+                type: ApplicationCommandOptionType.String,
                 required: false,
             },
             {
@@ -207,13 +207,13 @@ const setVerifyConfig = {
             {
                 name: 'passmessage',
                 description: 'The message after someone verifies successfully',
-                type: OPTION.STRING,
+                type: ApplicationCommandOptionType.String,
                 required: false,
             },
             {
                 name: 'failmessage',
                 description: 'The message after someone verifies unsuccessfully',
-                type: OPTION.STRING,
+                type: ApplicationCommandOptionType.String,
                 required: false,
             },
         ],
@@ -252,7 +252,7 @@ const setModmailChannel = {
                 name: 'channel',
                 description: 'The channel to set',
                 type: OPTION.CHANNEL,
-                channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                channelTypes: [],
                 required: true,
             },
         ],
@@ -284,7 +284,7 @@ module.exports = {
 
     name: 'serversettings',
     description: 'Setup your server!',
-    type: '1',
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
 
     // ------------------------------------------------------------------------------

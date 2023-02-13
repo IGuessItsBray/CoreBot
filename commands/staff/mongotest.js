@@ -1,4 +1,4 @@
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -11,9 +11,9 @@ module.exports = {
 	type: 'CHAT_INPUT', // CHAT_INPUT, USER, MESSAGE
 	guild_id: [],
 	enabled: true,
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 	// ------------------------------------------------------------------------------
 	// Options
 	// ------------------------------------------------------------------------------

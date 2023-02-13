@@ -1,5 +1,5 @@
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { CommandInteraction, EmbedBuilder, Intents, ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'feedback',
     description: 'Send feedback to the dev team!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -21,7 +21,7 @@ module.exports = {
         {
             name: 'message',
             description: 'The feedback',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
@@ -44,9 +44,9 @@ module.exports = {
         const user = interaction.user
         const guild = interaction.guild.name
         const channel = interaction.client.channels.cache.get("1016052055883911219");
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor("#0000FF")
-            .setAuthor(`Feedback from ${user.tag}`)
+            .setAuthor({ name: `Feedback from ${user.tag}` })
             .setDescription(`New feedback from <@${user.id}> in ${guild}
 \`\`\`
 ${message}

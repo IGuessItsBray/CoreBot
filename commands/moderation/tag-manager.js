@@ -1,7 +1,7 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { getTag, getGuildTags } = require('../../db/dbAccess');
 const { newTag } = require('../../db/dbAccess');
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
 	description: 'Manage tags.',
 	type: OPTION.SUB_COMMAND,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 	options: [
 		{
 			name: 'new',
@@ -19,19 +19,19 @@ module.exports = {
 				{
 					name: 'title',
 					description: 'The embed title',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
 					name: 'text',
 					description: 'The embed text',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
 					name: 'footer',
 					description: 'The embed footer',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 			],
@@ -45,7 +45,7 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 					autocomplete: true
 				},
@@ -68,7 +68,7 @@ module.exports = {
 		const id = interaction.options.getString('id');
 
 		const prompt = await getTag(id, guild);
-		const embed = new MessageEmbed();
+		const embed = new EmbedBuilder();
 
 
 		switch (interaction.options.getSubcommand()) {

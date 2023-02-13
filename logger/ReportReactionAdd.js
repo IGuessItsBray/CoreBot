@@ -1,7 +1,8 @@
 const fn = require('../util/genUtils')
 const { newWarning, addPunishments, getReportChannel } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents, MessageActionRow, MessageButton } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const report = require('../modules/report');
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -41,9 +42,9 @@ module.exports = {
             const reportChannel = await reaction.guild.channels.fetch(data)
             const messageTime = Math.floor(reaction.message.createdAt.getTime() / 1000.0);
             const timestamp = `<t:${messageTime}:R>, <t:${messageTime}:F>`
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor('#E10600')
-                .setAuthor('Report!')
+                .setAuthor({ name: 'Report' })
                 .setDescription(`Report from <@${reportUser}> in <#${msgchannel}>
                 Message from: ${msgauthor}
                 \`\`\`
@@ -53,35 +54,35 @@ ${content}
                 [Message](<${msgLink}}>)`)
                 .setFooter({ text: "Corebot" })
                 .setTimestamp();
-            const actions = new MessageActionRow()
+            const actions = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('kick')
                         .setLabel('Kick')
-                        .setStyle('PRIMARY'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
                         .setCustomId('ban')
                         .setLabel('Ban')
-                        .setStyle('DANGER'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Danger),
+                    new ButtonBuilder()
                         .setCustomId('warn')
                         .setLabel('Warn')
-                        .setStyle('PRIMARY'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
                         .setCustomId('timeout')
                         .setLabel('Timeout')
-                        .setStyle('DANGER'),
+                        .setStyle(ButtonStyle.Danger),
                 );
-            const actions2 = new MessageActionRow()
+            const actions2 = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('delete')
                         .setLabel('Delete Msg')
-                        .setStyle('PRIMARY'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
                         .setCustomId('dismiss')
                         .setLabel('Dismiss')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                 );
             await reportChannel.send({ embeds: [embed], components: [actions, actions2] });
             const type = "report"

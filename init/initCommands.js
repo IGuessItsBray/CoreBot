@@ -3,7 +3,7 @@
 // Initializes commands and loads them into the client
 // ------------------------------------------------------------------------------
 
-const { Collection } = require('discord.js');
+const { Collection, InteractionType } = require('discord.js');
 const cmdUtils = require('../util/commandUtils');
 
 module.exports = {
@@ -36,14 +36,15 @@ function init(client) {
 	}
 
 	client.on('interactionCreate', async interaction => {
-		if (!interaction.isCommand() && !interaction.isContextMenu()) return;
+		if (interaction.type !== InteractionType.ApplicationCommand) return;
+
 		const guild = interaction.guild;
 		const user = interaction.user;
 		const channel = interaction.channel
 		const subcommand = interaction.options._subcommand ?? '';
 
 		try {
-			if (interaction.channel.type == 'DM') {
+			if (interaction.channel.type == "DM") {
 				console.log(`DM: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`)
 			}
 			else {

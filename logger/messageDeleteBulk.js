@@ -1,6 +1,7 @@
 const fn = require('../util/genUtils')
 const { getServerSettings } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(channel) {
         const fetchedLogs = await channel.guild.fetchAuditLogs({
-            type: "MESSAGE_DELETE",
+            type: AuditLogEvent.MessageDeleteBUlk,
             limit: 1
         });
         const log = fetchedLogs.entries.first();
@@ -27,7 +28,7 @@ module.exports = {
         logCreated.setMilliseconds(0);
         if (logCreated == messageDeleted) {
             const sendchannel = await channel.client.channels.fetch((await getServerSettings(message.guild.id)).logChannel);
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor('#2f3136')
                 .setDescription(`**MULTIPLE MESSAGES DELETED:** Sent by ${channel.member} in ${channel.channel} | ${time}
         \`\`\`${channel.content}\`\`\``)

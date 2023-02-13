@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const config = require("../config.json");
 const { ClientCredentialsAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');

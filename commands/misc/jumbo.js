@@ -1,4 +1,4 @@
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -8,9 +8,9 @@ module.exports = {
 
     name: 'jumbo',
     description: 'Make an emoji big.',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -20,7 +20,7 @@ module.exports = {
         {
 			name: 'in',
 			description: 'The emoji to make jumbo!',
-			type: OPTION.STRING,
+			type: ApplicationCommandOptionType.String,
 			required: true,
 		},
     ],

@@ -1,5 +1,5 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu, CommandInteraction } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'test',
     description: 'autocomplete test',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -21,7 +21,7 @@ module.exports = {
         {
             name: '1',
             description: 'Option 1',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
             autocomplete: true
         },

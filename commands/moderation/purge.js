@@ -1,5 +1,5 @@
-const { MessageEmbed } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'purge',
     description: 'purge',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options

@@ -4,8 +4,7 @@
 // ------------------------------------------------------------------------------
 
 const fs = require('fs');
-const { Permissions } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, PermissionsBitField } = require('discord.js');
 
 const helpPath = './commands/help/';
 const miscPath = './commands/misc/';
@@ -31,7 +30,7 @@ function readFiles() {
 
 	// the default permissions for all commands, if not defined in the command
 	// TODO make this configurable
-	const defaultMemberPermissions = new Permissions([FLAGS.ADMINISTRATOR]);
+	const defaultMemberPermissions = new PermissionsBitField([PermissionFlagsBits.Administrator]);
 
 	// public = global, private = support/dev guild only
 	const helpJsFiles = fs.readdirSync(helpPath).filter(f => f.endsWith('.js'));
@@ -64,7 +63,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
 					?? true,
@@ -98,7 +97,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
 					?? true,
@@ -132,7 +131,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
 					?? true,
@@ -166,7 +165,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
 					?? true,
@@ -200,7 +199,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 				dm_permission:
 					command.dm_permission
 					?? true,
@@ -234,7 +233,7 @@ function readFiles() {
 				...command,
 				default_member_permissions:
 					command.default_member_permissions
-					?? new Permissions(setMemberPermissions),
+					?? new PermissionsBitField(setMemberPermissions),
 			};
 		}
 		catch (e) {

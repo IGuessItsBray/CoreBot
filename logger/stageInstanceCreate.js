@@ -1,6 +1,7 @@
 const fn = require('../util/genUtils')
 const { getServerSettings } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -15,14 +16,14 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(channel, message) {
         const fetchedLogs = await channel.guild.fetchAuditLogs({
-            type: "STAGE_INSTANCE_CREATE",
+            type: AuditLogEvent.stageInstanceCreate,
             limit: 1
         });
         const log = fetchedLogs.entries.first();
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
           const sendchannel = await channel.client.channels.fetch((await getServerSettings(channel.guild.id)).logChannel);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
         .setColor('#2f3136')
         .setDescription(`**STAGE:** Stage \`${channel.channel}\` created | ${time}
         Topic: 

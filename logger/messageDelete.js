@@ -1,7 +1,8 @@
 const fn = require('../util/genUtils')
 const { getServerSettings } = require('../db/dbAccess');
 const axios = require('axios');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
     // ------------------------------------------------------------------------------
     // Definition
@@ -15,7 +16,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(message) {
         const fetchedLogs = await message.guild.fetchAuditLogs({
-            type: "MESSAGE_DELETE",
+            type: AuditLogEvent.MessageDelete,
             limit: 1
         });
         const log = fetchedLogs.entries.first();
@@ -33,11 +34,11 @@ module.exports = {
             }
             catch { undefined; }
         }
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
         .setColor('#2f3136')
         .setDescription(`**MESSAGE DELETED:** Sent by ${message.member} in ${message.channel} | ${time}
         \`\`\`${message.content}\`\`\``)
-        .setFooter(message.id)
+        .setFooter({ text: `${message.id}` })
         await sendchannel.send({
             embeds: [ embed ],
             allowedMentions: { parse: [] },

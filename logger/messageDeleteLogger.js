@@ -1,6 +1,7 @@
 const fn = require('../util/genUtils')
 const { setDeletedMessageLog } = require('../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
+const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(message) {
         const fetchedLogs = await message.guild.fetchAuditLogs({
-            type: "MESSAGE_CREATE",
+            type: AuditLogEvent.MessageCreate,
             limit: 1
         });
         //console.log(message)

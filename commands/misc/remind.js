@@ -1,7 +1,7 @@
 const moment = require('moment');
 const scheduler = require('../../modules/scheduler');
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, ApplicationCommandType, ApplicationCommandOptionType, ChannelType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 
 module.exports = {
@@ -12,9 +12,9 @@ module.exports = {
 
     name: 'remind',
     description: 'Remind yourself of anything at a later time!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -29,7 +29,7 @@ module.exports = {
                 {
                     name: 'message',
                     description: 'Remind you of?',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
@@ -37,7 +37,7 @@ module.exports = {
                     description: 'Channel to remind you in.',
                     type: OPTION.CHANNEL,
                     required: false,
-                    channel_types: [CHANNEL.GUILD_TEXT],
+                    channel_types: ChannelType.GuildText,
                 },
                 {
                     name: 'seconds',
@@ -102,7 +102,7 @@ module.exports = {
                 {
                     name: 'reminder',
                     description: 'Reminder to cancel',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                     autocomplete: true,
                 },
@@ -191,24 +191,24 @@ module.exports = {
 
         const nowFormat = `<t:${Math.floor(new Date().getTime() / 1000.0)}:F>`;
 
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('rdismiss')
-                    .setStyle('SUCCESS')
+                    .setStyle(ButtonStyle.Success)
                     .setEmoji('✔️'),
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('rsnooze10')
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel(' 10 Minutes')
                     .setEmoji('💤'),
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('rsnooze24')
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel(' 24 Hours')
                     .setEmoji('💤'),
             );
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor('#2f3136')
             .setAuthor(`Reminder for ${user.tag}`)
             .setDescription(`${nowFormat}\n${message}`)

@@ -1,5 +1,5 @@
-const { CommandInteraction, MessageEmbed, Intents, MessageActionRow, MessageButton } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { CommandInteraction, EmbedBuilder, Intents, ActionRowBuilder, ButtonBuilder, ApplicationCommandType } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'about',
     description: 'Gives you the bot info!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -24,9 +24,9 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, ephemeral = false) {
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor('#e464ee')
-            .setAuthor('CoreBot Info!')
+            .setAuthor({ name: 'CoreBot Info!' })
             .setDescription(`
     Welcome to <@950525282434048031>!
     CoreBot is a multipurpose discord bot made by Bray! It features music, moderation, role buttons, and more!
@@ -35,18 +35,18 @@ module.exports = {
             .setFooter({ text: "Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001" })
             .setTimestamp();
 
-        const discord = new MessageActionRow()
+        const discord = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setLabel('Support Server')
-                    .setStyle('LINK')
+                    .setStyle(ButtonStyle.Link)
                     .setURL('https://discord.gg/GAAj6DDrCJ'),
             );
-        const invite = new MessageActionRow()
+        const invite = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setLabel('Invite Me!')
-                    .setStyle('LINK')
+                    .setStyle(ButtonStyle.Link)
                     .setURL('https://discord.com/api/oauth2/authorize?client_id=950525282434048031&permissions=1634838510663&scope=bot%20applications.commands'),
             );
         interaction.reply({

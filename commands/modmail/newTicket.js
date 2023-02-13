@@ -1,10 +1,7 @@
 const { time } = require("@discordjs/builders");
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType, ModalBuilder, TextInputBuilder, TextInputStyle, Events, PermissionsBitField, PermissionFlagsBits, ChannelType } = require("discord.js");
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { Modal, TextInputComponent, SelectMenuComponent, showModal } = require('discord-modals');
 const { getMmCatagory, getMmChannel, setMmInfo } = require('../../db/dbAccess');
-const { Permissions } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -13,9 +10,9 @@ module.exports = {
 
     name: 'newticket',
     description: 'Manually start a ticket with a user',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -43,47 +40,45 @@ module.exports = {
         const lc = await getMmChannel(guildId)
         const catagory = c.catagory
         const logChannel = await interaction.client.channels.fetch(lc.channel);
-        const modal = new Modal()
+        const modal = new ModalBuilder()
             .setCustomId('newTicketMan')
             .setTitle('New ticket!')
-            .addComponents(
-                new TextInputComponent() // We create a Text Input Component
-                    .setCustomId('reason')
-                    .setLabel('Reason')
-                    .setStyle('LONG') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
-                    .setPlaceholder('Why are you starting this thread?')
-                    .setRequired(true), // If it's required or not.
-            );
-        showModal(modal, {
-            client: interaction.client, // Client to show the Modal through the Discord API.
-            interaction: interaction, // Show the modal with interaction data.
-        });
-        interaction.client.on('modalSubmit', async (modal) => {
+        const reason = new TextInputBuilder()
+            .setCustomId('reason')
+            .setLabel('Reason')
+            .setStyle('Paragraph')
+            .setPlaceholder('Why are you starting this thread?')
+            .setRequired(true)
+        const row = new ActionRowBuilder().addComponents(reason);
+        modal.addComponents(row);
+        await interaction.showModal(modal);
+        interaction.client.on("modalSubmit", async (modal) => {
             if (modal.customId === 'newTicketMan') {
                 const reason = modal.getTextInputValue('reason');
-                const ticket = await guild.channels.create(`${member.user.username}s ticket`, {
-                    type: 'GUILD_TEXT',
+                const ticket = await guild.channels.create({ 
+                    name: `${member.user.username}s ticket`,
+                    type: ChannelType.GuildText,
                     topic: `Ticket for ${member.user.username}#${member.user.discriminator}`,
                     parent: catagory,
                     permissionOverwrites: [
                         {
                             id: member.user.id,
                             allow: [
-                                Permissions.FLAGS.VIEW_CHANNEL,
-                                Permissions.FLAGS.SEND_MESSAGES,
+                                PermissionsBitField.Flags.ViewChannel,
+                                PermissionsBitField.Flags.SendMessages,
                             ],
                         },
                     ],
                 })
-                ticket.permissionOverwrites.create(ticket.guild.roles.everyone, { VIEW_CHANNEL: false });
-                const embed = new MessageEmbed()
+                ticket.permissionOverwrites.create(ticket.guild.roles.everyone, { ViewChannel: false });
+                const embed = new EmbedBuilder()
                     .setColor("#3a32a8")
-                    .setAuthor("New ticket!")
+                    .setAuthor({ name: 'New Ticket' })
                     .setDescription(`
 A new staff ticket was opened by <@${interaction.user.id}> for <@${member.user.id}> - <#${ticket.id}>
 Reason:
 \`\`\`${reason}\`\`\``)
-                    .setFooter("Corebot")
+                    .setFooter({ text: `CoreBot` })
                     .setTimestamp();
                 await logChannel.send({ embeds: [embed] });
                 ticket.send(`This ticket is now active!
@@ -91,19 +86,10 @@ Ticket opened by: <@${interaction.user.id}>
 Ticket opened for: <@${member.user.id}>
 With reason: 
 \`\`\`${reason}\`\`\``)
-                modal.reply({
-                    content:
-                        `
-Thread opened!
-<#${ticket.id}>
-\`\`\`${reason}\`\`\`
-                    `, ephemeral: true
-                })
                 const channelId = ticket.id
                 await setMmInfo(guildId, userId, channelId, reason)
             }
         });
-        //interaction.reply({ content: 'Message sent', ephemeral: true })
     },
 
     // ------------------------------------------------------------------------------

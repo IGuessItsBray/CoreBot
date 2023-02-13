@@ -1,10 +1,9 @@
 const { time } = require("@discordjs/builders");
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType } = require("discord.js");
+const { ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { Modal, TextInputComponent, SelectMenuComponent, showModal } = require('discord-modals');
 const { getMmCatagory, getMmChannel, setMmInfo, getMmInfo, deleteMmInfo } = require('../../db/dbAccess');
-const { Permissions } = require('discord.js');
+const { PermissionFlagsBits, PermissionsBitField } = require('discord.js');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -13,9 +12,9 @@ module.exports = {
 
     name: 'closeticket',
     description: 'Close a modmail ticket',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -48,11 +47,11 @@ module.exports = {
         if (interaction.channel.id === channel) {
             interaction.reply("Deleting thread...")
             interaction.guild.channels.delete(channel)
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor("#3a32a8")
-                .setAuthor("New ticket!")
+                .setAuthor({ name: 'New Ticket' })
                 .setDescription(`The ticket for <@${userId}> was closed by <@${interaction.user.id}>`)
-                .setFooter("Corebot")
+                .setFooter({ text: `CoreBot` })
                 .setTimestamp();
             await logChannel.send({ embeds: [embed] });
             await deleteMmInfo(guildId, userId, channelId)

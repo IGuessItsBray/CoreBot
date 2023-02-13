@@ -1,9 +1,9 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
 const { getWarnings } = require('../../db/dbAccess');
 const { newWarning } = require('../../db/dbAccess');
 const { addPunishments } = require('../../db/dbAccess');
 const fn = require('../../util/genUtils')
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 
 
@@ -12,7 +12,7 @@ module.exports = {
     description: 'Echo a message!',
     type: OPTION.SUB_COMMAND,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
     options: [
         {
             name: 'text',
@@ -22,7 +22,7 @@ module.exports = {
                 {
                     name: 'message',
                     description: 'The message to echo',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
@@ -48,7 +48,7 @@ module.exports = {
                 {
                     name: 'message',
                     description: 'The message to echo',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
@@ -60,19 +60,19 @@ module.exports = {
                 {
                     name: 'colour',
                     description: 'Embed Colour Hex (Don\'t include #)',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
                     name: 'header',
                     description: 'Embed Header',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
                     name: 'footer',
                     description: 'Embed footer',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
@@ -92,13 +92,13 @@ module.exports = {
                 {
                     name: 'message',
                     description: 'The message to echo',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
                     name: 'link',
                     description: 'The link to the message to reply to',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
@@ -125,13 +125,13 @@ module.exports = {
                 {
                     name: 'message',
                     description: 'The message to echo',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
                     name: 'link',
                     description: 'The link to the message to reply to',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
@@ -144,19 +144,19 @@ module.exports = {
                 {
                     name: 'colour',
                     description: 'Embed Colour Hex (Don\'t include #)',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
                     name: 'header',
                     description: 'Embed Header',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
                     name: 'footer',
                     description: 'Embed footer',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
                 {
@@ -190,11 +190,11 @@ module.exports = {
                 const colour = interaction.options.getString('colour') ?? '000000';
                 const footer = interaction.options.getString('footer');
                 const image = interaction.options.getAttachment('image');
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(colour)
-                    .setAuthor(header)
+                    .setAuthor({ name: `${header}` })
                     .setDescription(message)
-                    .setFooter(footer)
+                    .setFooter({ text: `${footer}` })
                     .setTimestamp();
                 await channel.send({ embeds: [embed], files: image ? [{ attachment: image.url }] : undefined, });
                 interaction.reply({ content: 'Message sent', ephemeral: true })
@@ -227,11 +227,11 @@ module.exports = {
                 const colour = interaction.options.getString('colour') ?? '000000';
                 const footer = interaction.options.getString('footer');
                 const image = interaction.options.getAttachment('image');
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(colour)
-                    .setAuthor(header)
+                    .setAuthor({ name: `${header}` })
                     .setDescription(message)
-                    .setFooter(footer)
+                    .setFooter({ text: `${footer}` })
                     .setTimestamp();
                 replyMsg.reply({ embeds: [embed], files: image ? [{ attachment: image.url }] : undefined, });
                 interaction.reply({ content: 'Reply sent', ephemeral: true })

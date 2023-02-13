@@ -1,8 +1,9 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandOptionType } = require("discord.js");
 const { getRoleButtons } = require('../../db/dbAccess');
 const { updateRoleButtons } = require('../../db/dbAccess');
 const { getGuildRolebuttons } = require('../../db/dbAccess');
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType } = require('discord.js');
+const buttons = require("../../modules/buttons");
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
 	description: 'Manage role buttons.',
 	type: OPTION.SUB_COMMAND,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 	options: [
 		{
 			name: 'update',
@@ -20,19 +21,19 @@ module.exports = {
 				{
 					name: 'title',
 					description: 'The embed title',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
 					name: 'text',
 					description: 'The embed text',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
 					name: 'footer',
 					description: 'The embed footer',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 			],
@@ -46,7 +47,7 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
@@ -59,18 +60,18 @@ module.exports = {
 					name: 'style',
 					description: 'The sytle of the button',
 					choices: [
-						{ name: 'Primary', value: 'PRIMARY' },
-						{ name: 'Secondary', value: 'SECONDARY' },
-						{ name: 'Success', value: 'SUCCESS' },
-						{ name: 'Danger', value: 'DANGER' },
+						{ name: 'ButtonStyle.Primary', value: 'ButtonStyle.Primary' },
+						{ name: 'Secondary', value: 'ButtonStyle.Secondary' },
+						{ name: 'ButtonStyle.Success', value: 'ButtonStyle.Success' },
+						{ name: 'Danger', value: 'ButtonStyle.Danger' },
 					],
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
 					name: 'label',
 					description: 'The label of the button',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
 				{
@@ -90,7 +91,7 @@ module.exports = {
 				{
 					name: 'id',
 					description: 'The embed title',
-					type: OPTION.STRING,
+					type: ApplicationCommandOptionType.String,
 					required: true,
 					autocomplete: true
 				},
@@ -113,8 +114,8 @@ module.exports = {
 		const id = interaction.options.getString('id');
 
 		const prompt = await getRoleButtons(id, guild);
-		const embed = new MessageEmbed();
-		const rows = [new MessageActionRow()];
+		const embed = new EmbedBuilder();
+		const rows = [new ActionRowBuilder()];
 		let count = 0;
 
 
@@ -174,16 +175,22 @@ module.exports = {
 				break;
 			}
 			case 'send': {
+				const styles = {
+					SECONDARY: ButtonStyle.Secondary,
+					PRIMARY: ButtonStyle.Primary,
+					DANGER: ButtonStyle.Danger,
+					SUCCESS: ButtonStyle.Success,
+				  }
 				embed.setTitle(prompt.embed.title);
 				embed.setDescription(prompt.embed.text);
 				embed.setFooter({ text: prompt.embed.footer })
 				prompt.buttons.forEach(elem => {
-					if (rows[Math.floor(count / 5)] == null) rows.push(new MessageActionRow());
+					if (rows[Math.floor(count / 5)] == null) rows.push(new ActionRowBuilder());
 					rows[Math.floor(count / 5)].addComponents(
-						new MessageButton()
+						new ButtonBuilder()
 							.setCustomId(`rolebutton_${elem.role}`)
-							.setLabel(elem.label)
-							.setStyle(elem.style)
+							.setLabel(`${elem.label}`)
+							.setStyle(styles[elem.style])
 							.setDisabled(elem.enabled),
 					);
 					count++;

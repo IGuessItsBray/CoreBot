@@ -1,6 +1,6 @@
 const fn = require('../../util/genUtils')
 const { getServerSettings } = require('../../db/dbAccess');
-const { CommandInteraction, MessageEmbed, Intents, WebhookClient } = require("discord.js");
+const { CommandInteraction, EmbedBuilder, Intents, WebhookClient } = require("discord.js");
 module.exports = {
 
     // ------------------------------------------------------------------------------

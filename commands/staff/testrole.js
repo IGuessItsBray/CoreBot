@@ -1,5 +1,5 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'testrole',
     description: 'Test to ensure the bots role assignment is correctly functioning.',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -25,12 +25,12 @@ module.exports = {
     
     async execute(interaction, ephemeral = false) {
         //command contents go here, just like in builders
-            const row = new MessageActionRow()
+            const row = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('rolebutton_955276079474561024')
                         .setLabel('Test role')
-                        .setStyle('PRIMARY'),
+                        .setStyle(ButtonStyle.Primary),
                 );
 
             await interaction.reply({ content: 'Press to test if role buttons are functioning.', components: [row] });

@@ -1,5 +1,5 @@
-const { Client, Intents, MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu, CommandInteraction } = require('discord.js');
-const { FLAGS } = require('discord.js').Permissions;
+const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder, StringSelectMenuBuilder, CommandInteraction, ApplicationCommandType, ChannelType } = require('discord.js');
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
 
@@ -9,9 +9,9 @@ module.exports = {
 
     name: 'invites',
     description: 'Generates invites for all servers the bot is in',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -28,7 +28,7 @@ module.exports = {
         await Promise.all(
             interaction.client.guilds.cache.map(async guild => {
                 const channel = guild.channels.cache
-                    .filter((channel) => channel.type === 'GUILD_TEXT')
+                    .filter((channel) => channel.type === ChannelType.GuildText)
                     .first();
                 await channel.guild.invites.create(channel, { temporary: true, maxuses: 1, maxAge: 300 })
                     .then(async (invite) => {

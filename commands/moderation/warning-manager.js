@@ -1,9 +1,9 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
 const { getWarnings } = require('../../db/dbAccess');
 const { newWarning } = require('../../db/dbAccess');
 const { addPunishments } = require('../../db/dbAccess');
 const fn = require('../../util/genUtils')
-const { FLAGS } = require('discord.js').Permissions;
+const { PermissionFlagsBits, ButtonStyle } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 
 
@@ -12,7 +12,7 @@ module.exports = {
     description: 'Manage warnings.',
     type: OPTION.SUB_COMMAND,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
     options: [
         {
             name: 'new',
@@ -28,7 +28,7 @@ module.exports = {
                 {
                     name: 'reason',
                     description: 'Reason to ban member',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
             ],
@@ -48,7 +48,7 @@ module.exports = {
                 {
                     name: 'userid',
                     description: 'The userID to check',
-                    type: OPTION.STRING,
+                    type: ApplicationCommandOptionType.String,
                     required: false,
                 },
             ],

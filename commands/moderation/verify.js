@@ -1,5 +1,5 @@
-const { MessageEmbed, Channel } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, Channel } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { getVerifyConfig } = require('../../db/dbAccess');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
 module.exports = {
@@ -10,9 +10,9 @@ module.exports = {
 
     name: 'verify',
     description: 'Verify yourself!',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     enabled: true,
-    permissions: [FLAGS.SEND_MESSAGES],
+    permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,7 +22,7 @@ module.exports = {
         {
             name: 'password',
             description: 'The server password',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
 

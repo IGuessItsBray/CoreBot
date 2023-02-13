@@ -1,4 +1,4 @@
-const { MessageEmbed, Collection } = require('discord.js');
+const { EmbedBuilder, Collection, ApplicationCommandType } = require('discord.js');
 const { OPTION } = require ('../../util/enum').Types;
 const cmdUtils = require('../../util/commandUtils');
 
@@ -31,7 +31,7 @@ const reloadCommands = {
 		}
 
 		// Success message
-		const statusEmbed = new MessageEmbed()
+		const statusEmbed = new EmbedBuilder()
 			.setColor('#2f3136')
 			.setFooter({ text: `✅ ${this.options.name} finished` });
 		interaction.editReply({ embeds: [statusEmbed] });
@@ -54,7 +54,7 @@ const registerCommands = {
 		require('../../util/commandUtils').deploy(false);
 
 		// Success message
-		const statusEmbed = new MessageEmbed()
+		const statusEmbed = new EmbedBuilder()
 			.setColor('#2f3136')
 			.setFooter({ text: `✅ ${this.options.name} finished` });
 		interaction.editReply({ embeds: [statusEmbed] });
@@ -79,7 +79,7 @@ const reloadMongo = {
 				require('../../db/mongo').initMongo(false);
 			});
 
-		const statusEmbed = new MessageEmbed()
+		const statusEmbed = new EmbedBuilder()
 			.setColor('#2f3136')
 			.setFooter({ text: `✅ ${this.options.name} finished` });
 		interaction.editReply({ embeds: [statusEmbed] });
@@ -98,7 +98,7 @@ module.exports = {
 
 	name: 'bot',
 	description: 'Bot Utilities & Setup',
-	type: '1',
+	type: ApplicationCommandType.ChatInput,
 	enabled: true,
 
 	// ------------------------------------------------------------------------------

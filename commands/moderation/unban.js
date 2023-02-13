@@ -1,5 +1,5 @@
-const { MessageEmbed, User, Client } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder, User, Client } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { addPunishments } = require('../../db/dbAccess');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
@@ -10,9 +10,9 @@ module.exports = {
 
     name: 'unban',
     description: 'Allows the admin or owner to unban the member.',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -22,7 +22,7 @@ module.exports = {
         {
             name: 'userid',
             description: 'The ID of the user to unban',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
     ],

@@ -1,5 +1,5 @@
-const { MessageEmbed } = require("discord.js");
-const { FLAGS } = require('discord.js').Permissions;
+const { EmbedBuilder } = require("discord.js");
+const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const { addPunishments } = require('../../db/dbAccess');
 const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
 module.exports = {
@@ -10,9 +10,9 @@ module.exports = {
 
     name: 'timeout',
     description: 'Allows the admin or owner to timeout the member.',
-    type: COMMAND.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
 	enabled: true,
-	permissions: [FLAGS.SEND_MESSAGES],
+	permissions: [PermissionFlagsBits.SendMessages],
 
     // ------------------------------------------------------------------------------
     // Options
@@ -28,7 +28,7 @@ module.exports = {
         {
             name: 'reason',
             description: 'Reason to timeout member',
-            type: OPTION.STRING,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
