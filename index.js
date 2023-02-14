@@ -88,10 +88,10 @@ Support server: https://discord.gg/GAAj6DDrCJ
 	}
 	if (client.user.id === "950525282434048031") {
 		const status = [
-			`CB v3.0.0`,
+			`CB v4.0.0`,
 			"also checkout CBMusic!",
 			"Made with ♥️",
-			"Built on DJS13",
+			"Built on DJS14",
 			"Hi Seth!",
 			`Serving ${totalUsers} users!`
 				`${client.guilds.cache.size} Discord Servers`
