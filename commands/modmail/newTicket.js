@@ -88,6 +88,7 @@ With reason:
 \`\`\`${reason}\`\`\``)
                 const channelId = ticket.id
                 await setMmInfo(guildId, userId, channelId, reason)
+                interaction.reply({ content: `Ticket opened - <#${ticket.id}>`, ephemeral: true })
             }
         });
     },
