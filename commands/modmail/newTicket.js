@@ -54,6 +54,7 @@ module.exports = {
         await interaction.showModal(modal);
         interaction.client.on("modalSubmit", async (modal) => {
             if (modal.customId === 'newTicketMan') {
+                console.log(modal.ActionRowBuilder)
                 const reason = modal.getTextInputValue('reason');
                 const ticket = await guild.channels.create({ 
                     name: `${member.user.username}s ticket`,

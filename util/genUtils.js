@@ -53,6 +53,6 @@ async function getDateAndTime(dateValue, style) {
 			return time;
 		}
 		catch {
-			console.log('error getting time');
+			console.log(red('error getting time'));
 		}
 	};

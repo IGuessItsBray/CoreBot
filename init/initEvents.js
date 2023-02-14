@@ -12,6 +12,7 @@ module.exports = {
 // ------------------------------------------------------------------------------
 
 function init(client) {
+	const { blue, bold, underline, yellow, red, green } = require('colorette');
 	const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 	eventFiles.forEach(ef => {
 		const newEvent = require(`../events/${ef}`);
@@ -20,7 +21,7 @@ function init(client) {
 				await newEvent.execute(...args);
 			}
 			catch (error) {
-				console.error(`${ef} Event File: Something went wrong handling this event.`, error);
+				console.error(red(`${ef} Event File: Something went wrong handling this event.`, error));
 			}
 		});
 	});

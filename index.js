@@ -6,7 +6,7 @@
 const config = require('./config.json');
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
-
+const { blue, bold, underline, yellow, red, green } = require('colorette');
 const client =
 	new Client({
 		intents: [
@@ -40,7 +40,6 @@ require('./init/initEvents').init(client);
 require('./init/initLogs').init(client);
 
 client.login(token);
-
 client.once('ready', () => {
 	const guilds = client.guilds.cache;
 	var totalUsers = 0;
@@ -48,18 +47,15 @@ client.once('ready', () => {
 	guilds.forEach((guild) => {
 		totalUsers += guild.memberCount;
 	});
-
-	console.info(`
+	console.info(underline(blue(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`);
-	console.log(`
- ------------------------------------------------------
-| 					${client.user.tag}				   |
-|	Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001	|
-|	      For help, contact @Bray#1051                 |
-|	Support server: (https://discord.gg/GAAj6DDrCJ)	   |
- ------------------------------------------------------
-`)
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`)));
+console.log(blue(`
+${client.user.tag}
+Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001
+For help, contact @Bray#1051
+Support server: https://discord.gg/GAAj6DDrCJ
+`))
 	if (client.user.id === "955267092800733214") {
 		const status = [
 			`Dev build`,
@@ -162,10 +158,6 @@ client.once('ready', () => {
 // ------------------------------------------------------------------------------
 //Modules
 const buttons = require("./modules/buttons");
-console.log('✅ Buttons │ Buttons online!');
+console.log(green('✅ Buttons │ Buttons online!'));
 buttons(client);
-//const twitchAlerts = require("./modules/twitchAlerts");
-//console.log('✅ Twitch Alerts │ TWAL online!');
-//twitchAlerts(client);
-//require('./modules/scheduler').resumeJobs();
-console.log('✅ Reminders │ Remind online!');
+console.log(green('✅ Reminders │ Remind online!'));

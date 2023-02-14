@@ -5,7 +5,7 @@
 
 const { Collection, InteractionType } = require('discord.js');
 const cmdUtils = require('../util/commandUtils');
-
+const { blue, bold, underline, yellow, red, green } = require('colorette');
 module.exports = {
 	init,
 };
@@ -45,10 +45,10 @@ function init(client) {
 
 		try {
 			if (interaction.channel.type == "DM") {
-				console.log(`DM: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`)
+				console.log(green(`DM: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`))
 			}
 			else {
-				console.log(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`);
+				console.log(green(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`));
 				await client
 					.commands[interaction.commandName]
 					.execute(interaction);
@@ -60,7 +60,7 @@ function init(client) {
 				content: 'Something went wrong executing this interaction, see console.',
 				ephemeral: true,
 			}).catch(() => {
-				console.error(`${guild.id}: ${user.tag}: Something went wrong executing this interaction.`);
+				console.error(red(`${guild.id}: ${user.tag}: Something went wrong executing this interaction.`));
 			});
 		}
 	});

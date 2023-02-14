@@ -5,6 +5,8 @@
 
 const mongoose = require('mongoose');
 const { MONGO } = require('../config.json');
+const { blue, bold, underline, yellow, red, green, } = require('colorette');
+
 
 module.exports = {
 	mongoose: getMongo,
@@ -43,23 +45,23 @@ function mongoConnect() {
 // Attach event listeners to the mongo connection
 function mongoListeners() {
 	mongoose.connection.on('disconnected', () => {
-		console.warn('❌ Mongo │ Disconnected');
+		console.warn(red('❌ Mongo │ Disconnected'));
 	});
 
 	mongoose.connection.on('connecting', () => {
-		console.info('⚠️ Mongo │ Connecting');
+		console.info(yellow('⚠️ Mongo │ Connecting'));
 	});
 
 	mongoose.connection.on('connected', () => {
-		console.info('✅ Mongo │ Connected');
+		console.info(green('✅ Mongo │ Connected'));
 	});
 
 	mongoose.connection.on('reconnected', () => {
-		console.info('✅ Mongo │ Reconnected');
+		console.info(green('✅ Mongo │ Reconnected'));
 	});
 
 	mongoose.connection.on('error', (e) => {
-		console.error('Mongo: Error Happened in Database Connection.', e.message ?? '');
+		console.error(red('Mongo: Error Happened in Database Connection.', e.message ?? ''));
 		if (e.message.includes('bad auth')) {
 			process.exit(5);
 		}
@@ -78,7 +80,7 @@ function mongoListeners() {
 
 	process.on('SIGINT', function () {
 		mongoose.connection.close(function () {
-			console.log('Mongo: App Closed, Attempting to Properly Close Connection.');
+			console.log(red('Mongo: App Closed, Attempting to Properly Close Connection.'));
 			process.exit(0);
 		});
 	});

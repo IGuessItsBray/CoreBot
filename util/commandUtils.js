@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const { PermissionFlagsBits, PermissionsBitField } = require('discord.js');
+const { blue, bold, underline, yellow, red, green } = require('colorette');
 
 const helpPath = './commands/help/';
 const miscPath = './commands/misc/';
@@ -70,7 +71,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -104,7 +105,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -138,7 +139,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -172,7 +173,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -206,7 +207,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🌎 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -237,7 +238,7 @@ function readFiles() {
 			};
 		}
 		catch (e) {
-			console.error(`❌🔒 ${cf} ➜ ${e.message}`);
+			console.error(red(`❌🔒 ${cf} ➜ ${e.message}`));
 		}
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
@@ -289,7 +290,7 @@ function deploy(log = false) {
 		]
 	})
 		.then(res => { if (log) commandTable(res, '🌎'); })
-		.catch(console.error);
+		.catch(red(console.error));
 }
 
 // ------------------------------------------------------------------------------

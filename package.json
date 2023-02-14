@@ -17,6 +17,7 @@
     "@twurple/eventsub": "^5.2.4",
     "@twurple/eventsub-ngrok": "^5.2.4",
     "axios": "^0.27.2",
+    "chalk": "^5.2.0",
     "colorette": "^2.0.19",
     "colors": "^1.4.0",
     "discord-api-types": "^0.28.0",
