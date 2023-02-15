@@ -37,7 +37,7 @@ function readFiles() {
 	const helpJsFiles = fs.readdirSync(helpPath).filter(f => f.endsWith('.js'));
 	const miscJsFiles = fs.readdirSync(miscPath).filter(f => f.endsWith('.js'));
 	const modJsFiles = fs.readdirSync(modPath).filter(f => f.endsWith('.js'));
-	const proxyJsFiles = fs.readdirSync(proxyPath).filter(f => f.endsWith('.js'));
+	//const proxyJsFiles = fs.readdirSync(proxyPath).filter(f => f.endsWith('.js'));
 	const privateJsFiles = fs.readdirSync(staffPath).filter(f => f.endsWith('.js'));
 	const mmJsFiles = fs.readdirSync(mailPath).filter(f => f.endsWith('.js'));
 
@@ -144,39 +144,39 @@ function readFiles() {
 		// filter out any undefined/disabled commands
 	}).filter(c => c);
 
-	const proxyCommands = proxyJsFiles.map(cf => {
-		try {
+	//const proxyCommands = proxyJsFiles.map(cf => {
+		//try {
 			// remove the require cache for the command module
-			delete require.cache[require.resolve(`.${proxyPath}${cf}`)];
-			const command = require(`.${proxyPath}${cf}`);
+			//delete require.cache[require.resolve(`.${proxyPath}${cf}`)];
+			//const command = require(`.${proxyPath}${cf}`);
 
 			// check if the command is enabled or not
-			if (!command.enabled) return;
+			//if (!command.enabled) return;
 
 			// figure out the default permissions
 			// use the 'permissions' property if it exists
-			const setMemberPermissions =
-				command.permissions || defaultMemberPermissions;
+			//const setMemberPermissions =
+				//command.permissions || defaultMemberPermissions;
 			// delete the permissions property becauase it causes issues in
 			// the api's current state if left.
-			delete command.permissions;
+			//delete command.permissions;
 
 			// add perms & return the command
-			return {
-				...command,
-				default_member_permissions:
-					command.default_member_permissions
-					?? new PermissionsBitField(setMemberPermissions),
-				dm_permission:
-					command.dm_permission
-					?? true,
-			};
-		}
-		catch (e) {
-			console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
-		}
+			//return {
+				//...command,
+				//default_member_permissions:
+					//command.default_member_permissions
+					//?? new PermissionsBitField(setMemberPermissions),
+				//dm_permission:
+					//command.dm_permission
+					//?? true,
+			//};
+		//}
+		//catch (e) {
+			//console.error(red(`❌🌎 ${cf} ➜ ${e.message}`));
+		//}
 		// filter out any undefined/disabled commands
-	}).filter(c => c);
+	//}).filter(c => c);
 
 	const mmCommands = mmJsFiles.map(cf => {
 		try {
@@ -247,7 +247,7 @@ function readFiles() {
 		helpCommands,
 		miscCommands,
 		modCommands,
-		proxyCommands,
+		//proxyCommands,
 		privateCommands,
 		mmCommands,
 	};
@@ -266,7 +266,7 @@ function deploy(log = false) {
 		helpCommands,
 		miscCommands,
 		modCommands,
-		proxyCommands,
+		//proxyCommands,
 		privateCommands,
 		mmCommands,
 	} = readFiles();
@@ -285,7 +285,7 @@ function deploy(log = false) {
 			...helpCommands,
 			...miscCommands,
 			...modCommands,
-			...proxyCommands,
+			//...proxyCommands,
 			...mmCommands
 		]
 	})

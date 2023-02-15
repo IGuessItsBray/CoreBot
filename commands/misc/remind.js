@@ -37,7 +37,7 @@ module.exports = {
                     description: 'Channel to remind you in.',
                     type: OPTION.CHANNEL,
                     required: false,
-                    channel_types: ChannelType.GuildText,
+                    channel_types: [CHANNEL.GUILD_TEXT],
                 },
                 {
                     name: 'seconds',
