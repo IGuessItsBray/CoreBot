@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------
 
 const config = require('./config.json');
-const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, EmbedBuilder, ActivityType } = require('discord.js');
 const { token } = require('./config.json');
 const { blue, bold, underline, yellow, red, green } = require('colorette');
 const client =
@@ -68,15 +68,7 @@ Support server: https://discord.gg/GAAj6DDrCJ
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
 			const newActivity = status[randomIndex];
-			client.user.setPresence({
-				activities: [
-					{
-						type: 'WATCHING',
-						name: newActivity
-					},
-				],
-				status: 'online'
-			});
+			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
 		}, 10000);
 		const embed = new EmbedBuilder()
 			.setColor('#2f3136')
@@ -99,15 +91,7 @@ Support server: https://discord.gg/GAAj6DDrCJ
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
 			const newActivity = status[randomIndex];
-			client.user.setPresence({
-				activities: [
-					{
-						type: 'WATCHING',
-						name: newActivity
-					},
-				],
-				status: 'online'
-			});
+			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
 		}, 10000);
 
 		const embed = new EmbedBuilder()
@@ -131,15 +115,7 @@ Support server: https://discord.gg/GAAj6DDrCJ
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
 			const newActivity = status[randomIndex];
-			client.user.setPresence({
-				activities: [
-					{
-						type: 'WATCHING',
-						name: newActivity
-					},
-				],
-				status: 'online'
-			});
+			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
 		}, 10000);
 
 		const embed = new EmbedBuilder()
