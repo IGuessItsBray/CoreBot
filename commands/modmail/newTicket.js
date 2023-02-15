@@ -53,9 +53,10 @@ module.exports = {
         modal.addComponents(row);
         await interaction.showModal(modal);
         interaction.client.on(Events.InteractionCreate, async (interaction) => {
-            if (interaction.customId === 'newTicketMan') {
+            if (interaction.isModalSubmit() && interaction.customId.startsWith('newTicketMan')) {
+                const guild = interaction.guild
                 const reason = interaction.fields.getTextInputValue('reason');
-                const ticket = await guild.channels.create({ 
+                const ticket = await guild.channels.create({
                     name: `${member.user.username}s ticket`,
                     type: ChannelType.GuildText,
                     topic: `Ticket for ${member.user.username}#${member.user.discriminator}`,
@@ -90,7 +91,7 @@ With reason:
                 await setMmInfo(guildId, userId, channelId, reason)
                 interaction.reply({ content: `Ticket opened - <#${ticket.id}>`, ephemeral: true })
             }
-        });
+        })
     },
 
     // ------------------------------------------------------------------------------

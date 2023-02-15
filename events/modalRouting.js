@@ -1,24 +1,27 @@
-const fn = require('../util/genUtils')
-const { getModmailChannel } = require('../db/dbAccess');
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, Message, AttachmentBuilder } = require('discord.js');
-const { createMember } = require('../db/dbAccess');
+const { ModalBuilder, TextInputBuilder } = require('discord.js')
 module.exports = {
-    // ------------------------------------------------------------------------------
-    // Definition
-    // ------------------------------------------------------------------------------
 
-    name: 'ModalSubmit',
-    type: 'modalSubmit',
+	// ------------------------------------------------------------------------------
+	// Definition
+	// ------------------------------------------------------------------------------
 
-    // ------------------------------------------------------------------------------
-    // Execution
-    // ------------------------------------------------------------------------------
-    async execute(modal) {
-      
-    },
+	name: 'Modal Routing',
+	type: 'interactionCreate',
 
+	// ------------------------------------------------------------------------------
+	// Execution
+	// ------------------------------------------------------------------------------
 
+	async execute(interaction) {
+		if (!interaction.isModalSubmit()) return;
 
+		if (interaction.customId.startsWith('ntms')) {
+			require('../commands/modmail/sendButton').modalHandling(interaction);
+		}
+       // if (interaction.customId.startsWith('newTicketMan')) {
+			//require('../commands/modmail/newTicket').modalHandling(interaction);
+		//}
+	},
 
-    // ------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------
 };

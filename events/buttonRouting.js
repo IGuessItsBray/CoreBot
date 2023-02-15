@@ -1,3 +1,4 @@
+const { ModalBuilder, TextInputBuilder } = require('discord.js')
 module.exports = {
 
 	// ------------------------------------------------------------------------------
@@ -16,6 +17,9 @@ module.exports = {
 
 		if (interaction.customId.startsWith('r')) {
 			require('../commands/misc/remind').buttonHandling(interaction);
+		}
+		if (interaction.customId.startsWith('nt')) {
+			require('../commands/modmail/sendButton').buttonHandling(interaction);
 		}
 	},
 
