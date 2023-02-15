@@ -69,6 +69,13 @@ module.exports = {
                                 PermissionsBitField.Flags.SendMessages,
                             ],
                         },
+                        {
+                            id: interaction.client.user.id,
+                            allow: [
+                                PermissionsBitField.Flags.ViewChannel,
+                                PermissionsBitField.Flags.SendMessages,
+                            ],
+                        },
                     ],
                 })
                 ticket.permissionOverwrites.create(ticket.guild.roles.everyone, { ViewChannel: false });
