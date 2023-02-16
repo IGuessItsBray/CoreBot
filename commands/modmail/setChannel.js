@@ -2,7 +2,6 @@ const { time } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
 const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType } = require('discord.js');
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { Modal, TextInputBuilder, SelectMenuComponent, showModal } = require('discord-modals');
 const { setMmCatagory, setMmChannel } = require('../../db/dbAccess');
 module.exports = {
 
