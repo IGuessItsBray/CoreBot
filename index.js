@@ -81,7 +81,6 @@ Support server: https://discord.gg/GAAj6DDrCJ
 	if (client.user.id === "950525282434048031") {
 		const status = [
 			`CB v4.0.0`,
-			"also checkout CBMusic!",
 			"Made with ♥️",
 			"Built on DJS14",
 			"Hi Seth!",

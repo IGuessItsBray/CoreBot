@@ -19,6 +19,7 @@ const serverSettingsSchema = require('./schemas/serverSettingsSchema');
 const userSchema = require('./schemas/userSchema');
 const mmSchema = require('./schemas/modMailSchema');
 const userMmSchema = require('./schemas/userMmSchema');
+const tboxSchema = require('./schemas/tboxLogger');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -120,6 +121,8 @@ module.exports = {
 	//NgetMmThread,
 	//NaddToUser,
 	//NfindUserCount,
+	setTboxContent,
+	getTboxContent,
 };
 
 // ------------------------------------------------------------------------------
@@ -838,6 +841,37 @@ async function setTags(tags) {
 					tags: tags,
 				},
 				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+//-------------------------------
+//TBox Logger Fix
+//-------------------------------
+async function setTboxContent(guild, content) {
+	return await mongo().then(async () => {
+		try {
+			return await tboxSchema.findOneAndUpdate(
+				{ _id: guild },
+				{
+					guild: guild,
+					content: content,
+				},
+				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getTboxContent(guild) {
+	return await mongo().then(async () => {
+		try {
+			return await tboxSchema.findOne({ _id: guild });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
