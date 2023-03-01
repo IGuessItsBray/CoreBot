@@ -9,8 +9,8 @@ module.exports = {
     // Definition
     // ------------------------------------------------------------------------------
 
-    name: 'setchannel',
-    description: 'Set the channel of modmail logs',
+    name: 'setcatagory',
+    description: 'Set the catagory of ticket threads',
     type: ApplicationCommandType.ChatInput,
     enabled: true,
     permissions: [PermissionFlagsBits.SendMessages],
@@ -21,8 +21,8 @@ module.exports = {
 
     options: [
         {
-            name: 'channel',
-            description: 'The channel to send logs to',
+            name: 'catagory',
+            description: 'The catagory to open threads within',
             type: OPTION.CHANNEL,
             required: true,
         },
@@ -33,10 +33,10 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, client, ephemeral = true) {
-       const channel = interaction.options.getChannel('channel')
+       const catagory = interaction.options.getChannel('catagory')
        const guildId = interaction.guild.id
-       await setMmChannel(guildId, channel)
-       interaction.reply("Channel set!")
+       await setMmCatagory(guildId, catagory)
+       interaction.reply("Catagory set!")
     },
 
     // ------------------------------------------------------------------------------

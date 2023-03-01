@@ -10,7 +10,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     name: 'sendbutton',
-    description: 'Send the start modmail button!',
+    description: 'Send the start ticket button!',
     type: ApplicationCommandType.ChatInput,
     enabled: true,
     permissions: [PermissionFlagsBits.SendMessages],
@@ -36,8 +36,8 @@ module.exports = {
         const channel = interaction.options.getChannel('channel') ?? interaction.channel;
         const embed = new EmbedBuilder()
             .setColor("#3a32a8")
-            .setAuthor({ name: 'Modmail' })
-            .setDescription("Press this button to open a modmail thread!")
+            .setAuthor({ name: 'ticket' })
+            .setDescription("Press this button to open a ticket thread!")
             .setFooter({ text: `CoreBot` })
             .setTimestamp();
         const row = new ActionRowBuilder()

@@ -103,10 +103,10 @@ Support server: https://discord.gg/GAAj6DDrCJ
 	}
 	if (client.user.id === "1019253573139316776") {
 		const status = [
-			`CB Beta v3.0.0`,
+			`CB Beta v$.0.0`,
 			"Not prod lol",
 			"Made with ♥️",
-			"Built on DJS13, not 14",
+			"Built on DJS14",
 			"Updates daily!",
 			`${client.guilds.cache.size} Discord Servers`,
 			`Serving ${totalUsers} users!`

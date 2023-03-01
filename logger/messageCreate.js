@@ -18,13 +18,15 @@ module.exports = {
         const guild = message.guild.id
         const user = message.author.tag
         const tbox = 'Tupperbox#4754'
-        const embed = message.embeds[0]
-        const content = embed.description
-        const check = embed.footer.text
+
         if (user === tbox) {
+            const embed = message.embeds[0]
+            console.log(embed.description)
+            const content = embed.description
+            const check = embed.footer.text
             if (check.startsWith("Message ID")){
                 //console.log(content)
-                //msg.delete()
+                //message.delete()
                 setTboxContent(guild, content)
             }
         }

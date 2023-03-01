@@ -21,7 +21,7 @@ function init(client) {
 				await newEvent.execute(...args);
 			}
 			catch (error) {
-				console.error(red(`${ef} Event File: Something went wrong handling this log.`, error));
+				console.error(`${ef} Event File: Something went wrong handling this log.`, error);
 			}
 		});
 	});

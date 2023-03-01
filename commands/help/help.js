@@ -57,6 +57,8 @@ module.exports = {
             \`Jamie\` | <@295299571456933888> - Beta Tester <:CBBetaTester:1012934218592034887>
             \`Ethereal\` | <@844641126748258355> - Beta Tester <:CBBetaTester:1012934218592034887>
             `, title: 'Meet our team', footer: 'CoreBot' },
+            { content: `[View the privacy policy for all CoreBot Services](https://privacy.brayd.net)`, title: 'Privacy Policy', footer: 'CoreBot' },
+            { content: `[Coming Soon™️](https://tos.brayd.net)`, title: 'Terms of Service', footer: 'CoreBot' },
         ];
         await paginateText(interaction, pages, false);
     },

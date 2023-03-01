@@ -29,6 +29,7 @@ module.exports = {
         const rawDB = await getServerSettings(guildId)
         const data = rawDB.logChannel
         const sendchannel = await oldMessage.guild.channels.fetch(data)
+        const PKTOKEN = require('../config.json').PKTOKEN;
         if (PKTOKEN) {
             try {
                 const requestConfig = { headers: { 'Authorization': PKTOKEN } };
