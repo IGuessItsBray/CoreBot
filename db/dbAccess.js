@@ -20,6 +20,7 @@ const userSchema = require('./schemas/userSchema');
 const mmSchema = require('./schemas/modMailSchema');
 const userMmSchema = require('./schemas/userMmSchema');
 const tboxSchema = require('./schemas/tboxLogger');
+const userData = require('./schemas/userDataSchema');
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -128,6 +129,10 @@ module.exports = {
 	//NfindUserCount,
 	setTboxContent,
 	getTboxContent,
+
+	setAPState,
+	setAPMember,
+	getAPState,
 };
 
 // ------------------------------------------------------------------------------
@@ -894,6 +899,53 @@ async function setColor(id, color) {
 				{ _id: id },
 				{
 					color: color,
+				},
+				{ new: false, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function setAPState(id, aps) {
+	return await mongo().then(async () => {
+		try {
+			return await userData.findOneAndUpdate(
+				{ _id: id },
+				{
+					user: id,
+					autoproxy_state: aps
+				},
+				{ new: false, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getAPState(id, aps) {
+	return await mongo().then(async () => {
+		try {
+			return await userData.findOne(
+				{ _id: id }
+			);
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function setAPMember(id, apmid) {
+	return await mongo().then(async () => {
+		try {
+			return await userData.findOneAndUpdate(
+				{ _id: id },
+				{
+					user: id,
+					autoproxy_member_id: apmid
 				},
 				{ new: false, upsert: true });
 		}

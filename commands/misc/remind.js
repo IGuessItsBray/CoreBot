@@ -183,7 +183,7 @@ module.exports = {
         }
     },
     doRemind: async function (guildId, channelId, senderId, messageIn) {
-        const client = require('../../index').client;
+        const client = require('../../index.js').client;
 
         const channel = await client.channels.fetch(channelId);
         const user = await client.users.fetch(senderId);
