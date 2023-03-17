@@ -17,6 +17,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
     async execute(interaction) {
         const guild = interaction.guild.id;
+        const owner = interaction.user.id
         const uid = interaction.user.id
         if (!interaction.isAutocomplete()) return;
         const focusedValue = interaction.options.getFocused();
@@ -66,55 +67,45 @@ module.exports = {
             }).filter(o => o.fullMessage.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(remindersOptions.slice(0, 25));
         }
-        if (interaction.commandName === 'set-pronouns') {
-            const member = await getMembers(uid)
-            const memberMapped = member.map(member => {
+        if (interaction.commandName === 'setavatar') {
+            const members = await getMembers(owner)
+            const membersMapped = members.map(m => {
                 return {
-                    name: member.name.slice(0, 30),
-                    value: member._id
+                    name: m.name.slice(0, 30),
+                    value: m._id
                 };
-            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
-            await interaction.respond(memberMapped.slice(0, 25))
+            }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(membersMapped.slice(0, 25))
         }
-        if (interaction.commandName === 'set-proxy') {
-            const member = await getMembers(uid)
-            const memberMapped = member.map(member => {
+        if (interaction.commandName === 'settags') {
+            const members = await getMembers(owner)
+            const membersMapped = members.map(m => {
                 return {
-                    name: member.name.slice(0, 30),
-                    value: member._id
+                    name: m.name.slice(0, 30),
+                    value: m._id
                 };
-            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
-            await interaction.respond(memberMapped.slice(0, 25))
+            }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(membersMapped.slice(0, 25))
         }
-        if (interaction.commandName === 'set-avatar') {
-            const member = await getMembers(uid)
-            const memberMapped = member.map(member => {
+        if (interaction.commandName === 'searchmembers') {
+            const members = await getMembers(owner)
+            const membersMapped = members.map(m => {
                 return {
-                    name: member.name.slice(0, 30),
-                    value: member._id
+                    name: m.name.slice(0, 30),
+                    value: m._id
                 };
-            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
-            await interaction.respond(memberMapped.slice(0, 25))
+            }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(membersMapped.slice(0, 25))
         }
-        if (interaction.commandName === 'proxy-info') {
-            const member = await getMembers(uid)
-            const memberMapped = member.map(member => {
+        if (interaction.commandName === 'setcolor') {
+            const members = await getMembers(owner)
+            const membersMapped = members.map(m => {
                 return {
-                    name: member.name.slice(0, 30),
-                    value: member._id
+                    name: m.name.slice(0, 30),
+                    value: m._id
                 };
-            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
-            await interaction.respond(memberMapped.slice(0, 25))
-        }
-        if (interaction.commandName === 'set-color') {
-            const member = await getMembers(uid)
-            const memberMapped = member.map(member => {
-                return {
-                    name: member.name.slice(0, 30),
-                    value: member._id
-                };
-            }).filter(member => member.name.toLowerCase().includes(focusedValue.toLowerCase()));
-            await interaction.respond(memberMapped.slice(0, 25))
+            }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(membersMapped.slice(0, 25))
         }
     },
 

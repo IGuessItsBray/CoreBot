@@ -109,6 +109,11 @@ module.exports = {
 
 	getServerSettings,
 
+	getMembers,
+	getMembersByTag,
+	getMemberByID,
+	setColor,
+
 	//----
 	//User
 	//----
@@ -711,9 +716,9 @@ async function getMmInfo(guildId, userId) {
 	return await mongo().then(async () => {
 		try {
 			return await userMmSchema.findOne({
-				 guildId,
-				 userId,
-				});
+				guildId,
+				userId,
+			});
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -725,10 +730,10 @@ async function deleteMmInfo(guildId, userId, channelId) {
 	return await mongo().then(async () => {
 		try {
 			return await userMmSchema.findOneAndDelete({
-				 guildId,
-				 userId,
-				 channelId,
-				});
+				guildId,
+				userId,
+				channelId,
+			});
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -799,10 +804,8 @@ async function createMember(owner, name, desc, pronouns) {
 					_id: id,
 					owner: owner,
 					name: name,
-					//tags: tags,
 					desc: desc,
 					pronouns: pronouns,
-					//avatar: avatar,
 				},
 				{ new: true, upsert: true });
 		}
@@ -812,9 +815,7 @@ async function createMember(owner, name, desc, pronouns) {
 	});
 }
 
-async function setAvatar(avatar) {
-	const id = (Math.round(Date.now())).toString(36).toUpperCase();
-	const date = Date.now();
+async function setAvatar(id, avatar) {
 	return await mongo().then(async () => {
 		try {
 			return await proxySchema.findOneAndUpdate(
@@ -822,7 +823,7 @@ async function setAvatar(avatar) {
 				{
 					avatar: avatar,
 				},
-				{ new: true, upsert: true });
+				{ new: false, upsert: true });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
@@ -830,9 +831,7 @@ async function setAvatar(avatar) {
 	});
 }
 
-async function setTags(tags) {
-	const id = (Math.round(Date.now())).toString(36).toUpperCase();
-	const date = Date.now();
+async function setTags(id, tags) {
 	return await mongo().then(async () => {
 		try {
 			return await proxySchema.findOneAndUpdate(
@@ -840,7 +839,63 @@ async function setTags(tags) {
 				{
 					tags: tags,
 				},
-				{ new: true, upsert: true });
+				{ new: false, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getMembers(owner) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.find({
+				owner: owner,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getMembersByTag(owner, tags) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.find({
+				owner: owner,
+				tags: tags,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getMemberByID(id) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOne(
+				{ _id: id },
+			);
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function setColor(id, color) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{ _id: id },
+				{
+					color: color,
+				},
+				{ new: false, upsert: true });
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);

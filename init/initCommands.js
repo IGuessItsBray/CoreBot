@@ -17,7 +17,7 @@ function init(client) {
 		helpCommands,
 		miscCommands,
 		modCommands,
-		//proxyCommands,
+		proxyCommands,
 		privateCommands,
 		mmCommands,
 	} = cmdUtils.readFiles();
@@ -27,7 +27,7 @@ function init(client) {
 		...helpCommands,
 		...miscCommands,
 		...modCommands,
-		//...proxyCommands,
+		...proxyCommands,
 		...mmCommands,
 		...privateCommands
 	]) {

@@ -14,6 +14,7 @@ const schema = mongoose.Schema({
     desc: reqString,
     pronouns: reqString,
     avatar: reqString,
+    color: reqString
 });
 
 module.exports = mongoose.model(schemaName, schema, schemaName);
