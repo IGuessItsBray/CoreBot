@@ -32,19 +32,28 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, client, ephemeral = true) {
-        const owner = interaction.options.getMember('user').id
-        const members = await getMembers(owner)
-        const membernames = members.map(m => m.name)
-        const memberIDs = members.map(m => m._id)
-        const memberTags = members.map(m => m.tags)
+        const owner = interaction.options.getMember('user')
+        const user = await interaction.client.users.fetch(owner);
+        const members = await getMembers(user.id)
+        console.log(user)
+        console.log(members)
+        //const membernames = members.map(m => m.name)
+        //const memberIDs = members.map(m => m._id)
+        //const memberTags = members.map(m => m.tags)
         const embed = new EmbedBuilder()
             .setColor('#2f3136')
-            .setAuthor({ name: `Members of <@${owner}>'s Collection`})
+            .setAuthor({ name: `Members of ${user.tag}'s Collection` })
             .addFields(
-                { name: '\u200B', value: '\u200B' },
-                { name: '', value: `\`${memberIDs}\` ${membernames} - ${memberTags}`, inline: true },
+                //{ name: '\u200B', value: '\u200B' },
+                ...members.map(m => {
+                    return {
+                        name: '\u200B',
+                        value: `\`${m._id}\` ${m.name} - ${m.tags}`
+
+                    }
+                })
             )
-            .setFooter({ text: `User: ${owner}` })
+            .setFooter({ text: `User: ${user.tag}` })
             .setTimestamp();
         interaction.reply({ embeds: [embed] });
     },
