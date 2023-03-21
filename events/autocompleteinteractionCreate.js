@@ -107,6 +107,16 @@ module.exports = {
             }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(membersMapped.slice(0, 25))
         }
+        if (interaction.commandName === 'setid') {
+            const members = await getMembers(owner)
+            const membersMapped = members.map(m => {
+                return {
+                    name: m.name.slice(0, 30),
+                    value: m._id
+                };
+            }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(membersMapped.slice(0, 25))
+        }
     },
 
     // ------------------------------------------------------------------------------

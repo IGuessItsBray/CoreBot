@@ -1,7 +1,7 @@
 const { time } = require("@discordjs/builders");
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType, ModalBuilder, TextInputBuilder, TextInputStyle, Events, PermissionsBitField, PermissionFlagsBits, ChannelType } = require("discord.js");
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { updateID } = require('../../db/dbAccess');
+const { setID, getMembers } = require('../../db/dbAccess');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -41,7 +41,9 @@ module.exports = {
     async execute(interaction, client, ephemeral = true) {
         const _id = interaction.options.getString('member')
         const newID = interaction.options.getString('newid')
-const member = getMembers
+        const member = await getMembers(_id)
+        console.log(member)
+        setID(_id, newID)
     },
 
     // ------------------------------------------------------------------------------

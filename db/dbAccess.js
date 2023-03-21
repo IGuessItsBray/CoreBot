@@ -107,6 +107,7 @@ module.exports = {
 	createMember,
 	setAvatar,
 	setTags,
+	setID,
 
 	getServerSettings,
 
@@ -843,6 +844,25 @@ async function setTags(id, tags) {
 				{ _id: id },
 				{
 					tags: tags,
+				},
+				{ new: false, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function setID(owner, tags, id) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndUpdate(
+				{
+					owner: owner,
+					tags: tags,
+				},
+				{
+					_id: id
 				},
 				{ new: false, upsert: true });
 		}
