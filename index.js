@@ -108,8 +108,7 @@ Support server: https://discord.gg/GAAj6DDrCJ
 			"Made with ♥️",
 			"Built on DJS14",
 			"Updates daily!",
-			`${client.guilds.cache.size} Discord Servers`,
-			`Serving ${totalUsers} users!`
+			`${client.guilds.cache.size} Servers | ${totalUsers} users!`
 		];
 		setInterval(() => {
 			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
