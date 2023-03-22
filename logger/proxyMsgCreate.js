@@ -26,10 +26,9 @@ module.exports = {
         const ap = await getAPState(userID)
         const usedMember = members.find(m => content.startsWith(m.tags));
         const autoMember = ap.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined;
-        console.log(usedMember, autoMember);
 
         const proxy = usedMember ?? autoMember;
-        
+
         if (!proxy) return;
         if (message.author.bot == true) return;
 
@@ -37,6 +36,14 @@ module.exports = {
         const bot = message.client.user.id
         const webhooks = await channel.fetchWebhooks()
         const webhook = webhooks.find(w => w.owner.id === bot && w.name === 'CB | Proxy Webhook')
+        var textArray = [
+            `https://cdn.discordapp.com/embed/avatars/0.png`,
+            `https://cdn.discordapp.com/embed/avatars/1.png`,
+            `https://cdn.discordapp.com/embed/avatars/2.png`,
+            `https://cdn.discordapp.com/embed/avatars/3.png`,
+            `https://cdn.discordapp.com/embed/avatars/4.png`
+        ];
+        var randomNumber = Math.floor(Math.random() * textArray.length);
         if (webhook) {
             const whId = webhook.id
             const whToken = webhook.token
@@ -44,7 +51,7 @@ module.exports = {
             webhookClient.send({
                 content: cleanContent,
                 username: `${proxy.name}`,
-                avatarURL: `${proxy.avatar ?? 'https://cdn.discordapp.com/embed/avatars/0.png'}`,
+                avatarURL: `${proxy.avatar ?? textArray[randomNumber]}`,
             });
         }
         if (!webhook) {
@@ -58,7 +65,7 @@ module.exports = {
             webhookClient.send({
                 content: cleanContent,
                 username: `${proxy.name}`,
-                avatarURL: `${proxy.avatar ?? `https://cdn.discordapp.com/embed/avatars/0.png`}`,
+                avatarURL: `${proxy.avatar ?? textArray[randomNumber]}`,
             });
         }
         const apmid = proxy._id
