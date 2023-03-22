@@ -24,11 +24,10 @@ module.exports = {
         const id = message.author.id
         const members = await getMembers(userID)
         const ap = await getAPState(userID)
+        const usedMember = members.find(m => content.startsWith(m.tags));
+        const autoMember = ap.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined;
 
-        const proxy =
-            members.find(m => content.startsWith(m.tags))
-
-            //?? ap.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined;
+        const proxy = usedMember ?? autoMember;
         
         if (!proxy) return;
         if (message.author.bot == true) return;
