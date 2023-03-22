@@ -26,6 +26,7 @@ module.exports = {
         const ap = await getAPState(userID)
         const usedMember = members.find(m => content.startsWith(m.tags));
         const autoMember = ap.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined;
+        console.log(usedMember, autoMember);
 
         const proxy = usedMember ?? autoMember;
         
@@ -43,7 +44,7 @@ module.exports = {
             webhookClient.send({
                 content: cleanContent,
                 username: `${proxy.name}`,
-                avatarURL: `${proxy.avatar}`,
+                avatarURL: `${proxy.avatar ?? 'https://cdn.discordapp.com/embed/avatars/0.png'}`,
             });
         }
         if (!webhook) {
@@ -57,7 +58,7 @@ module.exports = {
             webhookClient.send({
                 content: cleanContent,
                 username: `${proxy.name}`,
-                avatarURL: `${proxy.avatar}`,
+                avatarURL: `${proxy.avatar ?? `https://cdn.discordapp.com/embed/avatars/0.png`}`,
             });
         }
         const apmid = proxy._id
