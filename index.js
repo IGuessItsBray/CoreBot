@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------------------
 // index.js
-// The actual running of the bot.
+// The actual running of the bot
 // ------------------------------------------------------------------------------
 
 const config = require('./config.json');
