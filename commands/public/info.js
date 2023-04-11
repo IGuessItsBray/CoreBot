@@ -1,8 +1,8 @@
 const { MessageEmbed } = require("discord.js");
 const { FLAGS } = require('discord.js').Permissions;
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const badges = require('../../config.json').emotes;
-const { dev, tester, networkadmin } = require('../../config.json');
+const badges = require('../../util/localStorage').emotes;
+const { dev, tester, networkadmin } = ('../../util/localStorage');
 const { findMessageLog } = require('../../db/dbAccess');
 const { findUserCount } = require('../../db/dbAccess');
 const { getPunishments } = require('../../db/dbAccess');

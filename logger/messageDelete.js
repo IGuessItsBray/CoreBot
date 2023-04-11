@@ -22,7 +22,7 @@ module.exports = {
         const time = await fn.getDateAndTime()
         const { executor, target } = log;
         const sendchannel = await message.client.channels.fetch((await getLogChannel(message.guild.id)).logChannel);
-        const PKTOKEN = require('../config.json').PKTOKEN;
+        const { PKTOKEN } = require('../util/localStorage').PKTOKEN;
         if (PKTOKEN) {
             try {
                 const requestConfig = { headers: { 'Authorization': PKTOKEN } };

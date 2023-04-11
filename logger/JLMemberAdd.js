@@ -1,8 +1,8 @@
 const fn = require('../util/genUtils')
 const { getJoin } = require('../db/dbAccess');
 const { CommandInteraction, MessageEmbed, Intents } = require("discord.js");
-const badges = require('../config.json').emotes;
-const { dev, tester, networkadmin } = require('../config.json');
+const badges = ('../util/localStorage').emotes;
+const { dev, tester, networkadmin } = ('../util/localStorage');
 module.exports = {
 
     // ------------------------------------------------------------------------------
