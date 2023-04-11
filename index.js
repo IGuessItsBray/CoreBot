@@ -5,7 +5,7 @@
 
 const { config } = require('./util/localStorage');
 const { Client, Intents, MessageEmbed } = require('discord.js');
-const { token } = require('./config.json');
+const { TOKEN: token } = require('./localStorage').config;
 
 const client =
 	new Client({
