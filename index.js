@@ -3,7 +3,7 @@
 // The actual running of the bot
 // ------------------------------------------------------------------------------
 
-const config = require('./config.json');
+const { config } = require('./util/localStorage');
 const { Client, GatewayIntentBits, Partials, EmbedBuilder, ActivityType } = require('discord.js');
 const { token } = require('./config.json');
 const { blue, bold, underline, yellow, red, green } = require('colorette');
