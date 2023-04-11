@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------
 
 const mongoose = require('mongoose');
-const { MONGO } = require('../config.json');
+const { MONGO } = require('../util/localStorage').config;
 
 module.exports = {
 	mongoose: getMongo,
