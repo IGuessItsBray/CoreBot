@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main", "CB2" ]
+
+jobs:
+      
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - id: pre-step
+      shell: bash
+      run: |
+        release_version=$(echo ${GITHUB_REF:10} | tr -d '/')
+        if [ "$release_version" == "main" ]; then
+          release_version="latest"
+        elif [ "$release_version" == "CB2" ]; then
+          release_version="beta"
+        fi
+        echo "release-version=$release_version" >> $GITHUB_OUTPUT
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: iguessitsbray/corebot
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "${{ steps.pre-step.outputs.release-version }}"
