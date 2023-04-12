@@ -39,7 +39,7 @@ module.exports = {
     // ------------------------------------------------------------------------------
 
     async execute(interaction, client, ephemeral = true) {
-        const config = require('../../config.json');
+        const config = require('../../util/localStorage');
         const channel = await interaction.client.channels.fetch(config.PROXYAVATARSTORAGE)
         const _id = interaction.options.getString('member')
         const a = interaction.options.getAttachment('avatar');

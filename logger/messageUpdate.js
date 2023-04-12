@@ -29,7 +29,7 @@ module.exports = {
         const rawDB = await getServerSettings(guildId)
         const data = rawDB.logChannel
         const sendchannel = await oldMessage.guild.channels.fetch(data)
-        const PKTOKEN = require('../config.json').PKTOKEN;
+        const PKTOKEN = require('../util/localStorage').PKTOKEN;
         if (oldMessage.author.id === `466378653216014359`) return;
         if (oldMessage.author.id === `1038913213678501968`) return;
         if (oldMessage.author.id === `955267092800733214`) return;

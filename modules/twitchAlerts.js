@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { Client, Intents, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const config = require("../config.json");
+const config = require("../util/localStorage");
 const { ClientCredentialsAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { DirectConnectionAdapter, EventSubListener } = require('@twurple/eventsub');
