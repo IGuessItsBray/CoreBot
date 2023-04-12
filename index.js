@@ -40,16 +40,10 @@ console.log(token)
 client.login(token);
 
 client.once('ready', () => {
-	const guilds = client.guilds.cache;
-	var totalUsers = 0;
-
-	guilds.forEach((guild) => {
-		totalUsers += guild.memberCount;
-	});
 
 	console.info(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`);
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels`);
 	console.log(`
  ------------------------------------------------------
 | 					${client.user.tag}				   |
@@ -96,19 +90,12 @@ client.once('ready', () => {
 		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
 	}
 	if (client.user.id === "950525282434048031") {
-		const guilds = client.guilds.cache;
-		var totalUsers = 0;
-	
-		guilds.forEach((guild) => {
-			totalUsers += guild.memberCount;
-		});
 		const status = [
 			`CB v3.0.0`,
 			"also checkout CBMusic!",
 			"Made with ♥️",
 			"Built on DJS13",
 			"Hi Seth!",
-			`Serving ${totalUsers} users!`
 			`${client.guilds.cache.size} Discord Servers`
 		];
 		setInterval(() => {
