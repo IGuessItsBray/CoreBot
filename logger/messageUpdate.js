@@ -30,9 +30,9 @@ module.exports = {
         const data = rawDB.logChannel
         const sendchannel = await oldMessage.guild.channels.fetch(data)
         const PKTOKEN = require('../config.json').PKTOKEN;
-        if (message.author.id === `466378653216014359`) return;
-        if (message.author.id === `1038913213678501968`) return;
-        if (message.author.id === `955267092800733214`) return;
+        if (oldMessage.author.id === `466378653216014359`) return;
+        if (oldMessage.author.id === `1038913213678501968`) return;
+        if (oldMessage.author.id === `955267092800733214`) return;
         if (PKTOKEN) {
             try {
                 const requestConfig = { headers: { 'Authorization': PKTOKEN } };

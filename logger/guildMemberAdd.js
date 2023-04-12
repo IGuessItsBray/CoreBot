@@ -2,9 +2,6 @@ const fn = require('../util/genUtils')
 const { getServerSettings } = require('../db/dbAccess');
 const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
 const { AuditLogEvent, Events } = require('discord.js');
-
-const badges = require('../config.json').emotes;
-const { dev, tester, networkadmin } = require('../config.json');
 module.exports = {
 
     // ------------------------------------------------------------------------------

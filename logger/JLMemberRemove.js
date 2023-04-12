@@ -1,8 +1,6 @@
 const fn = require('../util/genUtils')
 const { getLeave } = require('../db/dbAccess');
 const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
-const badges = require('../config.json').emotes;
-const { dev, tester, networkadmin } = require('../config.json');
 const { AuditLogEvent, Events } = require('discord.js');
 module.exports = {
 
