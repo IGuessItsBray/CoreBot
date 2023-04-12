@@ -5,7 +5,7 @@
 
 const { config } = require('./util/localStorage');
 const { Client, Intents, MessageEmbed } = require('discord.js');
-const { TOKEN: token } = require('./util/localStorage').config;
+const { token } = require('./util/localStorage').config;
 
 const client =
 	new Client({
@@ -36,6 +36,7 @@ require('./init/initCommands').init(client);
 require('./init/initEvents').init(client);
 require('./init/initLogs').init(client);
 
+console.log(token)
 client.login(token);
 
 client.once('ready', () => {
