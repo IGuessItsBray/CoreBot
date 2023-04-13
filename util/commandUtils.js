@@ -257,7 +257,7 @@ function deploy(log = false) {
 	const { REST } = require('@discordjs/rest');
 	const { Routes } = require('discord-api-types/v9');
 
-	const { TOKEN: token, SELF: self, HOME: home } = require('./localStorage').config;
+	const { token, SELF: self, HOME: home } = require('./localStorage').config;
 	const rest = new REST({ version: '9' }).setToken(token);
 
 	const {
