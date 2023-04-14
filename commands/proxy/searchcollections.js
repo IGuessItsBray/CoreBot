@@ -36,12 +36,24 @@ module.exports = {
         const owner = interaction.options.getMember('user')
         const user = await interaction.client.users.fetch(owner);
         const members = await getMembers(user.id)
+        const name = members.map(m => m.name)
+        const id = members.map(m => m._id)
+        const tags = members.map(m => m.tags)
        
         //Fetch from db
         const bigArray = await getMembers(user.id);
 
-        //Split the array into small(er) arrays of 20
-        const arrayOfArrays = split(bigArray, 20);
+        //add this block
+        bigArray.sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        });
+        
+        const size = 20; //number of lines per page
+        const arrayOfArrays = []; //array of arrays, each array is one page
+
+        for (let i = 0; i < bigArray.length; i += size) {
+            arrayOfArrays.push(bigArray.slice(i, i + size)); //slice the big array into smaller arrays
+        }
 
         //each array within the big array is one page
         const pages = arrayOfArrays.map(a => {

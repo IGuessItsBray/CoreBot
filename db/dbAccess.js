@@ -799,8 +799,8 @@ async function getMediaChannel(guild) {
 //-----------
 //Proxying
 //-----------
-async function createMember(owner, name, desc, pronouns) {
-	const id = (Math.round(Date.now())).toString(36).toUpperCase();
+async function createMember(owner, name, desc, pronouns, avatar, tags, color) {
+	const id = require('crypto').createHash('sha256').update(Math.random().toString(36).substring(2, 10)).digest('hex').substring(0, 8);
 	const date = Date.now();
 	return await mongo().then(async () => {
 		try {
@@ -810,8 +810,11 @@ async function createMember(owner, name, desc, pronouns) {
 					_id: id,
 					owner: owner,
 					name: name,
-					desc: desc,
-					pronouns: pronouns,
+					desc: desc ?? null,
+					pronouns: pronouns ?? null,
+					avatar: avatar ?? null,
+					tags: tags ?? null,
+					color: color,
 				},
 				{ new: true, upsert: true });
 		}

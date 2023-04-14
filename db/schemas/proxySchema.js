@@ -10,11 +10,11 @@ const schema = mongoose.Schema({
     _id: reqString,
     owner: reqString,
     name: reqString,
-    tags: reqString,
     desc: reqString,
     pronouns: reqString,
     avatar: reqString,
+    tags: reqString,
     color: reqString
-});
+}); 
 
 module.exports = mongoose.model(schemaName, schema, schemaName);

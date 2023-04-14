@@ -25,7 +25,7 @@ module.exports = {
         const members = await getMembers(userID)
         const ap = await getAPState(userID)
         const usedMember = members.find(m => content.startsWith(m.tags));
-        const autoMember = ap.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined;
+        const autoMember = ap?.autoproxy_state ? members.find(m => m._id === ap.autoproxy_member_id) : undefined ?? false;
 
         const proxy = usedMember ?? autoMember;
 
