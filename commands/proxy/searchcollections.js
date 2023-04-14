@@ -54,12 +54,13 @@ module.exports = {
         for (let i = 0; i < bigArray.length; i += size) {
             arrayOfArrays.push(bigArray.slice(i, i + size)); //slice the big array into smaller arrays
         }
-
         //each array within the big array is one page
         const pages = arrayOfArrays.map(a => {
             //This map defines what one line on one page looks like, join the lines on one page with \n
             return {
+                title: `Members for ${user.tag}`,
                 content: a.map(m => `\`${m._id}\` ${m.name} - ${m.tags}`).join('\n'),
+                footer: `User: ${user.username} - ${members.length} members`
             }
         });
 
