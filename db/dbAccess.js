@@ -64,6 +64,7 @@ module.exports = {
 	updateMessageLog,
 	setDeletedMessageLog,
 	findMessageLog,
+	findMessages,
 	//----
 	//Message Count
 	//----
@@ -115,6 +116,8 @@ module.exports = {
 	getMembersByTag,
 	getMemberByID,
 	setColor,
+
+	getTotalMembers,
 
 	//----
 	//User
@@ -498,6 +501,18 @@ async function findMessageLog(user) {
 		try {
 			return await messageCreateSchema.find({
 				user: user,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function findMessages(user) {
+	return await mongo().then(async () => {
+		try {
+			return await messageCreateSchema.find({
 			});
 		}
 		catch (e) {
@@ -974,6 +989,18 @@ async function setAPMember(id, apmid) {
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+
+async function getTotalMembers() {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.find({
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
 		}
 	});
 }
