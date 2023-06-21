@@ -1,6 +1,9 @@
 - groups
 - more/alt proxy tags
-- devs changing member ID's
 - commands for renaming members, changing prns and desc
 - proper exports styled like PK for safe imports
 - Reply handling (https://discord.com/channels/955230769939353623/1040353394163990628/1096449089278853290)
+-Delete members
+-Modify member data (name)
+-Msg/Char counting
+-Account linking

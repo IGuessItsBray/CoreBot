@@ -1,7 +1,7 @@
 const { time } = require("@discordjs/builders");
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType, ModalBuilder, TextInputBuilder, TextInputStyle, Events, PermissionsBitField, PermissionFlagsBits, ChannelType } = require("discord.js");
 const { COMMAND, OPTION, CHANNEL } = require('../../util/enum').Types;
-const { setID, getMembers } = require('../../db/dbAccess');
+const { setID, getMembers, getMemberByID, createMember, deleteMember } = require('../../db/dbAccess');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ module.exports = {
     options: [
         {
             name: 'member',
-            description: 'The member to add an avatar to',
+            description: 'The member to change the ID of',
             type: OPTION.STRING,
             required: true,
             autocomplete: true,
@@ -41,9 +41,19 @@ module.exports = {
     async execute(interaction, client, ephemeral = true) {
         const _id = interaction.options.getString('member')
         const newID = interaction.options.getString('newid')
-        const member = await getMembers(_id)
+        const member = await getMemberByID(_id)
         console.log(member)
-        setID(_id, newID)
+        const id = newID
+        const owner = member.owner
+        const name = member.name
+        const desc = member.desc
+        const pronouns = member.pronouns
+        const avatar = member.avatar
+        const tags = member.tags
+        const color = member.color
+        const newMember = await createMember(id, owner, name, desc, pronouns, avatar, tags, color)
+        deleteMember(_id)
+        interaction.reply(`Changed ID of ${name} from ${_id} to ${id} in collection belonging to <@${owner}>`)
     },
 
     // ------------------------------------------------------------------------------

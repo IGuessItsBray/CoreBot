@@ -38,7 +38,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setColor(member.color ?? '#2f3136')
             .setAuthor({ name: `${member.name}`, iconURL: `${member.avatar ?? null}` })
-            .setThumbnail(`${member.avatar}`)
+            .setThumbnail(`${member.avatar ?? null}`)
             .setDescription(member.desc)
             .addFields(
                 { name: '\u200B', value: '\u200B' },

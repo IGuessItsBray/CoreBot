@@ -109,6 +109,7 @@ module.exports = {
 	setAvatar,
 	setTags,
 	setID,
+	deleteMember,
 
 	getServerSettings,
 
@@ -814,9 +815,8 @@ async function getMediaChannel(guild) {
 //-----------
 //Proxying
 //-----------
-async function createMember(owner, name, desc, pronouns, avatar, tags, color) {
-	const id = require('crypto').createHash('sha256').update(Math.random().toString(36).substring(2, 10)).digest('hex').substring(0, 8);
-	const date = Date.now();
+async function createMember(id, owner, name, desc, pronouns, avatar, tags, color) {
+	id = id ?? require('crypto').createHash('sha256').update(Math.random().toString(36).substring(2, 10)).digest('hex').substring(0, 8);	const date = Date.now();
 	return await mongo().then(async () => {
 		try {
 			return await proxySchema.findOneAndUpdate(
@@ -832,6 +832,18 @@ async function createMember(owner, name, desc, pronouns, avatar, tags, color) {
 					color: color,
 				},
 				{ new: true, upsert: true });
+		}
+		catch (e) {
+			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
+}
+async function deleteMember(id) {
+	return await mongo().then(async () => {
+		try {
+			return await proxySchema.findOneAndDelete(
+				{ _id: id },
+			);
 		}
 		catch (e) {
 			console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
