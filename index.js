@@ -50,80 +50,19 @@ client.once('ready', () => {
 	console.info(underline(blue(`
 	Ready & Running as ${client.user.tag}
 	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`)));
-console.log(blue(`
+	console.log(blue(`
 ${client.user.tag}
-Made with ♥️ by Bray#1051, Seth#0110 and PMass#0001
-For help, contact @Bray#1051
+Made with ♥️ by iguessitsbray, seth and pmass
+For help, contact iguessitsbray
 Support server: https://discord.gg/GAAj6DDrCJ
 `))
-	if (client.user.id === "955267092800733214") {
-		const status = [
-			`Dev build`,
-			"Not a production version",
-			"Made with ♥️",
-			"Unstable!",
-			"I probably crashed lol",
-			`Serving ${totalUsers} users!`
-		];
-		setInterval(() => {
-			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
-			const newActivity = status[randomIndex];
-			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
-		}, 10000);
-		const embed = new EmbedBuilder()
-			.setColor('#2f3136')
-			.setAuthor({ name: 'Status Update' })
-			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
-			.setFooter({ text: "Corebot" })
-			.setTimestamp();
-		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
-	}
-	if (client.user.id === "950525282434048031") {
-		const status = [
-			`CB v4.0.0`,
-			"Made with ♥️",
-			"Built on DJS14",
-			"Hi Seth!",
-			`Serving ${totalUsers} users!`
-				`${client.guilds.cache.size} Discord Servers`
-		];
-		setInterval(() => {
-			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
-			const newActivity = status[randomIndex];
-			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
-		}, 10000);
-
-		const embed = new EmbedBuilder()
-			.setColor('#2f3136')
-			.setAuthor({ name: 'Status Update' })
-			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
-			.setFooter({ text: "Corebot" })
-			.setTimestamp();
-		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
-	}
-	if (client.user.id === "1019253573139316776") {
-		const status = [
-			`CB Beta v$.0.0`,
-			"Not prod lol",
-			"Made with ♥️",
-			"Built on DJS14",
-			"Updates daily!",
-			`${client.guilds.cache.size} Servers | ${totalUsers} users!`
-		];
-		setInterval(() => {
-			const randomIndex = Math.floor(Math.random() * (status.length - 1) + 1);
-			const newActivity = status[randomIndex];
-			client.user.setActivity(`${newActivity}`, { type: ActivityType.Watching });
-		}, 10000);
-
-		const embed = new EmbedBuilder()
-			.setColor('#2f3136')
-			.setAuthor({ name: 'Status Update' })
-			.setDescription(`<@${client.user.id}> is online! <:ONLINE:960716360416124990> `)
-			.setFooter({ text: "Corebot" })
-			.setTimestamp();
-		client.channels.cache.get("1013084321478885386").send({ embeds: [embed] });
-	}
+	client.user.setPresence({
+		activities: [{
+			type: ActivityType.Custom,
+			name: `CoreBot!`,
+		}],
+		status: 'online',
+	});
 
 });
 
