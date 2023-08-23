@@ -27,7 +27,7 @@ async function getMongo() {
 // Initialize the mongo connection for the fist time,
 // 'monitoring' being false will not auto-reconnect on error.
 function initMongo(monitoring = true) {
-	if(monitoring) mongoListeners();
+	if (monitoring) mongoListeners();
 	mongoConnect();
 }
 
@@ -78,11 +78,10 @@ function mongoListeners() {
 		// }
 	});
 
-	process.on('SIGINT', function () {
-		mongoose.connection.close(function () {
-			console.log(red('Mongo: App Closed, Attempting to Properly Close Connection.'));
-			process.exit(0);
-		});
+	process.on('SIGINT', async function () {
+		await mongoose.connection.close()
+		console.log('Mongo: App Closed, Attempting to Properly Close Connection.');
+		process.exit(0);
 	});
 }
 

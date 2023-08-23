@@ -7,7 +7,7 @@ const manager = new ShardingManager('./bot.js', { token: token });
 manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
 
 manager.spawn(
-    {amount: 3}
+    //{amount: 3} //Comment this line out to use the automatic recomended amount of shards
     )
     .then(shards => {
         shards.forEach(shard => {

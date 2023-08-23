@@ -40,6 +40,7 @@ require('./db/mongo').init();
 require('./init/initCommands').init(client);
 require('./init/initEvents').init(client);
 require('./init/initLogs').init(client);
+require('./modules/api/express').init(4500);
 
 client.login(token);
 client.once('ready', async () => {
@@ -119,7 +120,7 @@ client.once('ready', async () => {
 
 	console.info(underline(blue(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users - ${client}`)));
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users`)));
 	console.log(blue(`
 ${client.user.tag}
 Made with ♥️ by iguessitsbray, seth and pmass
