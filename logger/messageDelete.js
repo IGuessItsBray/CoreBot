@@ -22,8 +22,8 @@ module.exports = {
     const log = fetchedLogs.entries.first();
     const time = await fn.getDateAndTime();
     const guild = message.guild.id;
-    const content = await getTboxContent(guild);
-    const cleanContent = content.content;
+    //const content = await getTboxContent(guild);
+    //const cleanContent = content.content;
     //const { executor, target } = log;
     const sendchannel = await message.client.channels.fetch(
       (
