@@ -9,6 +9,7 @@ const mongo = require("./mongo").mongoose;
 const serverSettingsSchema = require("./schemas/serverSettingsSchema");
 const userData = require("./schemas/userDataSchema");
 const proxySchema = require("./schemas/proxySchema");
+const proxyMsgCreateSchema = require("./schemas/proxyMsgCreateSchema");
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -32,6 +33,14 @@ module.exports = {
   setColor,
 
   getTotalMembers,
+
+  addToProxy,
+  findProxyCount,
+  updateMessageLog,
+  setDeletedMessageLog,
+  findMessageLog,
+  findMessages,
+  findOneMessage,
 };
 
 async function getServerSettings(guildId) {
@@ -39,7 +48,7 @@ async function getServerSettings(guildId) {
     try {
       return await serverSettingsSchema.findOne({ _id: guildId });
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -52,7 +61,7 @@ async function createMember(
   avatar,
   tags,
   color,
-  id,
+  id
 ) {
   id =
     id ??
@@ -79,7 +88,7 @@ async function createMember(
         { new: true, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -88,7 +97,7 @@ async function deleteMember(id) {
     try {
       return await proxySchema.findOneAndDelete({ _id: id });
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -104,7 +113,7 @@ async function setAvatar(id, avatar) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -120,7 +129,7 @@ async function setTags(id, tags) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -139,7 +148,7 @@ async function setID(owner, tags, id) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -151,7 +160,7 @@ async function getMembers(owner) {
         owner: owner,
       });
     } catch (e) {
-      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -164,7 +173,7 @@ async function getMembersByTag(owner, tags) {
         tags: tags,
       });
     } catch (e) {
-      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -174,7 +183,7 @@ async function getMemberByID(id) {
     try {
       return await proxySchema.findOne({ _id: id });
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -190,7 +199,7 @@ async function setColor(id, color) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -207,7 +216,7 @@ async function setAPState(id, aps) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -217,7 +226,7 @@ async function getAPState(id, aps) {
     try {
       return await userData.findOne({ _id: id });
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -234,7 +243,7 @@ async function setAPMember(id, apmid) {
         { new: false, upsert: true }
       );
     } catch (e) {
-      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }
@@ -244,7 +253,116 @@ async function getTotalMembers() {
     try {
       return await proxySchema.find({});
     } catch (e) {
-      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+//Message/Char counter
+async function addToProxy(_id, messageInc, characterInc) {
+  return await mongo().then(async () => {
+    try {
+      return await proxySchema.findOneAndUpdate(
+        {
+          _id: _id,
+        },
+        {
+          $inc: {
+            messages: messageInc,
+            characters: characterInc,
+          },
+        },
+        { new: true, upsert: true }
+      );
+    } catch (e) {
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function findProxyCount(_id) {
+  return await mongo().then(async () => {
+    try {
+      return await proxySchema.findOne({
+        _id: _id,
+      });
+    } catch (e) {
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+//Message Logger (Not deleted)
+async function updateMessageLog(guild, channel, author, content, timestamp, attachments, messageId, messageLink, proxy) {
+
+  return await mongo().then(async () => {
+    try {
+      return await proxyMsgCreateSchema.findOneAndUpdate(
+        { messageId: messageId },
+        {
+          guild: guild.id,
+          channel: channel.id,
+          author: author.id,
+          content: content,
+          timestamp: timestamp,
+          attachments: attachments,
+          messageId: messageId,
+          messageLink: messageLink,
+          proxy: proxy,
+        },
+        { new: true, upsert: true }
+      );
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+//Message Logger (deleted)
+async function setDeletedMessageLog(messageObj) {
+  const { id } = messageObj;
+
+  return await mongo().then(async () => {
+    try {
+      return await proxyMsgCreateSchema.findOneAndUpdate(
+        { messageId: id },
+        {
+          deleted: true,
+        },
+        { upsert: true }
+      );
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+async function findMessageLog(user) {
+  return await mongo().then(async () => {
+    try {
+      return await proxyMsgCreateSchema.find({
+        user: user,
+      });
+    } catch (e) {
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function findMessages() {
+  return await mongo().then(async () => {
+    try {
+      return await proxyMsgCreateSchema.find({});
+    } catch (e) {
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function findOneMessage(messageLink) {
+  return await mongo().then(async () => {
+    try {
+      return await proxyMsgCreateSchema.findOne({ messageLink: messageLink });
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }
   });
 }

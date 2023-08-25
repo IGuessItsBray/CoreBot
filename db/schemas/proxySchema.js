@@ -5,6 +5,10 @@ const reqString = {
   type: String,
   required: true,
 };
+const reqNumber = {
+  type: Number,
+  required: true,
+};
 
 const schema = mongoose.Schema({
   _id: reqString,
@@ -15,6 +19,9 @@ const schema = mongoose.Schema({
   avatar: reqString,
   tags: reqString,
   color: reqString,
+
+  messages: reqNumber,
+  characters: reqNumber,
 });
 
 module.exports = mongoose.model(schemaName, schema, schemaName);

@@ -5,6 +5,8 @@ const {
   setAPMember,
   getAPState,
   getMemberByID,
+  addToProxy,
+  updateMessageLog,
 } = require("../db/dbProxy");
 const axios = require("axios");
 const {
@@ -63,11 +65,31 @@ module.exports = {
       const whId = webhook.id;
       const whToken = webhook.token;
       const webhookClient = new WebhookClient({ id: whId, token: whToken });
-      webhookClient.send({
+      const webhookMsg = await webhookClient.send({
         content: cleanContent,
         username: `${proxy.name}`,
         avatarURL: `${proxy.avatar ?? textArray[randomNumber]}`,
       });
+
+      const _id = proxy.id;
+      const guild = message.guild.id;
+      const author = message.author.id;
+      const timestamp = message.timestamp;
+      const attachments = message.attachments.map((a) => a.url ?? a);
+      const messageId = webhookMsg.id;
+      const messageLink = `https://discord.com/channels/${guild}/${channelId}/${messageId}`;
+      await updateMessageLog(
+        guild,
+        channel,
+        author,
+        content,
+        timestamp,
+        attachments,
+        messageId,
+        messageLink,
+        proxy
+      );
+      await addToProxy(_id, 1, webhookMsg.content.length);
     }
     if (!webhook) {
       const Proxywebhook = await channel.createWebhook({
@@ -78,11 +100,30 @@ module.exports = {
       const whId = Proxywebhook.id;
       const whToken = Proxywebhook.token;
       const webhookClient = new WebhookClient({ id: whId, token: whToken });
-      webhookClient.send({
+      const webhookMsg = await webhookClient.send({
         content: cleanContent,
         username: `${proxy.name}`,
         avatarURL: `${proxy.avatar ?? textArray[randomNumber]}`,
       });
+      const _id = proxy.id;
+      const guild = message.guild.id;
+      const author = message.author.id;
+      const timestamp = message.timestamp;
+      const attachments = message.attachments.map((a) => a.url ?? a);
+      const messageId = webhookMsg.id;
+      const messageLink = `https://discord.com/channels/${guild}/${channelId}/${messageId}`;
+      await updateMessageLog(
+        guild,
+        channel,
+        author,
+        content,
+        timestamp,
+        attachments,
+        messageId,
+        messageLink,
+        proxy
+      );
+      await addToProxy(_id, 1, webhookMsg.content.length);
     }
     const apmid = proxy._id;
     await setAPMember(id, apmid);

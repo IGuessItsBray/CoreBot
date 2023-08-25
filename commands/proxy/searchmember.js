@@ -15,7 +15,8 @@ const {
   ChannelType,
 } = require("discord.js");
 const { COMMAND, OPTION, CHANNEL } = require("../../util/enum").Types;
-const { setAvatar, setTags, getMemberByID } = require("../../db/dbProxy");
+const { setAvatar, setTags, getMemberByID, findProxyCount } = require("../../db/dbProxy");
+
 module.exports = {
   // ------------------------------------------------------------------------------
   // Definition
@@ -47,6 +48,7 @@ module.exports = {
 
   async execute(interaction, client, ephemeral = true) {
     const _id = interaction.options.getString("member");
+    const { characters, messages } = await findProxyCount(_id);
     const member = await getMemberByID(_id);
     const embed = new EmbedBuilder()
       .setColor(member.color ?? "#2f3136")
@@ -63,7 +65,10 @@ module.exports = {
           value: `${member.pronouns ?? undefined}`,
           inline: true,
         },
-        { name: "Tags", value: `${member.tags ?? undefined}`, inline: true }
+        { name: "Tags", value: `${member.tags ?? undefined}`, inline: true },
+        { name: "\u200B", value: "\u200B" },
+        { name: `Characters`, value: `${characters ?? "0"}`, inline: true },
+        { name: `Messages`, value: `${messages ?? "0"}`, inline: true }
       )
       .setFooter({ text: `ID: ${member._id} | User: ${member.owner}` })
       .setTimestamp();

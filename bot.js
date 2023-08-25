@@ -16,6 +16,7 @@ const {
 } = require("discord.js");
 const { token } = require("./util/localStorage").config;
 const { blue, bold, underline, yellow, red, green } = require("colorette");
+const { getTotalMembers, findMessages } = require("./db/dbProxy");
 //const {totalUsers} = require("./util/totalUsers.js");
 //const {statusChanger} = require("./util/status");
 const client = new Client({
@@ -42,10 +43,11 @@ require("./db/mongo").init();
 require("./init/initCommands").init(client);
 require("./init/initEvents").init(client);
 require("./init/initLogs").init(client);
-require("./modules/api/express").init(4500);
 
 client.login(token);
 client.once("ready", async () => {
+  const proxyMsgs = await findMessages();
+  const proxyMembers = await getTotalMembers();
   const guilds = client.guilds.cache;
   var totalUsers = 0;
 
@@ -56,7 +58,7 @@ client.once("ready", async () => {
     underline(
       blue(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users - ${client.options.shardCount} shards`)
+	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users - ${client.options.shardCount} shards - ${proxyMembers.length} Proxy Members - ${proxyMsgs.length} Proxied messages`)
     )
   );
   console.log(
@@ -82,4 +84,5 @@ Support server: https://discord.gg/GAAj6DDrCJ
   const setPresence = require("./modules/setPresence");
   console.log(green("✅ setPresence │ Stats setPresence!"));
   setPresence(client);
+  require("./modules/api/express").init(4500);
 });
