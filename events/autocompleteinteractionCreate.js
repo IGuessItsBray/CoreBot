@@ -1,9 +1,10 @@
 const fn = require('../util/genUtils')
 const { CommandInteraction, EmbedBuilder, Intents } = require("discord.js");
 const { getGuildTags, getGuildRolebuttons } = require('../db/dbAccess');
-const { getMembers } = require("../db/dbProxy");
+const { getMembers, getGroupMembers, getGroups } = require("../db/dbProxy");
 const scheduler = require('../modules/scheduler');
 const moment = require('moment');
+const getgroupmembers = require('../commands/proxy/getgroupmembers');
 module.exports = {
 
     // ------------------------------------------------------------------------------
@@ -118,6 +119,36 @@ module.exports = {
             }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(membersMapped.slice(0, 25))
         }
+         if (interaction.commandName === "addtogroup") {
+           const members = await getMembers(owner);
+           const membersMapped = members
+             .map((m) => {
+               return {
+                 name: m.name.slice(0, 30),
+                 value: m._id,
+               };
+             })
+             .filter((m) =>
+               m.name.toLowerCase().includes(focusedValue.toLowerCase())
+             );
+           await interaction.respond(membersMapped.slice(0, 25));
+         }
+                  if (interaction.commandName === "getgroupmembers") {
+                    const groups = await getGroups(owner);
+                    const groupsMapped = groups
+                      .map((g) => {
+                        return {
+                          name: g.name.slice(0, 30),
+                          value: g._id,
+                        };
+                      })
+                      .filter((g) =>
+                        g.name
+                          .toLowerCase()
+                          .includes(focusedValue.toLowerCase())
+                      );
+                    await interaction.respond(groupsMapped.slice(0, 25));
+                  }
     },
 
     // ------------------------------------------------------------------------------

@@ -21,6 +21,8 @@ const {
   setTags,
   setColor,
   getMembers,
+  createGroup,
+  getGroups,
 } = require("../../db/dbProxy");
 const axios = require("axios");
 module.exports = {
@@ -74,12 +76,13 @@ module.exports = {
       const { data: system } = await axios.get(attachment.url);
 
       // get all members from the database
-      const existing = await getMembers(owner);
+      const existingMembers = await getMembers(owner);
+      const existingGroups = await getGroups(owner);
 
       //loop through the imported system.members, if the member's name is already existing in
       // const existing, then skip it, otherwise add it to the database
       system.members.forEach(async (member) => {
-        if (existing.find((m) => m.name === member.name)) return;
+        if (existingMembers.find((m) => m.name === member.name)) return;
         const name = member.name;
         const desc = member.description;
         const pronouns = member.pronouns;
@@ -97,6 +100,14 @@ module.exports = {
           tags,
           color
         );
+      });
+      system.groups.forEach(async (group) => {
+        if (existingGroups.find((g) => g.name === group.name)) return;
+        const name = group.name;
+        const desc = group.description
+          .map((x) => x.prefix)
+          .find((innerArr) => innerArr?.length > 0);
+        const newgroup = await createGroup(owner, name, desc);
       });
       interaction.editReply({
         content: "Collection file import successful!",
@@ -107,12 +118,13 @@ module.exports = {
       const { data: system } = await axios.get(link);
 
       // get all members from the database
-      const existing = await getMembers(owner);
+      const existingMembers = await getMembers(owner);
+      const existingGroups = await getGroups(owner);
 
       //loop through the imported system.members, if the member's name is already existing in
       // const existing, then skip it, otherwise add it to the database
       system.members.forEach(async (member) => {
-        if (existing.find((m) => m.name === member.name)) return;
+        if (existingMembers.find((m) => m.name === member.name)) return;
         const name = member.name;
         const desc = member.description;
         const pronouns = member.pronouns;
@@ -130,6 +142,14 @@ module.exports = {
           tags,
           color
         );
+      });
+      system.groups.forEach(async (group) => {
+        if (existingGroups.find((g) => g.name === group.name)) return;
+        const name = group.name;
+        const desc = group.description
+          //.map((x) => x.prefix)
+          //.find((innerArr) => innerArr?.length > 0);
+        const newgroup = await createGroup(owner, name, desc);
       });
       interaction.editReply({
         content: "Collection file import successful!",

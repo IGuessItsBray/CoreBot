@@ -9,6 +9,7 @@ const mongo = require("./mongo").mongoose;
 const serverSettingsSchema = require("./schemas/serverSettingsSchema");
 const userData = require("./schemas/userDataSchema");
 const proxySchema = require("./schemas/proxySchema");
+const proxyGroupSchema = require("./schemas/proxyGroupSchema");
 const proxyMsgCreateSchema = require("./schemas/proxyMsgCreateSchema");
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
@@ -41,6 +42,13 @@ module.exports = {
   findMessageLog,
   findMessages,
   findOneMessage,
+
+  //Group data
+  createGroup,
+  addMemberToGroup,
+  getGroups,
+  getGroupMembers,
+  getGroupByID,
 };
 
 async function getServerSettings(guildId) {
@@ -292,8 +300,17 @@ async function findProxyCount(_id) {
 }
 
 //Message Logger (Not deleted)
-async function updateMessageLog(guild, channel, author, content, timestamp, attachments, messageId, messageLink, proxy) {
-
+async function updateMessageLog(
+  guild,
+  channel,
+  author,
+  content,
+  timestamp,
+  attachments,
+  messageId,
+  messageLink,
+  proxy
+) {
   return await mongo().then(async () => {
     try {
       return await proxyMsgCreateSchema.findOneAndUpdate(
@@ -361,6 +378,82 @@ async function findOneMessage(messageLink) {
   return await mongo().then(async () => {
     try {
       return await proxyMsgCreateSchema.findOne({ messageLink: messageLink });
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function createGroup(owner, name, desc, id) {
+  id =
+    id ??
+    require("crypto")
+      .createHash("sha256")
+      .update(Math.random().toString(36).substring(2, 10))
+      .digest("hex")
+      .substring(0, 8);
+  const date = Date.now();
+  return await mongo().then(async () => {
+    try {
+      return await proxyGroupSchema.findOneAndUpdate(
+        { _id: id },
+        {
+          _id: id,
+          owner: owner,
+          name: name,
+          desc: desc ?? null,
+        },
+        { new: true, upsert: true }
+      );
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function addMemberToGroup(id, groups) {
+  groups = groups ?? [];
+  return await mongo().then(async () => {
+    try {
+      return await proxySchema.findOneAndUpdate(
+        { _id: id },
+        {
+          groups: groups,
+        },
+        { new: false, upsert: false }
+      );
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function getGroups(owner) {
+  return await mongo().then(async () => {
+    try {
+      return await proxyGroupSchema.find({
+        owner: owner,
+      });
+    } catch (e) {
+      console.error(`dbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function getGroupMembers(id) {
+  return await mongo().then(async () => {
+    try {
+      return await proxySchema.find({ groups: id });
+    } catch (e) {
+      console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function getGroupByID(id) {
+  return await mongo().then(async () => {
+    try {
+      return await proxyGroupSchema.findOne({ _id: id });
     } catch (e) {
       console.error(`Mongo:\tdbProxy: ${arguments.callee.name}: ${e}`);
     }

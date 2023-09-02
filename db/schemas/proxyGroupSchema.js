@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const schemaName = "proxySchema";
+const schemaName = "proxyGroupSchema";
 
 const reqString = {
   type: String,
@@ -23,15 +23,6 @@ const schema = mongoose.Schema({
   owner: reqString,
   name: reqString,
   desc: reqString,
-  pronouns: reqString,
-  avatar: reqString,
-  tags: reqString,
-  color: reqString,
-
-  messages: reqNumber,
-  characters: reqNumber,
-
-  groups: reqArray,
 });
 
 module.exports = mongoose.model(schemaName, schema, schemaName);

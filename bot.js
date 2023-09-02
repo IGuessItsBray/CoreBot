@@ -82,7 +82,7 @@ Support server: https://discord.gg/GAAj6DDrCJ
   console.log(green("✅ Stats │ Stats online!"));
   stats(client);
   const setPresence = require("./modules/setPresence");
-  console.log(green("✅ setPresence │ Stats setPresence!"));
+  console.log(green("✅ setPresence │ setPresence online!"));
   setPresence(client);
   require("./modules/api/express").init(4500);
 });
