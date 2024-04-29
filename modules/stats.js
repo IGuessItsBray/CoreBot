@@ -17,8 +17,8 @@ module.exports = (client) => {
   app.enable("trust proxy");
   app.set("etag", false); //disable cache
   app.use(express.static(__dirname + "./frontend"));
-  const { ip, port } = require("../util/localStorage").config;
-  app.listen(port);
+  const { statip, statport } = require("../util/localStorage").config;
+  app.listen(statport);
   // app.use((req, res, next) => {
   // 	console.log(`- ${req.method}: ${req.url} ${res.statusCode} ( by: ${req.ip} )`)
   // 	next()
@@ -47,5 +47,5 @@ module.exports = (client) => {
     file = file.replace("$$pmems$$", proxyMembers);
     res.send(file);
   });
-  console.log(`STATS: Listening at ${ip}:${port}`);
+  console.log(`STATS: Listening at ${statip}:${statport}`);
 };

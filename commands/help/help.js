@@ -52,7 +52,7 @@ module.exports = {
             \`Bray\` | <@530845321270657085> - Lead Developer <:CBDeveloper:1012934220030693376>
             \`Seth\` | <@111592329424470016> - Lead Developer <:CBDeveloper:1012934220030693376>
             \`Mass\` | <@91944143458152448> - Developer <:CBDeveloper:1012934220030693376>
-            \`Alex\` | <@474420299874435092> - Network Developer <:CBNetDev:1013108642519715980>
+            \`Skye\` | <@474420299874435092> - Network Developer <:CBNetDev:1013108642519715980>
             ***Testers:***
             \`Jamie\` | <@295299571456933888> - Beta Tester <:CBBetaTester:1012934218592034887>
             \`Ethereal\` | <@844641126748258355> - Beta Tester <:CBBetaTester:1012934218592034887>

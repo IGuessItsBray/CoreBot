@@ -17,6 +17,7 @@ const {
 const { token } = require("./util/localStorage").config;
 const { blue, bold, underline, yellow, red, green } = require("colorette");
 const { getTotalMembers, findMessages } = require("./db/dbProxy");
+const { boot } = require("./errors/watchtower");
 //const {totalUsers} = require("./util/totalUsers.js");
 //const {statusChanger} = require("./util/status");
 const client = new Client({
@@ -39,16 +40,24 @@ module.exports = { client };
 // Initializing Bot Components
 // ------------------------------------------------------------------------------
 
-require("./db/mongo").init();
-require("./init/initCommands").init(client);
-require("./init/initEvents").init(client);
-require("./init/initLogs").init(client);
+
 
 client.login(token);
 client.once("ready", async () => {
-  const proxyMsgs = await findMessages();
-  const proxyMembers = await getTotalMembers();
+  require("./db/mongo").init();
+  require("./init/initCommands").init(client);
+  require("./init/initEvents").init(client);
+  require("./init/initLogs").init(client);
+  require("./init/initAPI").initAPI(client);
+  
+  const proxyMsgs = (await findMessages()).length;
+  const proxyMembers = (await getTotalMembers()).length;
   const guilds = client.guilds.cache;
+  const gsize = client.guilds.cache.size;
+  const csize = client.channels.cache.size;
+  const shardCount = client.options.shardCount;
+  const data = { proxyMsgs, proxyMembers, gsize, csize, shardCount };
+  const bootData = await boot(client, data);
   var totalUsers = 0;
 
   guilds.forEach((guild) => {
@@ -58,7 +67,7 @@ client.once("ready", async () => {
     underline(
       blue(`
 	Ready & Running as ${client.user.tag}
-	${client.guilds.cache.size} Guilds - ${client.channels.cache.size} Channels - ${totalUsers} Users - ${client.options.shardCount} shards - ${proxyMembers.length} Proxy Members - ${proxyMsgs.length} Proxied messages`)
+	${gsize} Guilds - ${csize} Channels - ${totalUsers} Users - ${shardCount} shards - ${proxyMembers} Proxy Members - ${proxyMsgs} Proxied messages`)
     )
   );
   console.log(
@@ -68,21 +77,18 @@ Made with ♥️ by iguessitsbray, seth and pmass
 For help, contact iguessitsbray
 Support server: https://discord.gg/GAAj6DDrCJ
 `)
+
   );
   // ------------------------------------------------------------------------------
   // Addons
   // ------------------------------------------------------------------------------
   //Modules
   const buttons = require("./modules/buttons");
-  const req = require("express/lib/request");
   console.log(green("✅ Buttons │ Buttons online!"));
   buttons(client);
   console.log(green("✅ Reminders │ Remind online!"));
-  const stats = require("./modules/stats");
-  console.log(green("✅ Stats │ Stats online!"));
-  stats(client);
   const setPresence = require("./modules/setPresence");
   console.log(green("✅ setPresence │ setPresence online!"));
   setPresence(client);
-  require("./modules/api/express").init(4500);
+  
 });
