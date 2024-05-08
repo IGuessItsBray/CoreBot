@@ -1,0 +1,5 @@
+* @sethwv
+
+# DEPENDABOT
+package.json @dependabot
+yarn.lock @dependabot

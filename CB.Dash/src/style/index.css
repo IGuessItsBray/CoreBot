@@ -1,0 +1,104 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.session-hash {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  bottom: 0;
+  opacity: 0.25;
+  user-select: none;
+  pointer-events: none; 
+  overflow: hidden;
+}
+
+/*Guilds Pages*/
+
+.btn-group.btn-group-sm > .btn{
+  border-radius: 0 !important;
+}
+
+.btn-group.btn-group-sm{
+  border-top: 1px solid rgba(0,0,0,.125)
+}
+
+.badge {
+  user-select: none;
+}
+
+.noBot {
+  opacity: 0.5;
+}
+
+.disabled {
+  user-select: none !important;
+  pointer-events: none !important;
+  opacity: 0.25 !important;
+}
+
+.card-img-top-small {
+  height: 2em !important;
+  width: 2em !important;
+  margin-top: .5em !important;
+  margin-right: .75em !important;
+}
+
+.card-img-top {
+  height: 75px;
+  width: 75px;
+  object-fit: cover;
+  border-radius: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1.5em;
+  border : 2px outset rgba(0,0,0,.125);
+  background-color: rgba(4,4,4,.1);
+}
+
+
+/* Owner Badge */
+.card-img-top.owner {
+  border : 2px outset #5865F2 !important;
+}
+
+.badge.badge-owner {
+  background-color: #5865F2;
+  border : 2px outset #5865F2;
+}
+
+/* Admin Badge */
+.card-img-top.admin {
+  border : 2px outset #EB459E;
+}
+
+.badge.badge-admin {
+  background-color: #EB459E;
+  border : 2px outset #EB459E;
+}
+
+/* Moderator Badge */
+.card-img-top.moderator {
+  border : 2px outset #FAA61A;
+}
+.badge.badge-moderator {
+  background-color: #FAA61A;
+  border : 2px outset #FAA61A;
+}
+
+.badge.badge-owner,
+.badge.badge-admin,
+.badge.badge-moderator {
+  margin: 2px;
+}

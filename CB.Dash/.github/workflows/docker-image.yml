@@ -1,0 +1,42 @@
+name: Docker Image CI
+
+on:
+  release:
+      types: [ published ]
+  push:
+    branches: [ "develop" ]
+# pull_request:
+#   branches: [ "develop" ]
+
+jobs:
+
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Build the Docker image
+#       run: docker build . -t sethwv/utili2
+      
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - id: pre-step
+      shell: bash
+#     run: |
+#       release_version=$(echo ${GITHUB_REF:10} | tr -d '/')
+#       echo "release-version=$release_version" >> $GITHUB_OUTPUT
+      run: |
+        release_version=$(echo ${GITHUB_REF:10} | tr -d '/')
+        if [ "$release_version" != "develop" ]; then
+          release_version="$release_version,latest"
+        fi
+        echo "release-version=$release_version" >> $GITHUB_OUTPUT
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: sethwv/utili2-ui
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "${{ steps.pre-step.outputs.release-version }}"
+#       tags: "latest,${{ steps.pre-step.outputs.release-version }}"

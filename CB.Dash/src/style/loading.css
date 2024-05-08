@@ -1,0 +1,17 @@
+.loading-container {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(33,37,41,0.5);
+    z-index: 1;
+    transition: opacity 500ms ease-in;
+    pointer-events: none;
+}
+
+._loading_overlay_overlay{
+    margin-top: 35%;
+    margin-bottom: 35%;
+}
