@@ -14,9 +14,10 @@ function loadConfig() {
 	}
 	catch (e) {
 		return {
-      APIAddress: process.env.REACT_APP_API_URL ?? "http://localhost:4500/api/",
-      ClientID: process.env.REACT_APP_CLIENT_ID ?? "955267092800733214",
-    };
+			APIAddress:
+        process.env.REACT_APP_API_URL ?? 'https://api.corebot.services/api/',
+			ClientID: process.env.REACT_APP_CLIENT_ID ?? '955267092800733214',
+		};
 	}
 }
 

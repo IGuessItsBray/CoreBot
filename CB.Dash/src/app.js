@@ -4,6 +4,8 @@ import Navbar from './components/navbar';
 // ------------------------------------------------------------------------------
 import Guilds from './pages/guilds';
 import Guild from './pages/guild';
+import Stats from "./pages/stats";
+import Members from "./pages/members";
 // ------------------------------------------------------------------------------
 import { initCache, getCacheItem, setCacheItem } from './helpers';
 // ------------------------------------------------------------------------------
@@ -34,12 +36,19 @@ export default class App extends Component {
 	render() {
 		return (
 			<>
-				<Navbar value={this.state.ui.name} image={this.state.ui.logo} user={this.state.user} loading={this.state.loadingUser}/>
-				<div class="container">
-					{this.renderswitch()}
-				</div>
+				<Navbar
+					value={this.state.ui.name}
+					image={this.state.ui.logo}
+					user={this.state.user}
+					loading={this.state.loadingUser}
+					currentPage={this.state.page}
+					setPage={this.setPage}
+				/>
+				<div class="container">{this.renderswitch()}</div>
 				<div class="text-center session-hash">
-					<small><code class="text-muted">{localStorage.getItem('token')}</code></small>
+					<small>
+						<code class="text-muted">{localStorage.getItem('token')}</code>
+					</small>
 				</div>
 			</>
 		);
@@ -47,19 +56,23 @@ export default class App extends Component {
 	renderswitch() {
 		document.title = `${this.state.page}${this.state.ui.name ? ' - ' + this.state.ui.name : ''}`;
 		// console.log(this.state);
-		switch(this.state.page) {
-		default:
-		case 'login':
-			return (
-				<div class="alert alert-warning text-center">
-					Please sign in to proceed.
-				</div>
-			);
-		case 'guilds':
-			return (<Guilds userId={this.state.userId} setGuild={this.setGuild}/>);
-		case 'guild':
-			return (<Guild guild={this.state.guild} setPage={this.setPage} />);
-		}
+		switch (this.state.page) {
+      default:
+      case "login":
+        return (
+          <div class="alert alert-warning text-center">
+            Please sign in to proceed.
+          </div>
+        );
+      case "guilds":
+        return <Guilds userId={this.state.userId} setGuild={this.setGuild} />;
+      case "guild":
+        return <Guild guild={this.state.guild} setPage={this.setPage} />;
+      case "stats":
+        return <Stats />;
+      case "members":
+        return <Members />;
+    }
 	}
 	// ------------------------------------------------------------------------------
 	setPage = (page) => {
@@ -81,7 +94,7 @@ export default class App extends Component {
 	async versionCheck() {
 		const url = APIAddress + 'client';
 		const res = await axios.get(url).catch((err) => { return err.response; });
-		
+
 		if (res.status !== 200) return;
 		const liveVersion = res.data.api.tag;
 		const storageVersion = localStorage.getItem('version');

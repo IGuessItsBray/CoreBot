@@ -49,6 +49,7 @@ async function validate(req, res, next) {
     }
 
     req.token = webToken;
+    req.user = webToken.user;
     next();
 }
 

@@ -61,4 +61,10 @@ function registerRoutes() {
     app.get('/api/client/guild/', authorize, require('./routes/client/guild').guilds);
     app.get('/api/client/guild/:id', authorize, require('./routes/client/guild').guild);
 
+    // Proxy 
+    app.get('/api/getRegisteredMembers/', authorize, require('./routes/proxy/getRegisteredMembers'));
+
+    // Misc
+    app.get('/api/stats/', authorize, require('./routes/misc/stats'));
+
 }
