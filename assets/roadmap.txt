@@ -1,0 +1,21 @@
+```txt
+V4 Roadmap;
+- Admin commands
+ - Ability to edit About me through API
+ - Mass message through admin command
+ - Reset server config through commands
+ - List servers
+ - Leave servers
+ - Get an invite to servers
+- Version tracker in about me/about command
+- Easy startup scripts
+- DASHBOARD COMPLETE
+- API COMPLETE
+- Proxy additions
+ - Autoproxy
+ - Editing members
+ - Better imports/exports
+- ChatGPT commands
+- Audit log overhaul
+- Crosschat
+- Remove unneeded intents

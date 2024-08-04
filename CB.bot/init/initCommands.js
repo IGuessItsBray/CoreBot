@@ -6,6 +6,8 @@
 const { Collection, InteractionType } = require('discord.js');
 const cmdUtils = require('../util/commandUtils');
 const { blue, bold, underline, yellow, red, green } = require('colorette');
+require("../modules/instrument");
+const Sentry = require("@sentry/node");
 module.exports = {
 	init,
 };
@@ -56,6 +58,7 @@ function init(client) {
 		}
 		catch (error) {
 			console.error(error);
+			Sentry.captureException(error)
 			await interaction.reply({
 				content: 'Something went wrong executing this interaction, see console.',
 				ephemeral: true,

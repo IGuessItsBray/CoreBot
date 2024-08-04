@@ -1,0 +1,1 @@
+CoreBot by Bray & Seth, crafted with Discord.js v14, features top-notch moderation, encrypted logging, role buttons, custom echoes, tags, and user reporting. Add it now for a smarter server!

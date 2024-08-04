@@ -6,6 +6,15 @@
 const { config } = require("./util/localStorage");
 const fs = require("node:fs");
 const express = require("express");
+require("./modules/instrument");
+const { createServer } = require("node:http");
+
+const server = createServer((req, res) => {
+  // server code
+});
+
+server.listen(3002, "localhost");
+
 const app = express();
 const {
   Client,
@@ -18,6 +27,7 @@ const { token } = require("./util/localStorage").config;
 const { blue, bold, underline, yellow, red, green } = require("colorette");
 const { getTotalMembers, findMessages } = require("./db/dbProxy");
 const { boot } = require("./errors/watchtower");
+
 //const {totalUsers} = require("./util/totalUsers.js");
 //const {statusChanger} = require("./util/status");
 const client = new Client({

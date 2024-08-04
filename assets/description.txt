@@ -1,0 +1,23 @@
+🚀 **Enhance Your Discord Experience with CoreBot!** 🚀
+
+Looking to elevate your server’s functionality and user engagement? Meet CoreBot—your all-in-one solution for a smarter, more organized Discord community. Developed with Python by the talented creators Bray & Seth, CoreBot is designed to bring versatility and sophistication to your server with a host of powerful features. Here’s why adding CoreBot to your server is a game-changer:
+
+✨ **Key Features:**
+
+**1. Top-Tier Moderation Tools:** Keep your server in check with CoreBot’s advanced moderation capabilities. Enjoy automated message deletion, user warnings, and bans that work tirelessly to enforce rules and maintain order. Perfect for large communities, these tools help ensure a safe and respectful environment effortlessly.
+
+**2. Dynamic Role Management:** Simplify administrative tasks with CoreBot’s role management features. Assign roles with ease through commands, or let CoreBot manage them automatically based on user activity or other triggers. This means less manual work for you and a more organized server structure for everyone!
+
+**3. Insightful Server Statistics:** Gain valuable insights into your server’s activity with CoreBot’s comprehensive statistics. Monitor engagement levels, track user participation, and understand overall server dynamics to make informed decisions and enhance your community’s experience.
+
+**4. Feedback System:** CoreBot values your input! While it doesn’t handle polls or quizzes, it allows users to provide direct feedback to admins. This feedback loop ensures your concerns and suggestions are heard, driving continuous improvement and feature updates based on real user needs.
+
+**5. Powerful Integration Capabilities:** CoreBot’s integration features are second to none. With support for proxies and seamless data import/export to and from PluralKit, CoreBot interacts effortlessly with other tools and services. This makes it a versatile addition to any server setup.
+
+In essence, CoreBot is more than just a bot—it’s a comprehensive solution for server management and user engagement. Whether you’re running a bustling community or a cozy group, CoreBot equips you with the tools you need to streamline administration and create a more engaging environment for your members.
+
+Ready to transform your Discord server? Add CoreBot today and experience the difference! 🌟
+
+**[Add CoreBot to Your Server Now!](#)**
+
+Don’t miss out on the opportunity to bring unparalleled efficiency and fun to your server with CoreBot. Join the growing community of satisfied users who are already enjoying the benefits!

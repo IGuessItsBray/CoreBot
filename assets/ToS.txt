@@ -1,0 +1,42 @@
+Terms of Service
+
+Welcome to CoreBot! These Terms of Service ("Terms") govern your use of our Discord bots and services. By using CoreBot’s bots, you agree to these Terms. If you do not agree, please do not use our bots.
+
+1. Acceptance of Terms
+By accessing or using our Discord bots, you agree to be bound by these Terms and our Privacy Policy. We may update these Terms from time to time, and your continued use of the bots constitutes acceptance of any changes.
+
+2. Service Description
+CoreBot provides various Discord bots designed to enhance server functionality. These bots operate based on commands and events as defined by the bot’s capabilities.
+
+3. User Responsibilities
+Compliance: You agree to use our bots in compliance with Discord's Terms of Service and Community Guidelines.
+Prohibited Activities: You may not use the bots for illegal purposes or to engage in any behavior that disrupts or harms the functionality of the bots or the Discord server.
+4. Data Collection and Usage
+Information Collected: We do not collect personal information. We store message contents and audit logging information solely for the purpose of providing the intended functionality of the bots.
+Use of Information: Data is used to respond to commands and log events. We do not share, sell, or distribute your information to third parties.
+5. Data Security
+We implement measures to protect your data from unauthorized access, disclosure, or alteration. This includes data-at-rest encryption and restricted access to authorized personnel only.
+
+6. Data Retention
+Message contents and audit logging information are retained as long as necessary for bot functionality. Data may also be retained for longer periods if required by law or for legitimate business purposes.
+
+7. GDPR Compliance
+If you are located in the European Union, we comply with GDPR. You have the right to request access to, correction of, or deletion of your data. To make such requests, please contact us via the email provided on our website.
+
+8. Modifications to Services
+CoreBot reserves the right to modify or discontinue its bots or services, in whole or in part, at any time without notice. We are not liable for any changes or disruptions to the service.
+
+9. Termination
+CoreBot may terminate or suspend your access to the bots at its discretion, without prior notice, if you violate these Terms or engage in behavior that disrupts or harms the functionality of the bots.
+
+10. Limitation of Liability
+To the fullest extent permitted by law, CoreBot is not liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our bots.
+
+11. Indemnification
+You agree to indemnify and hold harmless CoreBot, its affiliates, and their respective officers, directors, employees, and agents from any claims, liabilities, damages, losses, and expenses, including legal fees, arising out of or related to your use of the bots or violation of these Terms.
+
+12. Changes to Terms
+We may update these Terms from time to time to reflect changes in our practices or applicable laws. Material changes will be posted in the #bot-updates channel on our Discord server. Continued use of the bots after changes constitutes acceptance of the revised Terms.
+
+13. Contact Information
+For any questions about these Terms or to request data removal, please contact us through the CoreBot Discord Server or via the email provided on our website.

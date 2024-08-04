@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org corebot --project corebot-testing ../../../../../.. && sentry-cli sourcemaps upload --org corebot --project corebot-testing ../../../../../.."
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,9 @@
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "@discordjs/voice": "github:discordjs/voice",
+    "@sentry/cli": "^2.32.0",
+    "@sentry/node": "^8.5.0",
+    "@sentry/profiling-node": "^8.5.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",

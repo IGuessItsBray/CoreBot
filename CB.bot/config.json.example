@@ -1,0 +1,35 @@
+{
+  "token": "",
+  "clientId": "",
+  "clientSecret": "",
+  "guildId": "",
+  "CHANNELID": "",
+  "MONGO": "",
+  "HOME": "", (DEV SERVER ID)
+  "SELF": "", (BOT ID)
+  "PROXYAVATARSTORAGE": "",
+  "PKTOKEN": "",
+  "emotes": {
+    "DISCORD_EMPLOYEE": "<:Discord_Staff:1012934223641976933> ",
+    "PARTNERED_SERVER_OWNER": "<:PartneredServerOwner:1013105282450198549>",
+    "HYPESQUAD_EVENTS": "<:HypeSquad_Event:1012934229086187561> ",
+    "BUGHUNTER_LEVEL_1": "<:Bug_Hunter:1012934218034192394> ",
+    "HOUSE_BRAVERY": "<:HypeSquad_Bravery:1012934226569613334>",
+    "HOUSE_BRILLIANCE": "<:HypeSquad_Brilliance:1012934227668504597>",
+    "HOUSE_BALANCE": "<:HypeSquad_Balance:1012934225881747558>",
+    "EARLY_SUPPORTER": "<:early_supporter:1012934224791228536>",
+    "BUGHUNTER_LEVEL_2": "<:Bug_Hunter_level2:1012934216880758794> ",
+    "EARLY_VERIFIED_BOT_DEVELOPER": "<:Verified_Bot_Developer:1012934234777849936>",
+    "DISCORD_CERTIFIED_MODERATOR": "<:Discord_certified_moderator:1012934221205078067>"
+  },
+  "API": {
+    "CLIENTID": "",
+    "CLIENTSECRET": "-",
+    "REDIRECTURI": "",
+    "TOKEN_SECRET": ""
+  },
+  "statip": "localhost",
+  "statport": "4505",
+  "apiip": "localhost",
+  "apiport": "4500"
+}
