@@ -22,15 +22,14 @@
     "colorette": "^2.0.19",
     "cors": "^2.8.5",
     "diff": "^5.1.0",
-    "discord-api-types": "^0.28.0",
-    "discord.js": "^14.13.0",
-    "eris": "^0.16.1",
+    "discord.js": "^14.15.3",
     "express": "^4.18.2",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.1",
     "moment": "^2.29.4",
     "mongoose": "^6.2.10",
     "node-fetch": "^3.3.1",
-    "node-schedule": "^2.1.0"
+    "node-schedule": "^2.1.0",
+    "nvm": "^0.0.4"
   }
 }

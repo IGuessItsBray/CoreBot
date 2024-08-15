@@ -99,5 +99,6 @@ Support server: https://discord.gg/GAAj6DDrCJ
   const setPresence = require("./modules/setPresence");
   console.log(green("✅ setPresence │ setPresence online!"));
   setPresence(client);
+      require("./util/vars").shard = client.shard;
   
 });
