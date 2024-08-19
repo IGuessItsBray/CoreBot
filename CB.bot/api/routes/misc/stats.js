@@ -8,7 +8,7 @@ module.exports = async function (req, res) {
     const {
       getTotalMembers,
       findMessages,
-    } = require("../../../../CB.bot/db/dbProxy");
+    } = require("../../../db/dbProxy");
   const guilds = client.guilds.cache;
   const gsize = client.guilds.cache.size;
   const csize = client.channels.cache.size;

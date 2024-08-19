@@ -66,6 +66,7 @@ async function login(req, res) {
         res.status(401).redirect(`https://discord.com/oauth2/authorize?client_id=${urlClientId}&redirect_uri=${urlRedirect}&response_type=code&scope=${scope}`);
         return;
     }
+    console.log(redirect ?? REDIRECTURI)
 
     const resp = await axios.post('https://discord.com/api/oauth2/token',
         new URLSearchParams({

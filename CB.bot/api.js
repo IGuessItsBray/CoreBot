@@ -17,10 +17,10 @@ module.exports = { client };
 
 client.login(token);
 client.once("ready", async () => {
+
   require("./api/db/mongo").init();
   const req = require("express/lib/request");
   require("./api/express").init('4500');
-
   const g = "955230769939353623";
   const c = "1234488052005470331";
   const t = "1234490192438755338";

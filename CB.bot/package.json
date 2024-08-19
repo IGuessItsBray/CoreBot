@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "deploy": "node deploy-commands.js",
+    "api": "node api.js",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org corebot --project corebot-testing ../../../../../.. && sentry-cli sourcemaps upload --org corebot --project corebot-testing ../../../../../.."
   },
   "keywords": [],
