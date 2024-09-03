@@ -1,13 +1,8 @@
 ```txt
 V4 Roadmap;
 - Admin commands
- - Ability to edit About me through API
- - Mass message through admin command
  - Reset server config through commands
- - List servers
- - Leave servers
- - Get an invite to servers
- - Command for server staff to purge all user data
+ - Command for devs to purge all user data
 - Version tracker in about me/about command
 - Easy startup scripts
 - DASHBOARD COMPLETE
@@ -20,3 +15,11 @@ V4 Roadmap;
 - Audit log overhaul
 - Crosschat
 - Remove unneeded intents
+Proxy:
+- Replies: https://discord.com/channels/955230769939353623/1040353394163990628/1096449089278853290
+- Groups
+- Alt proxy tags: arrays??
+- Add context menu cmd for message lookup
+- Stats for proxy in grafana (members, msgs)
+
+-Error codes and err message for commands
