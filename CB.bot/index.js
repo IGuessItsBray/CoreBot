@@ -16,9 +16,9 @@ manager
 
     shards.forEach((shard) => {
       shard.on("message", (message) => {
-        console.log(
+        /* console.log(
           `Shard[${shard.id}] : ${message._eval} : ${message._result}`
-        );
+        ); */
       });
     });
   })

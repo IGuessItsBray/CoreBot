@@ -37,9 +37,7 @@ function initMongo(monitoring = true) {
 
 // Use the supplied connection info to create a connection
 function mongoConnect() {
-	mongoose.connect(MONGO, {
-		useNewUrlParser: true,
-	});
+  mongoose.connect(MONGO, {});
 }
 
 // Attach event listeners to the mongo connection

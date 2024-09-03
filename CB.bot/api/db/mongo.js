@@ -21,14 +21,14 @@ module.exports = {
 // Emmulate previous behaviour, no reason to be async other than
 // not wanting to change what already exists outside this file
 async function getMongo() {
-	return mongoose;
+  return mongoose;
 }
 
 // Initialize the mongo connection for the fist time,
 // 'monitoring' being false will not auto-reconnect on error.
 function initMongo(monitoring = true) {
-	if (monitoring) mongoListeners();
-	mongoConnect();
+  if (monitoring) mongoListeners();
+  mongoConnect();
 }
 
 // ------------------------------------------------------------------------------
@@ -37,9 +37,7 @@ function initMongo(monitoring = true) {
 
 // Use the supplied connection info to create a connection
 function mongoConnect() {
-	mongoose.connect(MONGO, {
-		useNewUrlParser: true,
-	});
+  mongoose.connect(MONGO, {});
 }
 
 // Attach event listeners to the mongo connection
