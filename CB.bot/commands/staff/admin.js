@@ -14,10 +14,18 @@ const {
   ChannelType,
   Shard,
 } = require("discord.js");
+const FormData = require("form-data");
+const axios = require("axios");
 const { OPTION } = require("../../util/enum").Types;
 const { paginateText } = require("../../util/pageinate");
 const cmdUtils = require("../../util/commandUtils");
 const { REST } = require("@discordjs/rest");
+const {
+  zipline_password,
+  zipline_token,
+  zipline_url,
+  zipline_token_staff_images,
+} = require("../../config.json");
 
 // ------------------------------------------------------------------------------
 // List servers
@@ -174,7 +182,6 @@ const massMessage = {
   },
 
   execute: async function (interaction, ephemeral = true) {
-
     const { shard } = require("../../util/vars");
 
     const message = interaction.options.getString("message");
@@ -183,45 +190,73 @@ const massMessage = {
 
     if (!check1 || !check2 || !message)
       return await interaction.editReply({ content: "Message not sent." });
-    const broadcast = shard.broadcastEval(async (client, { message, sender }) => {
-			const { PermissionFlagsBits: p } = require('discord.js')
-			const shardResult = client.guilds.cache.map(async guild => {
-				const me = guild.members.me;
+    const broadcast = shard.broadcastEval(
+      async (client, { message, sender }) => {
+        const { PermissionFlagsBits: p } = require("discord.js");
+        const shardResult = client.guilds.cache.map(async (guild) => {
+          const me = guild.members.me;
 
-				// const systemChannel = guild.systemChannel;
-				const safetyChannel = guild.safetyAlertsChannel;
-				const updatesChannel = guild.publicUpdatesChannel;
-				const widgetChannel = guild.widgetChannel;
-				const ownerChannel = await (await guild.fetchOwner()).createDM();
+          // const systemChannel = guild.systemChannel;
+          const safetyChannel = guild.safetyAlertsChannel;
+          const updatesChannel = guild.publicUpdatesChannel;
+          const widgetChannel = guild.widgetChannel;
+          const ownerChannel = await (await guild.fetchOwner()).createDM();
 
-				const signature = `\n-# This message was sent as an important broadcast to all servers, for the moderators of **${guild.name}** by CoreBot administrator ${sender}.\n-# Questions? Visit us at [CoreBot](https://discord.gg/PW7VzKtGSn)`;
-				const allowedMentions = { parse: [] };
+          const signature = `\n-# This message was sent as an important broadcast to all servers, for the moderators of **${guild.name}** by CoreBot administrator ${sender}.\n-# Questions? Visit us at [CoreBot](https://discord.gg/PW7VzKtGSn)`;
+          const allowedMentions = { parse: [] };
 
-				let channelToUse = undefined;
-				// if 		(systemChannel 	&& systemChannel?.viewable 	&& systemChannel.permissionsFor(me).has(p.SendMessages)) channelToUse = systemChannel;
-				if 		(safetyChannel 	&& safetyChannel?.viewable 	&& safetyChannel.permissionsFor(me).has(p.SendMessages)) channelToUse = safetyChannel;
-				else if (updatesChannel && updatesChannel?.viewable && updatesChannel.permissionsFor(me).has(p.SendMessages)) channelToUse = updatesChannel;
-				else if (widgetChannel 	&& widgetChannel?.viewable 	&& widgetChannel.permissionsFor(me).has(p.SendMessages)) channelToUse = widgetChannel;
-				else channelToUse = ownerChannel;
+          let channelToUse = undefined;
+          // if 		(systemChannel 	&& systemChannel?.viewable 	&& systemChannel.permissionsFor(me).has(p.SendMessages)) channelToUse = systemChannel;
+          if (
+            safetyChannel &&
+            safetyChannel?.viewable &&
+            safetyChannel.permissionsFor(me).has(p.SendMessages)
+          )
+            channelToUse = safetyChannel;
+          else if (
+            updatesChannel &&
+            updatesChannel?.viewable &&
+            updatesChannel.permissionsFor(me).has(p.SendMessages)
+          )
+            channelToUse = updatesChannel;
+          else if (
+            widgetChannel &&
+            widgetChannel?.viewable &&
+            widgetChannel.permissionsFor(me).has(p.SendMessages)
+          )
+            channelToUse = widgetChannel;
+          else channelToUse = ownerChannel;
 
-				try {
-					await channelToUse.send({ content: `${message.replaceAll('\\n','\n')}${signature}`, allowedMentions });
-					return { guild: { id: guild.id, name: guild.name}, success: true };
-				}
-				catch (e) {
-					return { guild: { id: guild.id, name: guild.name}, success: false, error: e };
-				}
-			})
-			return await Promise.all(shardResult);
-		}, { context: { message, sender: interaction.user.tag } });
+          try {
+            await channelToUse.send({
+              content: `${message.replaceAll("\\n", "\n")}${signature}`,
+              allowedMentions,
+            });
+            return { guild: { id: guild.id, name: guild.name }, success: true };
+          } catch (e) {
+            return {
+              guild: { id: guild.id, name: guild.name },
+              success: false,
+              error: e,
+            };
+          }
+        });
+        return await Promise.all(shardResult);
+      },
+      { context: { message, sender: interaction.user.tag } }
+    );
 
-		const result = [].concat(...await broadcast);
+    const result = [].concat(...(await broadcast));
 
-		await interaction.editReply({
-			content: `Message:\n\`\`\`md\n${message.replaceAll('\\n','\n')}\`\`\`\nSent: \`${result.filter(r => r.success).length}\`\nErrors: \`${result.filter(r => !r.success).length}\``,
-		});
-	},
-  
+    await interaction.editReply({
+      content: `Message:\n\`\`\`md\n${message.replaceAll(
+        "\\n",
+        "\n"
+      )}\`\`\`\nSent: \`${
+        result.filter((r) => r.success).length
+      }\`\nErrors: \`${result.filter((r) => !r.success).length}\``,
+    });
+  },
 };
 
 // ------------------------------------------------------------------------------
@@ -278,21 +313,69 @@ const leaveServer = {
   },
 
   execute: async function (interaction, ephemeral = true) {
-    		const { shard } = require("../../util/vars");
-    const ID = interaction.options.getString("server");
-    const guild = [].concat(...await shard.fetchClientValues('guilds.cache')).map(g)
-const fetchedGuild = guild.find(g => g.id = ID)
-console.log(fetchedGuild)
-				const broadcast = await shard.broadcastEval(async (client, { guildId }) => {
-					const guild = client.guilds.cache.get(guildId);
-					if (!guild) return undefined;
-					//return await guild.leave();
-				}, { context: { guildId: fetchedGuild } })
-				const result = (await broadcast).find(res => res);
-				const content = result ?
-					`Successfully left ${fetchedGuild.name} (\`${fetchedGuild.id}\`)` :
-					`Could not leave ${fetchedGuild?.name ?? ID}. Guild was not found.`;
-				await interaction.editReply({ content, ephemeral });
+    const { shard } = require("../../util/vars");
+    const guildOption = interaction.options.getString("server");
+    const fetchedGuild = []
+      .concat(...(await shard.fetchClientValues("guilds.cache")))
+      .find((g) => g.id === guildOption);
+    const broadcast = await shard.broadcastEval(
+      async (client, { guildId }) => {
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) return undefined;
+        return await guild.leave();
+      },
+      { context: { guildId: fetchedGuild.id } }
+    );
+    const result = (await broadcast).find((res) => res);
+    const content = result
+      ? `Successfully left ${fetchedGuild.name} (\`${fetchedGuild.id}\`)`
+      : `Could not leave ${
+          fetchedGuild?.name ?? guildOption
+        }. Guild was not found.`;
+    await interaction.editReply({ content, ephemeral });
+  },
+};
+
+// ------------------------------------------------------------------------------
+// Remove user data
+// ------------------------------------------------------------------------------
+
+const uploadPhoto = {
+  options: {
+    name: "uploadphoto",
+    description: "Upload a photo to the zipline staff image share",
+    type: OPTION.SUB_COMMAND,
+    options: [
+      {
+        name: "photo",
+        description: "The avatar to upload to the server",
+        type: OPTION.ATTACHMENT,
+        required: true,
+      },
+    ],
+  },
+
+  execute: async function (interaction, ephemeral = true) {
+    const client = interaction.client;
+
+    const attachment = interaction.options.getAttachment("photo");
+    if (!isAllowedAttachment(attachment))
+      return await interaction.editReply({
+        content: "Invalid attachment type. Attachments must be jpg, png, jpeg or gif file formats.",
+        ephemeral,
+      });
+    const { _fullResponse, uploadUrl } = await uploadAttachment(attachment.url);
+    if (!uploadUrl)
+      return await interaction.editReply({
+        content: "Failed to upload attachment. This could be due to an error with the bot's image CDN or with the discord CDN.",
+        ephemeral,
+      });
+    // add the file to the database, send a message, whatever on success
+    await interaction.editReply({
+      content: `\`\`\`json\n${JSON.stringify(_fullResponse, null, 2)}\n\`\`\``,
+      ephemeral,
+    });
+    await interaction.followUp({ content: uploadUrl, ephemeral });
   },
 };
 
@@ -321,6 +404,7 @@ module.exports = {
     resetServerConfig.options,
     removeUSerData.options,
     massMessage.options,
+    uploadPhoto.options,
   ],
 
   // ------------------------------------------------------------------------------
@@ -354,6 +438,51 @@ module.exports = {
         await interaction.deferReply({ ephemeral });
         massMessage.execute(interaction);
         break;
+      case uploadPhoto.options.name:
+        await interaction.deferReply({ ephemeral });
+        uploadPhoto.execute(interaction);
+        break;
     }
   },
 };
+
+// ------------------------------------------------------------------------------
+// Functions
+// ------------------------------------------------------------------------------
+
+function isAllowedAttachment(attachment) {
+  const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+  return ALLOWED_TYPES.includes(attachment?.contentType ?? "unknown");
+}
+async function uploadAttachment(url) {
+  const zipine_url = zipline_url;
+  const zipline_token = zipline_token_staff_images;
+
+  let _fullResponse = undefined;
+  let uploadUrl = undefined;
+
+  try {
+    const { data: imageStream } = await axios.get(url, {
+      responseType: "stream",
+    });
+
+    // create a form with the file
+    const form = new FormData();
+    form.append("file", imageStream, { filename: "image.jpg" });
+
+    // upload the file with axios
+    const res = await axios.post(zipine_url, form, {
+      headers: {
+        Authorization: zipline_token_staff_images,
+        ...form.getHeaders(),
+      },
+    });
+
+    _fullResponse = res.data;
+    uploadUrl = res.data.files[0];
+  } catch (e) {
+    console.error(e?.message);
+  }
+
+  return { _fullResponse, uploadUrl };
+}
