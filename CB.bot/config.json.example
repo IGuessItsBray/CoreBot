@@ -1,11 +1,11 @@
 {
   "token": "",
   "clientId": "",
-  "clientSecret": "",
+  "clientSecret": "-",
   "guildId": "",
   "CHANNELID": "",
   "MONGO": "",
-  "HOME": "", (DEV SERVER ID)
+  "HOME": "", (Development server)
   "SELF": "", (BOT ID)
   "PROXYAVATARSTORAGE": "",
   "PKTOKEN": "",
@@ -25,11 +25,19 @@
   "API": {
     "CLIENTID": "",
     "CLIENTSECRET": "-",
-    "REDIRECTURI": "",
+    "REDIRECTURI": "http://localhost:3001/api/auth",
     "TOKEN_SECRET": ""
   },
   "statip": "localhost",
   "statport": "4505",
   "apiip": "localhost",
-  "apiport": "4500"
+  "apiport": "4500",
+  "CLIENTID": "",
+  "CLIENTSECRET": "-",
+  "REDIRECTURI": "http://localhost:3001/api/auth",
+  "TOKEN_SECRET": "",
+  "zipline_password": "",
+  "zipline_token_staff_images": "",
+  "zipline_token_testing": "",
+  "zipline_url": ""
 }

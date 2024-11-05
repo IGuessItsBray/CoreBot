@@ -268,11 +268,21 @@ const removeUSerData = {
     name: "ruserdata",
     description: "Remove data on a specified user",
     type: OPTION.SUB_COMMAND,
-    options: [],
+    options: [
+      {
+        name: "id",
+        description: "The ID of the user to remove data for",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      },
+    ],
   },
 
   execute: async function (interaction) {
-    await interaction.reply();
+    const client = interaction.client;
+    const id = interaction.options.getString("id");
+    const user = await interaction.user.fetch(id);
+    console.log(user);
   },
 };
 
@@ -337,7 +347,7 @@ const leaveServer = {
 };
 
 // ------------------------------------------------------------------------------
-// Remove user data
+// Upload Photos
 // ------------------------------------------------------------------------------
 
 const uploadPhoto = {
@@ -361,13 +371,15 @@ const uploadPhoto = {
     const attachment = interaction.options.getAttachment("photo");
     if (!isAllowedAttachment(attachment))
       return await interaction.editReply({
-        content: "Invalid attachment type. Attachments must be jpg, png, jpeg or gif file formats.",
+        content:
+          "Invalid attachment type. Attachments must be jpg, png, jpeg or gif file formats.",
         ephemeral,
       });
     const { _fullResponse, uploadUrl } = await uploadAttachment(attachment.url);
     if (!uploadUrl)
       return await interaction.editReply({
-        content: "Failed to upload attachment. This could be due to an error with the bot's image CDN or with the discord CDN.",
+        content:
+          "Failed to upload attachment. This could be due to an error with the bot's image CDN or with the discord CDN.",
         ephemeral,
       });
     // add the file to the database, send a message, whatever on success

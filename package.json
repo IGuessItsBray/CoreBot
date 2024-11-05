@@ -1,0 +1,46 @@
+{
+  "name": "corebot",
+  "version": "4.0.0",
+  "description": "CoreBot is a multi-function discord moderation bot.",
+  "main": "index.js",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "@discordjs/voice": "github:discordjs/voice",
+    "@sentry/cli": "^2.32.0",
+    "@sentry/node": "^8.5.0",
+    "@sentry/profiling-node": "^8.5.0",
+    "axios": "^0.27.2",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "colorette": "^2.0.19",
+    "cors": "^2.8.5",
+    "diff": "^5.1.0",
+    "discord.js": "^14.15.3",
+    "djs": "^0.0.2",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.1",
+    "moment": "^2.29.4",
+    "mongoose": "^6.2.10",
+    "node-fetch": "^3.3.1",
+    "node-schedule": "^2.1.0",
+    "nvm": "^0.0.4"
+  },
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IGuessItsBray/CoreBot.git#main"
+  },
+  "keywords": [
+    "Discord"
+  ],
+  "author": "Bray",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IGuessItsBray/CoreBot/issues"
+  },
+  "homepage": "https://github.com/IGuessItsBray/CoreBot/tree/main#readme"
+}

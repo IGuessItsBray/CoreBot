@@ -119,7 +119,7 @@ module.exports = {
             }).filter(m => m.name.toLowerCase().includes(focusedValue.toLowerCase()));
             await interaction.respond(membersMapped.slice(0, 25))
         }
-         if (interaction.commandName === "addtogroup") {
+        /*  if (interaction.commandName === "addtogroup") {
            const members = await getMembers(owner);
            const membersMapped = members
              .map((m) => {
@@ -133,6 +133,20 @@ module.exports = {
              );
            await interaction.respond(membersMapped.slice(0, 25));
          }
+          if (interaction.commandName === "addtogroup") {
+            const groups = await getGroups(owner);
+            const groupsMapped = groups
+              .map((g) => {
+                return {
+                  name: g.name.slice(0, 30),
+                  value: g._id,
+                };
+              })
+              .filter((m) =>
+                m.name.toLowerCase().includes(focusedValue.toLowerCase())
+              );
+            await interaction.respond(groupsMapped.slice(0, 25));
+          } */
                   if (interaction.commandName === "getgroupmembers") {
                     const groups = await getGroups(owner);
                     const groupsMapped = groups
@@ -149,6 +163,7 @@ module.exports = {
                       );
                     await interaction.respond(groupsMapped.slice(0, 25));
                   }
+                 
     },
 
     // ------------------------------------------------------------------------------

@@ -61,8 +61,6 @@ module.exports = {
 
   async execute(interaction, client, ephemeral = true) {
     const config = require("../../util/localStorage");
-    const { PROXYAVATARSTORAGE: c } = require("../../util/localStorage").config;
-    const channel = await interaction.client.channels.fetch(c);
     const _id = interaction.options.getString("member");
     const attachment = interaction.options.getAttachment("avatar");
     if (!isAllowedAttachment(attachment))
@@ -121,7 +119,7 @@ async function uploadAttachment(url) {
     // upload the file with axios
     const res = await axios.post(zipine_url, form, {
       headers: {
-        Authorization: zipline_token_staff_images,
+        Authorization: zipline_token_testing,
         ...form.getHeaders(),
       },
     });

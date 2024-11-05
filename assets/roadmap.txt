@@ -3,23 +3,34 @@ V4 Roadmap;
 - Admin commands
  - Reset server config through commands
  - Command for devs to purge all user data
+ - Wipe DB command (pass protected)
 - Version tracker in about me/about command
 - Easy startup scripts
 - DASHBOARD COMPLETE
 - API COMPLETE
-- Proxy additions
- - Autoproxy
- - Editing members
- - Better imports/exports
+
 - ChatGPT commands
 - Audit log overhaul
 - Crosschat
 - Remove unneeded intents
 Proxy:
-- Replies: https://discord.com/channels/955230769939353623/1040353394163990628/1096449089278853290
 - Groups
 - Alt proxy tags: arrays??
 - Add context menu cmd for message lookup
 - Stats for proxy in grafana (members, msgs)
+ - Autoproxy
+ - Editing members
+ - Better imports/exports
 
 -Error codes and err message for commands
+
+
+Options in dash
+Audit logs
+Cross chat 
+Error handling/codes
+finish adding admin commands
+Fix user info and user info messages (per server)
+Setup way to parse user info/server config
+Auto purge server config on leave
+Logs for server join/leave
