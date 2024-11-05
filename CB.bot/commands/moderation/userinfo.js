@@ -42,7 +42,7 @@ module.exports = {
       choices: [
         { name: "General", value: "gen" },
         { name: "Messages", value: "msg" },
-        //{ name: "Punishments", value: "pun" },
+        { name: "Punishments", value: "pun" },
       ],
       required: true,
     },
@@ -116,7 +116,12 @@ module.exports = {
           tester: hasTesterRole,
         };
       },
-      { context: { homeGuild: `955230769939353623`, targetUser: selectedUser.id } }
+      {
+        context: {
+          homeGuild: `955230769939353623`,
+          targetUser: selectedUser.id,
+        },
+      }
     );
     const result = [].concat(await broadcast).find((obj) => obj);
     // destructuring the result object, each will be true or false
@@ -183,7 +188,7 @@ module.exports = {
               inline: true,
             },
             { name: `Badges`, value: `${flagString}` },
-            { name: `Characters`, value: `${characters}`, inline: true },
+            { name: `Characters`, value: `${characters ?? 0}`, inline: true },
             { name: `Messages`, value: `${messages}`, inline: true }
           );
 
@@ -249,7 +254,7 @@ module.exports = {
               inline: true,
             },
             { name: `Badges`, value: `${flagString}` },
-            { name: `Characters`, value: `${characters}`, inline: true },
+            { name: `Characters`, value: `${characters ?? 0}`, inline: true },
             { name: `Messages`, value: `${messages}`, inline: true }
           );
 
@@ -267,7 +272,10 @@ module.exports = {
         .setDescription(`Messages from ${selectedUser}`)
         .setFooter({ text: "Corebot" })
         .setTimestamp();
-      const messages = await findMessageLog(selectedUser.id, interaction.guild.id);
+      const messages = await findMessageLog(
+        selectedUser.id,
+        interaction.guild.id
+      );
       const messagesFormatted = messages.map(
         (m) =>
           `${m.timestamp.toLocaleString()} #${
@@ -295,7 +303,8 @@ module.exports = {
       const punishments = await getPunishments(selectedUser.id);
       const punishmentsFormatted = punishments.map(
         (p) =>
-          `${p.type}: Message: ${p.message.replaceAll("\n", " ")}
+          `Type: ${p.type} 
+        Message: ${p.message.replaceAll("\n", " ")}
 Action taken by: ${interaction.client.users.resolve(p.staffUser)?.tag ?? id}`
       );
       console.log(punishments);
