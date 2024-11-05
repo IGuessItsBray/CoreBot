@@ -212,11 +212,12 @@ async function setDeletedMessageLog(messageObj) {
     }
   });
 }
-async function findMessageLog(user) {
+async function findMessageLog(user, guild) {
   return await mongo().then(async () => {
     try {
       return await messageCreateSchema.find({
         user: user,
+        guild: guild
       });
     } catch (e) {
       console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
@@ -235,7 +236,7 @@ async function findMessages(user) {
 }
 
 async function purgeUserInfo(user) {
-  owner = user;
+  let owner = user;
   return await mongo().then(async () => {
     try {
       await messageCreateSchema.deleteMany({ user: user });
