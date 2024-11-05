@@ -5,7 +5,7 @@ const {
   ApplicationCommandType,
   ApplicationCommandOptionType,
 } = require("discord.js");
-const { getVerifyConfig } = require("../../db/dbAccess");
+const { getServerSettings } = require("../../db/dbAccess");
 const { COMMAND, OPTION, CHANNEL } = require("../../util/enum").Types;
 module.exports = {
   // ------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ module.exports = {
 
   async execute(interaction, ephemeral = true) {
     const guildId = interaction.guild.id;
-    const verify = await getVerifyConfig(guildId);
+    const verify = await getServerSettings(guildId);
     const pass = interaction.options.getString("password");
     if (verify.password == pass) {
       interaction.member.roles.add(verify.addRole);

@@ -86,7 +86,8 @@ const setCcChannel = {
     const channelId = interaction.options.getChannel("channel").id;
     const name = interaction.guild.name;
     const guildId = interaction.guild.id;
-    const webhook = await channel.createWebhook("CoreBot | CrossChat", {
+    const webhook = await channel.createWebhook({
+      name: "CoreBot | CrossChat",
       avatar:
         "https://cdn.discordapp.com/attachments/968344820970029136/1014940658009653248/Screen_Shot_2022-04-07_at_3.51.20_PM.png",
     });

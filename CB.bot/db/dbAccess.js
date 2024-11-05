@@ -19,12 +19,16 @@ const userDataSchema = require("./schemas/userDataSchema");
 const punishmentSchema = require("./schemas/punishmentSchema");
 const mmSchema = require("./schemas/modMailSchema");
 const userMmSchema = require("./schemas/userMmSchema");
+const crosschatSchema = require("./schemas/crossChatSchema");
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
 
 module.exports = {
   getServerSettings,
+  getManyServerSettings,
+  setCrossChatChannel,
+  getCrossChatChannel,
   //----
   //Logs
   //----
@@ -81,7 +85,7 @@ module.exports = {
   deleteMmInfo,
 
   setJoin,
-  setLeave
+  setLeave,
 };
 
 // ------------------------------------------------------------------------------
@@ -112,6 +116,16 @@ async function getServerSettings(guildId) {
   return await mongo().then(async () => {
     try {
       return await serverSettingsSchema.findOne({ _id: guildId });
+    } catch (e) {
+      console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function getManyServerSettings() {
+  return await mongo().then(async () => {
+    try {
+      return await serverSettingsSchema.find({});
     } catch (e) {
       console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
     }
@@ -240,24 +254,37 @@ async function setVerifyChannel(guildId, channel, name) {
   });
 }
 
+
 //Crosschat
-async function setCrossChatChannel(guildId, channel, whId, whToken, name) {
-  return await mongo().then(async () => {
-    try {
-      return await serverSettingsSchema.findOneAndUpdate(
-        { _id: guildId },
-        {
-          ccChannelId: channel,
-          webhookId: whId,
-          webhookToken: whToken,
-          name: name,
-        },
-        { new: true, upsert: true }
-      );
-    } catch (e) {
-      console.error(`dbAccess: ${e}`);
-    }
-  });
+async function setCrossChatChannel(guildId, channel, whId, whToken) {
+	return await mongo().then(async () => {
+		try {
+			return await crosschatSchema.findOneAndUpdate(
+				{
+					guildId: guildId,
+				},
+				{
+					channelId: channel,
+					webhookId: whId,
+					webhookToken: whToken,
+				},
+				{ new: true, upsert: true },
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getCrossChatChannel() {
+	return await mongo().then(async () => {
+		try {
+			return await crosschatSchema.find({});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
 
 //Reporting 
