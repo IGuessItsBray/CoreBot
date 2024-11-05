@@ -105,7 +105,7 @@ module.exports = {
         const hasDevRole = member.roles.cache.has("968346275881832569");
         const hasNetworkAdminRole =
           member.roles.cache.has("990956030290718751");
-        const hasTesterRole = member.roles.cache.has("1022142081323511899");
+        const hasTesterRole = member.roles.cache.has("1303379378377326602");
 
         // Return the member's notable roles & debug info
         return {
@@ -116,7 +116,7 @@ module.exports = {
           tester: hasTesterRole,
         };
       },
-      { context: { homeGuild: `955230769939353623`, targetUser: user } }
+      { context: { homeGuild: `955230769939353623`, targetUser: selectedUser.id } }
     );
     const result = [].concat(await broadcast).find((obj) => obj);
     // destructuring the result object, each will be true or false
@@ -125,7 +125,7 @@ module.exports = {
     const guild = interaction.guild;
     if (type === "gen") {
       if (id === "950525282434048031") {
-        const target = await interaction.guild.members.fetch(user);
+        const target = await interaction.guild.members.fetch(selectedUser);
         const flags = target.user?.flags?.toArray() ?? [];
         let flagString = "";
         if (dev == true) {
@@ -192,9 +192,8 @@ module.exports = {
           ephemeral: ephemeralSetting,
         });
       } else if (id !== "950525282434048031") {
-        const target = await interaction.guild.members.fetch(user);
+        const target = await interaction.guild.members.fetch(selectedUser);
         const flags = target.user?.flags?.toArray() ?? [];
-        console.log(dev);
         let flagString = "";
         if (dev == true) {
           flagString += "<:CBDeveloper:1012934220030693376>";
@@ -260,7 +259,6 @@ module.exports = {
         });
       }
     } else if (type === "msg") {
-      //console.log(messages)
       const embed = new EmbedBuilder()
         .setColor("#2f3136")
         .setAuthor({

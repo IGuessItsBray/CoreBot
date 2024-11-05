@@ -1,5 +1,5 @@
 const { PermissionFlagsBits, ButtonStyle, ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
-const { COMMAND, OPTION, CHANNEL } = require ('../../util/enum').Types;
+const { COMMAND, OPTION, CHANNEL } = require ('../util/enum').Types;
 module.exports = {
 
     // ------------------------------------------------------------------------------
