@@ -16,6 +16,7 @@ const logSchema = require("./schemas/logSchema");
 const proxyGroupSchema = require("./schemas/proxyGroupSchema");
 const proxyMsgCreateSchema = require("./schemas/proxyMsgCreateSchema");
 const userDataSchema = require("./schemas/userDataSchema");
+const punishmentSchema = require("./schemas/punishmentSchema");
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -39,6 +40,8 @@ module.exports = {
   findMessageLog,
   findMessages,
   purgeUserInfo,
+  addPunishments,
+  getPunishments,
 
   //----
   //Guild Tracking
@@ -110,6 +113,42 @@ async function getTboxContent(guild) {
       console.error(`Mongo:\tdbAccess: ${arguments.callee.name}: ${e}`);
     }
   });
+}
+
+//-----------
+//Punishment Tracking
+//-----------
+async function addPunishments(guild, user, type, message, timestamp, staffUser) {
+	return await mongo().then(async () => {
+		try {
+			return await punishmentSchema.create(
+				{
+					guild: guild,
+					user: user,
+					type: type,
+					message: message,
+					timestamp: timestamp,
+					staffUser: staffUser
+				},
+			);
+		}
+		catch (e) {
+			console.error(`dbAccess: ${e}`);
+		}
+	});
+}
+async function getPunishments(user) {
+	return await mongo().then(async () => {
+		try {
+			return await punishmentSchema.find({
+				//guild: guild,
+				user: user,
+			});
+		}
+		catch (e) {
+			console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+		}
+	});
 }
 
 //-------------------------------

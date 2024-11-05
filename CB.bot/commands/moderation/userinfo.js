@@ -283,16 +283,16 @@ module.exports = {
         files: [file],
         ephemeral: ephemeralSetting,
       });
-    } /* else if (type === "pun") {
-      const embed = new MessageEmbed()
+    } else if (type === "pun") {
+      const embed = new EmbedBuilder()
         .setColor("#2f3136")
         .setAuthor({
-          name: `${user.user.username}#${user.user.discriminator}'s messages`,
+          name: `${selectedUser.user.username}'s punishments`,
         })
-        .setDescription(`Punishments for ${user}`)
+        .setDescription(`Punishments for ${selectedUser}`)
         .setFooter({ text: "Corebot" })
         .setTimestamp();
-      const punishments = await getPunishments(user.id);
+      const punishments = await getPunishments(selectedUser.id);
       const punishmentsFormatted = punishments.map(
         (p) =>
           `${p.type}: Message: ${p.message.replaceAll("\n", " ")}
@@ -301,14 +301,14 @@ Action taken by: ${interaction.client.users.resolve(p.staffUser)?.tag ?? id}`
       console.log(punishments);
       const file = new AttachmentBuilder(
         Buffer.from(punishmentsFormatted.join("\n")),
-        `FETCHED-PUNISHMENTS.txt`
+        { name: `${selectedUser.username}s punishments.txt` }
       );
       await interaction.reply({
         embeds: [embed],
         files: [file],
         ephemeral: ephemeralSetting,
       });
-    } */
+    }
   },
 
   // ------------------------------------------------------------------------------
