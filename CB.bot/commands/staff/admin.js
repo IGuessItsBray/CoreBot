@@ -5,6 +5,7 @@ const {
   ButtonStyle,
   ApplicationCommandType,
   ApplicationCommandOptionType,
+  AttachmentBuilder,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -18,6 +19,11 @@ const FormData = require("form-data");
 const axios = require("axios");
 const { OPTION } = require("../../util/enum").Types;
 const { paginateText } = require("../../util/pageinate");
+const {
+  getMasterLogs,
+  purgeGuildConfig,
+  purgeUserInfo,
+} = require("../../db/dbAccess");
 const cmdUtils = require("../../util/commandUtils");
 const { REST } = require("@discordjs/rest");
 const {
@@ -95,6 +101,12 @@ const listServers = {
       };
     });
     await paginateText(interaction, pages, false);
+    const { addMasterLog } = require("../../db/dbAccess");
+    await addMasterLog(
+      `A list of all servers was listed by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
   },
 };
 
@@ -145,6 +157,12 @@ const editAboutMe = {
           .catch(console.error);
         await interaction.reply(`Bot about me set to:
 ${aboutMe}`);
+        const { addMasterLog } = require("../../db/dbAccess");
+        await addMasterLog(
+          `About me was changed to "${aboutMe}" by ${
+            interaction.user.nickname ?? interaction.user.username
+          } (${interaction.user.id})`
+        );
       }
     });
   },
@@ -256,6 +274,12 @@ const massMessage = {
         result.filter((r) => r.success).length
       }\`\nErrors: \`${result.filter((r) => !r.success).length}\``,
     });
+    const { addMasterLog } = require("../../db/dbAccess");
+    await addMasterLog(
+      `Mass Message "${message}" was sent to all servers by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
   },
 };
 
@@ -278,11 +302,21 @@ const removeUSerData = {
     ],
   },
 
-  execute: async function (interaction) {
+  execute: async function (interaction, ephemeral = true) {
+    const { addMasterLog } = require("../../db/dbAccess");
     const client = interaction.client;
     const id = interaction.options.getString("id");
-    const user = await interaction.user.fetch(id);
-    console.log(user);
+    const user = await interaction.client.users.fetch(id);
+    await purgeUserInfo(user.id);
+    const content = user
+      ? `Successfully deleted ${user.username}'s data (\`${user.id}\`) This includes messages, proxies and all other data stored in our Database.`
+      : `Could not delete ${user?.username ?? id}'s data. User was not found.`;
+    await addMasterLog(
+      `User Data for ${user.username} (${user.id}) was cleared by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
+    await interaction.editReply({ content, ephemeral });
   },
 };
 
@@ -295,11 +329,37 @@ const resetServerConfig = {
     name: "rserverconfig",
     description: "Reset the config of a specified server",
     type: OPTION.SUB_COMMAND,
-    options: [],
+    options: [
+      {
+        name: "guild",
+        description: "The server to purge config for",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+      },
+    ],
   },
 
-  execute: async function (interaction) {
-    await interaction.reply();
+  execute: async function (interaction, ephemeral = true) {
+    const { purgeGuildConfig, addMasterLog } = require("../../db/dbAccess");
+    const { shard } = require("../../util/vars");
+    const guildOption = interaction.options.getString("guild");
+    const fetchedGuild = []
+      .concat(...(await shard.fetchClientValues("guilds.cache")))
+      .find((g) => g.id === guildOption);
+    await purgeGuildConfig(fetchedGuild.id);
+    const content = fetchedGuild
+      ? `Successfully deleted ${fetchedGuild.name}'s server config! (\`${fetchedGuild.id}\`)`
+      : `Could not delete ${
+          fetchedGuild?.name ?? guildOption
+        }'s config. Guild was not found.`;
+    await addMasterLog(
+      `Guild config for ${fetchedGuild.name} (${
+        fetchedGuild.id
+      }) was cleared by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
+    await interaction.editReply({ content, ephemeral });
   },
 };
 
@@ -338,11 +398,17 @@ const leaveServer = {
     );
     const result = (await broadcast).find((res) => res);
     const content = result
-      ? `Successfully left ${fetchedGuild.name} (\`${fetchedGuild.id}\`)`
+      ? `Successfully left ${fetchedGuild.name} (${fetchedGuild.id})`
       : `Could not leave ${
           fetchedGuild?.name ?? guildOption
         }. Guild was not found.`;
     await interaction.editReply({ content, ephemeral });
+    const { addMasterLog } = require("../../db/dbAccess");
+    await addMasterLog(
+      `Guild ${fetchedGuild.name} (\`${fetchedGuild.id}\`) was force-left by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
   },
 };
 
@@ -388,6 +454,59 @@ const uploadPhoto = {
       ephemeral,
     });
     await interaction.followUp({ content: uploadUrl, ephemeral });
+    const { addMasterLog } = require("../../db/dbAccess");
+    await addMasterLog(
+      `Photo was uploaded to the Staff zipline ${uploadUrl} by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
+  },
+};
+
+// ------------------------------------------------------------------------------
+// Get logs
+// ------------------------------------------------------------------------------
+
+const logCheck = {
+  options: {
+    name: "logs",
+    description: "Show the last 50 logs from the bot",
+    type: OPTION.SUB_COMMAND,
+    options: [],
+  },
+
+  execute: async function (interaction, ephemeral = true) {
+    const client = interaction.client;
+    let logcount = undefined;
+    logcount = 50;
+    await interaction.deferReply({ ephemeral });
+    const logs = await getMasterLogs(logcount);
+    const logStrings = [];
+    logs.forEach(
+      (log) =>
+        (log.message = log.message
+          .replaceAll("\n", " ")
+          .replaceAll(/(?:\w) - /gi, ", ")
+          .replaceAll(" - ", " "))
+    );
+    logs.forEach((log) =>
+      logStrings.push(`${log.time.toISOString().padEnd(25, " ")}${log.message}`)
+    );
+    const file = new AttachmentBuilder(
+      Buffer.from(logStrings.join("\n") ?? "NO LOGS"),
+      {
+        name: `${interaction.client.user.username
+          .replaceAll(" ", "-")
+          .toUpperCase()}-${logcount}LOGS-${new Date().getTime()}.txt`,
+      }
+    );
+    await interaction.editReply({ files: [file] });
+    const { addMasterLog } = require("../../db/dbAccess");
+    await addMasterLog(
+      `Logs were checked by ${
+        interaction.user.nickname ?? interaction.user.username
+      } (${interaction.user.id})`
+    );
   },
 };
 
@@ -417,6 +536,7 @@ module.exports = {
     removeUSerData.options,
     massMessage.options,
     uploadPhoto.options,
+    logCheck.options,
   ],
 
   // ------------------------------------------------------------------------------
@@ -429,6 +549,9 @@ module.exports = {
     switch (interaction.options.getSubcommand()) {
       case listServers.options.name:
         listServers.execute(interaction);
+        break;
+      case logCheck.options.name:
+        logCheck.execute(interaction);
         break;
       case editAboutMe.options.name:
         //await interaction.deferReply({ ephemeral });

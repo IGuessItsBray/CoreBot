@@ -12,6 +12,10 @@ const userCountsSchema = require("./schemas/userCountsSchema");
 const messageCreateSchema = require("./schemas/messageCreateSchema");
 const userData = require("./schemas/userDataSchema");
 const proxySchema = require("./schemas/proxySchema");
+const logSchema = require("./schemas/logSchema");
+const proxyGroupSchema = require("./schemas/proxyGroupSchema");
+const proxyMsgCreateSchema = require("./schemas/proxyMsgCreateSchema");
+const userDataSchema = require("./schemas/userDataSchema");
 // ------------------------------------------------------------------------------
 // Function + Prop Exports
 // ------------------------------------------------------------------------------
@@ -34,6 +38,14 @@ module.exports = {
   setDeletedMessageLog,
   findMessageLog,
   findMessages,
+  purgeUserInfo,
+
+  //----
+  //Guild Tracking
+  //----
+  purgeGuildConfig,
+  addMasterLog,
+  getMasterLogs,
 };
 
 // ------------------------------------------------------------------------------
@@ -216,6 +228,59 @@ async function findMessages(user) {
   return await mongo().then(async () => {
     try {
       return await messageCreateSchema.find({});
+    } catch (e) {
+      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function purgeUserInfo(user) {
+  owner = user;
+  return await mongo().then(async () => {
+    try {
+      await messageCreateSchema.deleteMany({ user: user });
+      await proxyGroupSchema.deleteMany({ owner: owner });
+      await proxySchema.deleteMany({ owner: owner });
+      await userCountsSchema.deleteMany({ user: user });
+      await userDataSchema.deleteMany({ user: user });
+    } catch (e) {
+      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+//-------------------------------
+//Guild Logging
+//-------------------------------
+
+async function purgeGuildConfig(guildId) {
+  return await mongo().then(async () => {
+    try {
+      return await serverSettingsSchema.deleteMany({ _id: guildId });
+    } catch (e) {
+      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+async function addMasterLog(message) {
+  return await mongo().then(async () => {
+    try {
+      return await logSchema.create({
+        time: new Date(),
+        message,
+      });
+    } catch (e) {
+      console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
+    }
+  });
+}
+
+// get x number of most recent logs, all logs if x is not specified
+async function getMasterLogs(x) {
+  return await mongo().then(async () => {
+    try {
+      return (await logSchema.find().sort({ time: -1 }).limit(x)) ?? [];
     } catch (e) {
       console.error(`dbAccess: ${arguments.callee.name}: ${e}`);
     }

@@ -1,11 +1,8 @@
 ```txt
 V4 Roadmap;
 - Admin commands
- - Reset server config through commands
  - Command for devs to purge all user data
- - Wipe DB command (pass protected)
 - Version tracker in about me/about command
-- Easy startup scripts
 - DASHBOARD COMPLETE
 - API COMPLETE
 
@@ -31,6 +28,4 @@ Cross chat
 Error handling/codes
 finish adding admin commands
 Fix user info and user info messages (per server)
-Setup way to parse user info/server config
-Auto purge server config on leave
-Logs for server join/leave
+Setup way to parse user info
