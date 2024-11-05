@@ -79,6 +79,9 @@ module.exports = {
   setMmInfo,
   getMmInfo,
   deleteMmInfo,
+
+  setJoin,
+  setLeave
 };
 
 // ------------------------------------------------------------------------------
