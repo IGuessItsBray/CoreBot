@@ -3,9 +3,10 @@
 // Initializes commands and loads them into the client
 // ------------------------------------------------------------------------------
 
-const { Collection, InteractionType } = require('discord.js');
-const cmdUtils = require('../util/commandUtils');
-const { blue, bold, underline, yellow, red, green } = require('colorette');
+const { Collection, InteractionType } = require("discord.js");
+const cmdUtils = require("../util/commandUtils");
+const { addException } = require("../db/dbAccess");
+const { blue, bold, underline, yellow, red, green } = require("colorette");
 require("../modules/instrument");
 const Sentry = require("@sentry/node");
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
 // ------------------------------------------------------------------------------
 
 function init(client) {
-	const { 
+	const {
 		helpCommands,
 		miscCommands,
 		modCommands,
@@ -31,40 +32,61 @@ function init(client) {
 		...modCommands,
 		...proxyCommands,
 		...mmCommands,
-		...privateCommands
+		...privateCommands,
 	]) {
 		if (!command.enabled) continue;
 		client.commands[command.name] = command;
 	}
 
-	client.on('interactionCreate', async interaction => {
+	client.on("interactionCreate", async (interaction) => {
 		if (interaction.type !== InteractionType.ApplicationCommand) return;
 
 		const guild = interaction.guild;
 		const user = interaction.user;
-		const channel = interaction.channel
+		const type = "Command"
 		const subcommand = interaction.options._subcommand ?? '';
+		const group = interaction.options._group ?? '';
+		const options = (subcommand || group ? interaction.options.data[0].options : interaction.options.data)
+			.map(option => `${option.name}:${option.value}`).join(' ');
 
+		const logPrefix = `${client.shard.ids[0] + 1}-${guild.id}-${user.id}`;
+		const logCommand = `${interaction.commandName}${group ? ` ${group} ` : ''}${subcommand} ${options ? `${options} ` : ''}`;
 		try {
-			if (interaction.channel.type == "DM") {
-				console.log(green(`DM: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`))
-			}
-			else {
-				console.log(green(`${guild.name} | ${channel.name}: ${user.tag}: Executed ${interaction.commandName} ${subcommand}`));
-				await client
-					.commands[interaction.commandName]
-					.execute(interaction);
-			}
+			console.log(`${logPrefix}: /${logCommand}`);
+			await client
+				.commands[interaction.commandName]
+				.execute(interaction, undefined, interaction.locale);
 		}
 		catch (error) {
-			console.error(error);
-			Sentry.captureException(error)
-			await interaction.reply({
-				content: 'Something went wrong executing this interaction, see console.',
-				ephemeral: true,
-			}).catch(() => {
-				console.error(red(`${guild.id}: ${user.tag}: Something went wrong executing this interaction.`));
-			});
+			if (error.message.includes('Shards are still being spawned')) {
+				await interaction.reply({
+					content: 'The bot is still starting up, please try again in a few minutes.'
+						+ '\n-# Need help? Join our [support server](<https://discord.gg/PW7VzKtGSn>)',
+					ephemeral: true,
+				}).catch(() => {
+					console.error(`${logPrefix}: Something went wrong executing this interaction.`);
+				});
+			}
+			else {
+				Sentry.captureException(error, `${logPrefix}: Something went wrong executing this interaction.`);
+				const dbException = await addException(
+					error,
+					logCommand,
+					type,
+					interaction?.guild?.id,
+					interaction?.channel?.id,
+					interaction?.user?.id,
+				).catch(() => undefined);
+				console.log(`${logPrefix}: Exception logged - ${dbException?.identifier}, ${error.message}`);
+				await interaction.reply({
+					content: 'Something went wrong executing this interaction.'
+						+ `\n-# Error Identifier: \`${dbException.identifier}\``
+						+ '\n-# Need help? Join our [support server](<https://discord.gg/PW7VzKtGSn>)',
+					ephemeral: false,
+				}).catch(() => {
+					console.error(`${logPrefix}: Something went wrong executing this interaction.`);
+				});
+			}
 		}
 	});
 }
