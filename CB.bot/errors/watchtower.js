@@ -14,9 +14,9 @@ module.exports = {
 };
 
 async function boot(client, data) {
-  const g = "955230769939353623";
-  const c = "1234488052005470331";
-  const t = "1234490192438755338";
+  const g = "1350126112432328704";
+  const c = "1350129794238644255";
+  const t = "1350130181448273921";
   const proxyMsgs = data.proxyMsgs;
   const proxyMembers = data.proxyMembers;
   const gsize = data.gsize;
@@ -51,9 +51,9 @@ async function boot(client, data) {
 }
 
 async function startAPI(client, data) {
-  const g = "955230769939353623";
-  const c = "1234488052005470331";
-  const t = "1234490192438755338";
+  const g = "1350126112432328704";
+  const c = "1350129794238644255";
+  const t = "1350130181448273921";
   const res = await client.shard.broadcastEval(
     async (client, { g, c, t, data }) => {
       if (client.guilds.cache.get(g)) {
