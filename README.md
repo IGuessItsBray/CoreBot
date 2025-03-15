@@ -1,6 +1,6 @@
 # CoreBot
 
-## CoreBot was written in DiscordJS v13 by Bray, with help from Seth and PMass. It has a ton of unique features such as:
+## CoreBot was written in DiscordJS v14 by Bray, with help from Seth and PMass. It has a ton of unique features such as:
 
 \-Custom audit logging (Which ignores pluralkit stuff)\
 \-Custom CrossChat pluging\
