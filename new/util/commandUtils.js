@@ -275,7 +275,7 @@ function deploy(log = false) {
                         + `${tagline ?? `Start sending codes with </${setupCommand.name}:${setupCommand.id}>!`}\n\n`
                         + game_icons.sort(() => 0.5 - Math.random()).slice(0, numberOfIconsToShow).join(' ')
                         + (game_icons.length > numberOfIconsToShow ? ` *and ${game_icons.length - numberOfIconsToShow} more*` : '')
-                        + '\nGet Support at https://support.nexus-codes.app',
+                        + '\nGet Support at [d.gg/corebot](<https://discord.gg/v9fzkjycr3>)',
                 },
             }).catch(console.error);
         }).catch(console.error);

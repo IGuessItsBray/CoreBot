@@ -66,7 +66,7 @@ function init(client) {
             if (error.message.includes('Shards are still being spawned')) {
                 await interaction.reply({
                     content: 'The bot is still starting up, please try again in a few minutes.'
-                        + '\n-# Have questions or need support? Visit us at [nexus-codes.app](<https://nexus-codes.app>) or our support server at [support.nexus-codes.app](<https://support.nexus-codes.app>)',
+                        + '\n-# Have questions or need support? Visit us at [Core.bot](<https://example.com>) or our support server at [d.gg/corebot](<https://discord.gg/v9fzkjycr3>)',
                     ephemeral: true,
                 }).catch(() => { undefined; });
             }
@@ -85,7 +85,7 @@ function init(client) {
                 console.log(`${logPrefix}: Exception happened - ${dbException?.identifier ? `${dbException?.identifier} , ` : ''}${error.message}`, dbException?.identifier && !DEVMODE ? '' : error);
                 const message = {
                     content: 'Something went wrong executing this command.'
-                        + `\n-# Need help? Note down error code \`${dbException.identifier}\` and join our support server at [support.nexus-codes.app](<https://support.nexus-codes.app>).`,
+                        + `\n-# Need help? Note down error code \`${dbException.identifier}\` and join our support server at [d.gg/corebot](<https://discord.gg/v9fzkjycr3>).`,
                     ephemeral: true,
                 };
                 interaction.reply(message).catch(() => {

@@ -264,7 +264,7 @@ async function messageServerAdmins(guild, message, footer = true) {
         const widgetChannel = guild.widgetChannel;
         const ownerChannel = await owner.createDM();
 
-        const signature = `\n-# This message was sent automatically for the moderators of **${guild.name}**.\n-# Have questions or need support? Visit us at [nexus-codes.app](<https://nexus-codes.app>) or our support server at [support.nexus-codes.app](<https://support.nexus-codes.app>) `;
+        const signature = `\n-# This message was sent automatically for the moderators of **${guild.name}**.\n-# Have questions or need support? Visit us at [d.gg/corebot](<https://discord.gg/v9fzkjycr3>) or our support server at [d.gg/corebot](<https://discord.gg/v9fzkjycr3>) `;
         const allowedMentions = { parse: [], users: [owner.id] };
 
         let channelToUse = undefined;
@@ -274,7 +274,7 @@ async function messageServerAdmins(guild, message, footer = true) {
         else channelToUse = ownerChannel;
 
         try {
-            await channelToUse.send({ content: `${message.replaceAll('\\n', '\n').replaceAll('%BOT%', channelToUse.client?.user ?? 'nexus')}${footer ? signature : ''}`, allowedMentions });
+            await channelToUse.send({ content: `${message.replaceAll('\\n', '\n').replaceAll('%BOT%', channelToUse.client?.user ?? 'corebot')}${footer ? signature : ''}`, allowedMentions });
             return { guild: guild.id, channel: channelToUse.id, success: true };
         }
         catch (e) {

@@ -43,14 +43,9 @@ manager.spawn(options)
         // every 5 minutes, update stats
         schedule.scheduleJob('*/5 * * * *', async () => {
             const { updateStat, getAllStats } = require('./db/dbStats');
-            const { countAllCodes } = require('./db/dbCodes');
             const { shard } = require('./util/vars');
             // Game Count
             const gameCount = Number(Object.keys(require('./util/vars').games).length).toLocaleString();
-            await updateStat('game-count', Number(gameCount));
-            // Code Count
-            const codeCount = Number(await countAllCodes()).toLocaleString();
-            await updateStat('code-count', Number(codeCount));
             // Guild Count
             const guildCount = await shard
                 .fetchClientValues('guilds.cache.size')

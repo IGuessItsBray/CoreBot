@@ -19,7 +19,7 @@ module.exports = {
 	// ------------------------------------------------------------------------------
 
 	async execute(interaction, ephemeral = true) {
-		await asdf.reply({
+		await interaction.reply({
 			content: '**Ping!**',
 			ephemeral,
 		});
