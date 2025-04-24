@@ -111,13 +111,14 @@ CoreBot is a multipurpose discord bot made by Bray! It features music, moderatio
     const deps = Object.keys(require("../../package.json").dependencies);
     deps.sort(() => 0.5 - Math.random());
     const lines = [
-      "[discord.gg/corebot](https://discord.gg/PW7VzKtGSn)",
+      "[d.gg/corebot](https://discord.gg/PW7VzKtGSn)",
       deps
         .slice(0, 20)
         .map((d) => `[${d}](https://www.npmjs.com/package/${d})`)
         .join("\n") + `\nand ${deps.length - 3} more...`,
     ];
     return lines.join("\n");
+    
   },
 
   // ------------------------------------------------------------------------------
