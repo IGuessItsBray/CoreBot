@@ -1,0 +1,39 @@
+{
+  "name": "nexus",
+  "description": "A simple bot to send gacha redeem codes.",
+  "main": "shard.js",
+  "scripts": {
+    "shard": "node shard.js",
+    "start": "node shard.js",
+    "deploy": "node bot-deploy.js",
+    "docs": "node util/docUtils.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sethwv/nexus"
+  },
+  "author": "Seth Van Niekerk",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@sentry/node": "^8.36.0",
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0",
+    "deepl-node": "^1.14.0",
+    "discord.js": "^14.16.3",
+    "https-proxy-agent": "^7.0.5",
+    "moment": "^2.30.1",
+    "mongoose": "^8.8.0",
+    "node-schedule": "^2.1.1",
+    "obscenity": "^0.4.0",
+    "querystring": "^0.2.1",
+    "socks-proxy-agent": "^8.0.4",
+    "sync-request": "^6.1.0",
+    "xpath-html": "^1.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.12.0",
+    "eslint": "^9.14.0",
+    "globals": "^15.12.0"
+  }
+}
