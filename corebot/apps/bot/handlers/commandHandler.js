@@ -153,8 +153,6 @@ module.exports = async (interaction) => {
 
         const data = {
           name: interaction.fields.getTextInputValue('group_name'),
-          avatar: interaction.fields.getTextInputValue('group_avatar'),
-          banner: interaction.fields.getTextInputValue('group_banner'),
           description: interaction.fields.getTextInputValue('group_description')
         };
 
