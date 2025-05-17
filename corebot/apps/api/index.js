@@ -7,7 +7,7 @@ const createLogger = require('../../shared/utils/logger');
 const logger = createLogger('API');
 
 const app = express();
-const port = config.apiPort || 3001;
+const port = config.apiPort || 3341;
 const userRoutes = require('./routes/user');
 const proxyRoutes = require('./routes/member');
 const groupRoutes = require('./routes/group');

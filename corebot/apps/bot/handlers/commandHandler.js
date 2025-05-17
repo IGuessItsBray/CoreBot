@@ -250,7 +250,28 @@ module.exports = async (interaction) => {
       ].includes(commandName)) {
         return fetchAndFilter('proxies', p => ({ name: `${p.id} - ${p.name}`, value: p.id }));
       }
+if (commandName === 'autoproxy' && focused.name === 'member') {
+  try {
+    const userRes = await fetch(`${config.apiBaseUrl}/user/${user.id}`);
+    const userData = await userRes.json();
+    if (!userRes.ok || !userData?.systemId) return await interaction.respond([]);
 
+    const proxyRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`);
+    const proxies = await proxyRes.json();
+
+    const filtered = proxies
+      .filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 25)
+      .map(p => ({ name: `${p.name} (${p.id})`, value: p.id }));
+
+    return await interaction.respond(filtered);
+  } catch (err) {
+    logger.error('[Autocomplete] Failed to fetch proxies for autoproxy:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+    return await interaction.respond([]);
+  }
+}
       if (commandName === 'lookupproxy') {
         try {
           const res = await fetch(`${config.apiBaseUrl}/proxy`);

@@ -14,6 +14,14 @@ const systemSchema = new mongoose.Schema({
   description: String,
   avatar: String,
   banner: String,
+  autoproxy: {
+  mode: { type: String, enum: ['off', 'latch', 'member'], default: 'off' },
+  memberId: { type: String, default: null }
+},
+lastUsedProxyId: {
+  type: String,
+  default: null,
+}
 });
 
 module.exports = mongoose.model('System', systemSchema);
