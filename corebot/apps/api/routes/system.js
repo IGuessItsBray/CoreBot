@@ -269,4 +269,60 @@ router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
     return res.status(500).json({ error: 'Failed to log message' });
   }
 });
+// GET /system/:systemId/proxies/:proxyId/logs
+router.get('/:systemId/proxies/:proxyId/logs', async (req, res) => {
+  const { systemId, proxyId } = req.params;
+
+  try {
+    const member = await Proxy.findOne({ id: proxyId, systemId });
+    if (!member) {
+      return res.status(404).json({ error: 'Proxy not found' });
+    }
+
+    return res.json({
+      messageCount: member.messageCount,
+      characterCount: member.characterCount,
+      guildLogs: member.guildLogs,
+    });
+  } catch (err) {
+    logger.error('[GET /system/:systemId/proxies/:proxyId/logs] Error:', err);
+    return res.status(500).json({ error: 'Failed to fetch logs' });
+  }
+});
+// GET /proxy/lookup/by-message/:messageId
+router.get('/proxy/lookup/by-message/:messageId', async (req, res) => {
+  const { messageId } = req.params;
+
+  try {
+    // Search every member for a message with that ID
+    const member = await Proxy.findOne({
+      'guildLogs.messages.messageId': messageId,
+    });
+
+    if (!member) {
+      return res.status(404).json({ error: 'Proxy not found' });
+    }
+
+    const system = await System.findOne({ id: member.systemId });
+
+    return res.json({
+      proxy: {
+        id: member.id,
+        name: member.name,
+        display_name: member.display_name,
+        avatar: member.avatar,
+        banner: member.banner,
+        description: member.description,
+        proxyTags: member.proxyTags,
+      },
+      system: {
+        id: system?.id,
+        name: system?.name,
+      },
+    });
+  } catch (err) {
+    logger.error('[GET /proxy/lookup/by-message/:messageId] Error:', err);
+    return res.status(500).json({ error: 'Failed to lookup proxy by message ID' });
+  }
+});
 module.exports = router;

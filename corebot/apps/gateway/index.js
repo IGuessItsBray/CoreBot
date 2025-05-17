@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const Sentry = require('@sentry/node');
 const config = require('../../config/configLoader');
 const logger = require('../../shared/utils/logger')('Gateway');
@@ -24,9 +24,9 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions,
   ],
-  partials: [Partials.Channel],
-});
+partials: [Partials.Channel, Partials.Message, Partials.Reaction],});
 
 client.once('ready', () => {
   logger.info(`Gateway is online as ${client.user.tag}`);
@@ -93,7 +93,7 @@ client.on('messageCreate', async (message) => {
       });
     }
 
-    await webhook.send({
+    const sentMessage = await webhook.send({
       content: contentToSend,
       username: proxyToUse.display_name || proxyToUse.name,
       avatarURL: proxyToUse.avatar || undefined,
@@ -111,13 +111,75 @@ client.on('messageCreate', async (message) => {
           channel: message.channel.id,
           content: contentToSend,
           timestamp: new Date().toISOString(),
-          messageId: message.id,
-          messageLink: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+          messageId: sentMessage.id,
+          messageLink: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${sentMessage.id}`,
         }),
       });
     }
   } catch (err) {
     logger.error('Failed to proxy message:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+  }
+});
+
+// ============================
+// Reaction Handler
+// ============================
+client.on('messageReactionAdd', async (reaction, user) => {
+  if (user.bot) return;
+  try {
+    // Ensure full objects if partial
+    if (reaction.partial) await reaction.fetch();
+    if (reaction.message.partial) await reaction.message.fetch();
+
+    const emoji = reaction.emoji.name;
+    const validEmojis = ['❓', '⁉️', '❔', '❕'];
+    if (!validEmojis.includes(emoji)) return;
+
+    const message = reaction.message;
+
+    // Don't react to your own message
+    if (message.author?.id === user.id) return;
+
+    const res = await fetch(`${config.apiBaseUrl}/system/proxy/lookup/by-message/${message.id}`);
+    if (!res.ok) {
+      logger.warn(`[Reaction] Lookup failed for message ${message.id} (${res.status})`);
+      return;
+    }
+
+    const { proxy, system } = await res.json();
+
+    if (!proxy || !system) return;
+
+    const embed = new EmbedBuilder()
+      .setTitle(`${proxy.display_name || proxy.name} (${proxy.id})`)
+.setDescription(
+  (proxy.description || 'No description provided.')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join(' ')
+    .slice(0, 1000) // Optional: prevent hitting Discord embed limits
+)
+      .setColor(0x5865f2)
+      .setFooter({ text: `Message: ${message.url}` });
+
+    if (proxy.avatar) embed.setThumbnail(proxy.avatar);
+    if (proxy.banner) embed.setImage(proxy.banner);
+    if (proxy.proxyTags?.length)
+      embed.addFields({ name: 'Tags', value: proxy.proxyTags.join(', '), inline: false });
+    if (system.name)
+      embed.addFields({ name: 'System', value: system.name, inline: false });
+
+    await user.send({ embeds: [embed] });
+try {
+  await reaction.users.remove(user.id);
+} catch (err) {
+  logger.warn(`[Reaction] Failed to remove reaction: ${err.message}`);
+}
+    logger.info(`[Reaction] Sent proxy card to ${user.tag} for message ${message.id}`);
+  } catch (err) {
+    logger.error(`[Reaction] Failed to process message reaction: ${err.message}`);
     if (config.sentry?.enabled) Sentry.captureException(err);
   }
 });
