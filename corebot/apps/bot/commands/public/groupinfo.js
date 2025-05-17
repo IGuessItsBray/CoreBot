@@ -1,6 +1,3 @@
-// ============================
-// Name / Description / Type
-// ============================
 const { ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
@@ -12,9 +9,6 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  // ============================
-  // Options
-  // ============================
   options: [
     {
       name: 'group',
@@ -31,9 +25,6 @@ module.exports = {
     }
   ],
 
-  // ============================
-  // Execution
-  // ============================
   async execute(interaction) {
     const groupId = interaction.options.getString('group');
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? true;
@@ -49,15 +40,18 @@ module.exports = {
         });
       }
 
-      const allRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups`);
-      if (!allRes.ok) {
-        const html = await allRes.text();
-        logger.error(`[groupInfo] Failed to fetch groups: ${html}`);
-        throw new Error('Failed to fetch groups');
-      }
-      const allGroups = await allRes.json();
-      const group = allGroups.find(g => g.id === groupId);
+      const groupsRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups`);
+      const groups = await groupsRes.json();
+      const group = groups.find(g => g.id === groupId);
       if (!group) throw new Error('Group not found');
+
+      const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`);
+      const proxies = await proxiesRes.ok ? await proxiesRes.json() : [];
+
+      const memberNames = (group.members || []).map(id => {
+        const proxy = proxies.find(p => p.id === id);
+        return proxy?.display_name || proxy?.name || id;
+      });
 
       const embed = new EmbedBuilder()
         .setTitle(group.name)
@@ -66,10 +60,18 @@ module.exports = {
         .setImage(group.banner || null)
         .addFields(
           { name: 'Name', value: group.name, inline: true },
-          { name: 'Members', value: `${group.memberIds?.length || 0}`, inline: true },
+          { name: 'Members', value: `${group.members?.length || 0}`, inline: true },
           { name: 'ID', value: `\`${group.id}\``, inline: false }
         )
         .setColor(0x3498db);
+
+      if (memberNames.length) {
+        embed.addFields({
+          name: 'Member List',
+          value: memberNames.join(', ').slice(0, 1024), // fallback until pagination added
+          inline: false
+        });
+      }
 
       await interaction.reply({
         embeds: [embed],
