@@ -46,7 +46,76 @@ module.exports = async (interaction) => {
     // ============================
     if (interaction.isModalSubmit()) {
       logger.info(`[Modal Submit] guild: ${interaction.guild?.name} (${interaction.guild?.id}) channel: ${interaction.channel?.name} (${interaction.channel?.id}) - ${interaction.customId}`);
+// ----- System Edit -----
+if (interaction.customId.startsWith('editSystemModal:')) {
+  const systemId = interaction.customId.split(':')[1];
 
+  const updatedData = {
+    name: interaction.fields.getTextInputValue('system_name'),
+    avatar: interaction.fields.getTextInputValue('system_avatar'),
+    banner: interaction.fields.getTextInputValue('system_banner'),
+    description: interaction.fields.getTextInputValue('system_description')
+  };
+
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/system/${systemId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData)
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unknown error');
+
+    await interaction.reply({
+      content: `✅ System **${result.name}** has been updated.`,
+      ephemeral: true
+    });
+  } catch (err) {
+    logger.error('[Modal Submit] Failed to update system:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+    await interaction.reply({
+      content: '❌ Failed to update system. Please try again.',
+      ephemeral: true
+    }).catch(() => null);
+  }
+  return;
+}
+// ----- Group Edit -----
+if (interaction.customId.startsWith('editGroupModal:')) {
+  const [, systemId, groupId] = interaction.customId.split(':');
+
+  const updatedData = {
+    name: interaction.fields.getTextInputValue('group_name'),
+    avatar: interaction.fields.getTextInputValue('group_avatar'),
+    banner: interaction.fields.getTextInputValue('group_banner'),
+    description: interaction.fields.getTextInputValue('group_description')
+  };
+
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/system/${systemId}/groups/${groupId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData)
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Unknown error');
+
+    await interaction.reply({
+      content: `✅ Group **${result.name}** has been updated.`,
+      ephemeral: true
+    });
+  } catch (err) {
+    logger.error('[Modal Submit] Failed to update group:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+    await interaction.reply({
+      content: '❌ Failed to update group. Please try again.',
+      ephemeral: true
+    }).catch(() => null);
+  }
+  return;
+}
       // ----- System Creation -----
       if (interaction.customId === 'createSystemModal') {
         const name = interaction.fields.getTextInputValue('system_name');
