@@ -113,4 +113,46 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// POST /system/:systemId/proxies/:proxyId/log
+router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
+  const { systemId, proxyId } = req.params;
+  const { guild, channel, content, timestamp, messageId, messageLink } = req.body;
+
+  if (!guild || !channel || !content) {
+    return res.status(400).json({ error: 'Missing required fields (guild, channel, content)' });
+  }
+
+  try {
+    const member = await Proxy.findOne({ id: proxyId, systemId });
+    if (!member) {
+      return res.status(404).json({ error: 'Proxy not found' });
+    }
+
+    // Update message/char counts
+    member.messageCount = (member.messageCount || 0) + 1;
+    member.characterCount = (member.characterCount || 0) + content.length;
+
+    // Append to guild log
+    let guildLog = member.guildLogs.find(g => g.guildId === guild);
+    if (!guildLog) {
+      guildLog = { guildId: guild, messages: [] };
+      member.guildLogs.push(guildLog);
+    }
+
+    guildLog.messages.push({
+      guild,
+      channel,
+      content,
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      messageId,
+      messageLink
+    });
+
+    await member.save();
+    return res.status(201).json({ success: true });
+  } catch (err) {
+    logger.error('[POST /system/:systemId/proxies/:proxyId/log] Error:', err);
+    return res.status(500).json({ error: 'Failed to log message' });
+  }
+});
 module.exports = router;

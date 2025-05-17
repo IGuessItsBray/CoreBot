@@ -1,5 +1,3 @@
-// corebot/apps/gateway/index.js
-
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const Sentry = require('@sentry/node');
 const config = require('../../config/configLoader');
@@ -56,12 +54,15 @@ client.on('messageCreate', async (message) => {
     let contentToSend = message.content;
 
     // ========== 1. Tag Matching ==========
-    proxyToUse = proxies.find(p => {
-      return (p.proxyTags || []).some(tag => message.content.startsWith(tag));
-    });
+    proxyToUse = proxies.find(p =>
+      (p.proxyTags || []).some(tag => message.content.startsWith(tag))
+    );
 
     if (proxyToUse) {
-      contentToSend = message.content.replace(new RegExp(`^${proxyToUse.proxyTags.join('|')}`), '').trim();
+      const matchedTag = (proxyToUse.proxyTags || []).find(tag =>
+        message.content.startsWith(tag)
+      );
+      contentToSend = message.content.slice(matchedTag.length).trim();
 
       // Update lastUsedProxyId if in latch mode
       if (systemData.autoproxy?.mode === 'latch') {
@@ -69,9 +70,9 @@ client.on('messageCreate', async (message) => {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            mode: systemData.autoproxy?.mode,
-            lastUsedProxyId: proxyToUse.id
-          })
+            mode: 'latch',
+            lastUsedProxyId: proxyToUse.id,
+          }),
         });
       }
     }
@@ -81,7 +82,7 @@ client.on('messageCreate', async (message) => {
       proxyToUse = proxies.find(p => p.id === systemData.lastUsedProxyId);
     }
 
-    if (!proxyToUse || !contentToSend) return;
+    if (!proxyToUse || !contentToSend.trim()) return;
 
     const webhooks = await message.channel.fetchWebhooks();
     let webhook = webhooks.find(h => h.name === 'Corebot Proxy');
@@ -100,16 +101,19 @@ client.on('messageCreate', async (message) => {
 
     await message.delete();
 
+    // ========== Log Message ==========
     if (config.directDBQuery === false) {
       await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies/${proxyToUse.id}/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          channel: message.channel.id,
           guild: message.guild.id,
+          channel: message.channel.id,
           content: contentToSend,
           timestamp: new Date().toISOString(),
-        })
+          messageId: message.id,
+          messageLink: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+        }),
       });
     }
   } catch (err) {
