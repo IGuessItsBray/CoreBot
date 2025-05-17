@@ -1,0 +1,30 @@
+# Ignore all JSON config files in the config folder
+/config/*.json
+
+# Node modules
+node_modules/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Output directories
+dist/
+build/
+
+# VSCode settings
+.vscode/
+
+# Blessed screen state or runtime artifacts (if any)
+.hypervisor-cache/
+.cache/
