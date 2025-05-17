@@ -1,6 +1,3 @@
-// ============================
-// Name / Description / Type
-// ============================
 const { ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
@@ -12,9 +9,6 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  // ============================
-  // Options
-  // ============================
   options: [
     {
       name: 'proxy',
@@ -31,17 +25,16 @@ module.exports = {
     }
   ],
 
-  // ============================
-  // Execution
-  // ============================
   async execute(interaction) {
     const proxyId = interaction.options.getString('proxy');
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? true;
 
     logger.info(`[Command] proxyInfo for ${proxyId}`);
+
     try {
       const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
       const userData = await userRes.json();
+
       if (!userData?.systemId) {
         return await interaction.reply({
           content: '❌ You don’t have a system set up yet.',
@@ -55,10 +48,14 @@ module.exports = {
         logger.error(`[proxyInfo] Failed to fetch proxies: ${html}`);
         throw new Error('Failed to fetch proxies');
       }
+
       const allProxies = await allRes.json();
       const proxy = allProxies.find(p => p.id === proxyId);
-      if (!proxy) throw new Error('Proxy not found');
-      if (!proxy?.id) throw new Error('Proxy not found');
+      if (!proxy || !proxy?.id) throw new Error('Proxy not found');
+
+      // 🔍 Fetch groups this proxy is in
+      const groupsRes = await fetch(`${config.apiBaseUrl}/proxy/${proxy.id}/groups`);
+      const groups = await groupsRes.ok ? await groupsRes.json() : [];
 
       const embed = new EmbedBuilder()
         .setTitle(proxy.display_name || proxy.name)
@@ -73,6 +70,22 @@ module.exports = {
           { name: 'ID', value: `\`${proxy.id}\``, inline: false }
         )
         .setColor(0x8e44ad);
+
+      if (proxy.proxyTags?.length) {
+        embed.addFields({
+          name: 'Tags',
+          value: proxy.proxyTags.join(', '),
+          inline: false
+        });
+      }
+
+      if (groups?.length) {
+        embed.addFields({
+          name: 'Groups',
+          value: groups.map(g => g.name).join(', '),
+          inline: false
+        });
+      }
 
       await interaction.reply({
         embeds: [embed],

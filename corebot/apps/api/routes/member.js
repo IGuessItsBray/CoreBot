@@ -1,8 +1,37 @@
 const express = require('express');
-const Member = require('../../../shared/db/schemas/member');
 const router = express.Router();
+const Member = require('../../../shared/db/schemas/member');
+const Group = require('../../../shared/db/schemas/group');
 const createLogger = require('../../../shared/utils/logger');
 const logger = createLogger('MemberAPI');
+
+// ========================
+// GET: Groups a member is in
+// ========================
+router.get('/:id/groups', async (req, res) => {
+  try {
+    const groups = await Group.find({ members: req.params.id }).select('id name');
+    res.json(groups);
+  } catch (err) {
+    logger.error('[GET /member/:id/groups] Error:', err);
+    res.status(500).json({ error: 'Failed to fetch groups for member' });
+  }
+});
+
+// ========================
+// CRUD for Members
+// ========================
+
+// GET /member/system/:systemId - fetch all members in system
+router.get('/system/:systemId', async (req, res) => {
+  try {
+    const members = await Member.find({ systemId: req.params.systemId });
+    res.json(members);
+  } catch (err) {
+    logger.error('[GET /member/system/:systemId] Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // GET /member/:id - fetch single member
 router.get('/:id', async (req, res) => {
@@ -16,13 +45,13 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /member/system/:systemId - fetch all members in system
-router.get('/system/:systemId', async (req, res) => {
+// GET /member - fetch all members globally
+router.get('/', async (req, res) => {
   try {
-    const members = await Member.find({ systemId: req.params.systemId });
+    const members = await Member.find().select('id name').lean();
     res.json(members);
   } catch (err) {
-    logger.error('[GET /member/system/:systemId] Error:', err);
+    logger.error('[GET /member] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -62,58 +91,45 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete member' });
   }
 });
-// PUT /member/:id/message - log a proxied message
-router.put('/:id/message', async (req, res) => {
-    const { guild, channel, content } = req.body;
-  
-    if (!guild || !channel || !content) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-  
-    try {
-      const member = await Member.findOne({ id: req.params.id });
-      if (!member) return res.status(404).json({ error: 'Member not found' });
-  
-      const newMessage = {
-        content,
-        channel,
-        guild,
-      };
-  
-      // Find the guild log or create it
-      let guildLog = member.guildLogs.find(g => g.guildId === guild);
-  
-      if (!guildLog) {
-        // New guild entry with message
-        member.guildLogs.push({ guildId: guild, messages: [newMessage] });
-      } else {
-        // Append message to existing guild entry
-        guildLog.messages.push(newMessage);
-      }
-  
-      member.messageCount += 1;
-      member.characterCount += content.length;
-  
-      await member.save();
-  
-      res.json({ message: 'Logged message', member });
-    } catch (err) {
-      logger.error('[PUT /member/:id/message] Error:', err);
-      res.status(500).json({ error: 'Failed to log message' });
-    }
-  });
 
-// GET /member - fetch all members globally
-router.get('/', async (req, res) => {
+// ========================
+// Logging
+// ========================
+
+// PUT /member/:id/message - log a proxied message (old method)
+router.put('/:id/message', async (req, res) => {
+  const { guild, channel, content } = req.body;
+
+  if (!guild || !channel || !content) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
-    const members = await Member.find().select('id name').lean();
-    res.json(members);
+    const member = await Member.findOne({ id: req.params.id });
+    if (!member) return res.status(404).json({ error: 'Member not found' });
+
+    const newMessage = { content, channel, guild };
+    let guildLog = member.guildLogs.find(g => g.guildId === guild);
+
+    if (!guildLog) {
+      member.guildLogs.push({ guildId: guild, messages: [newMessage] });
+    } else {
+      guildLog.messages.push(newMessage);
+    }
+
+    member.messageCount += 1;
+    member.characterCount += content.length;
+
+    await member.save();
+
+    res.json({ message: 'Logged message', member });
   } catch (err) {
-    logger.error('[GET /member] Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    logger.error('[PUT /member/:id/message] Error:', err);
+    res.status(500).json({ error: 'Failed to log message' });
   }
 });
-// POST /system/:systemId/proxies/:proxyId/log
+
+// POST /system/:systemId/proxies/:proxyId/log - new structured logger
 router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
   const { systemId, proxyId } = req.params;
   const { guild, channel, content, timestamp, messageId, messageLink } = req.body;
@@ -123,16 +139,14 @@ router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
   }
 
   try {
-    const member = await Proxy.findOne({ id: proxyId, systemId });
+    const member = await Member.findOne({ id: proxyId, systemId });
     if (!member) {
       return res.status(404).json({ error: 'Proxy not found' });
     }
 
-    // Update message/char counts
     member.messageCount = (member.messageCount || 0) + 1;
     member.characterCount = (member.characterCount || 0) + content.length;
 
-    // Append to guild log
     let guildLog = member.guildLogs.find(g => g.guildId === guild);
     if (!guildLog) {
       guildLog = { guildId: guild, messages: [] };
@@ -155,4 +169,5 @@ router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
     return res.status(500).json({ error: 'Failed to log message' });
   }
 });
+
 module.exports = router;

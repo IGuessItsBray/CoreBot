@@ -1,6 +1,3 @@
-// ============================
-// Name / Description / Type
-// ============================
 const { ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
@@ -12,9 +9,6 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  // ============================
-  // Options
-  // ============================
   options: [
     {
       name: 'id',
@@ -31,9 +25,6 @@ module.exports = {
     }
   ],
 
-  // ============================
-  // Execution
-  // ============================
   async execute(interaction) {
     const proxyId = interaction.options.getString('id');
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? true;
@@ -41,10 +32,14 @@ module.exports = {
     logger.info(`[Command] lookupproxy for ${proxyId}`);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}`);
-      const proxy = await response.json();
+      const res = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}`);
+      const proxy = await res.json();
 
-      if (!response.ok || !proxy?.id) throw new Error(proxy.error || 'Proxy not found');
+      if (!res.ok || !proxy?.id) throw new Error(proxy.error || 'Proxy not found');
+
+      // 🔍 Fetch groups this proxy is in
+      const groupsRes = await fetch(`${config.apiBaseUrl}/proxy/${proxy.id}/groups`);
+      const groups = await groupsRes.ok ? await groupsRes.json() : [];
 
       const embed = new EmbedBuilder()
         .setTitle(proxy.display_name || proxy.name)
@@ -59,6 +54,22 @@ module.exports = {
           { name: 'ID', value: `\`${proxy.id}\``, inline: false }
         )
         .setColor(0x2980b9);
+
+      if (proxy.proxyTags?.length) {
+        embed.addFields({
+          name: 'Tags',
+          value: proxy.proxyTags.join(', '),
+          inline: false
+        });
+      }
+
+      if (groups?.length) {
+        embed.addFields({
+          name: 'Groups',
+          value: groups.map(g => g.name).join(', '),
+          inline: false
+        });
+      }
 
       await interaction.reply({ embeds: [embed], ephemeral });
     } catch (err) {
