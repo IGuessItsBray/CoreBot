@@ -5,7 +5,6 @@ const createLogger = require('../../../shared/utils/logger');
 const verifyToken = require('../middleware/verifyToken');
 const logger = createLogger('GroupAPI');
 
-// All routes in this file are protected
 router.use(verifyToken);
 
 // ========================
@@ -24,9 +23,13 @@ router.get('/:id', async (req, res) => {
 
 // ========================
 // GET /group/system/:systemId
+// Only bots can access arbitrary systemId
 // ========================
 router.get('/system/:systemId', async (req, res) => {
   try {
+    if (req.user.discordId !== 'bot') {
+      return res.status(403).json({ error: 'Forbidden: Only bot may use this route' });
+    }
     const groups = await Group.find({ systemId: req.params.systemId });
     res.json(groups);
   } catch (err) {
@@ -37,10 +40,17 @@ router.get('/system/:systemId', async (req, res) => {
 
 // ========================
 // POST /group
+// Bots must specify systemId
 // ========================
 router.post('/', async (req, res) => {
   try {
-    const { name, systemId, members } = req.body;
+    const { name, members } = req.body;
+    const systemId = req.user.discordId === 'bot' ? req.body.systemId : req.user.systemId;
+
+    if (!systemId) {
+      return res.status(400).json({ error: 'Missing systemId' });
+    }
+
     const group = await Group.create({ name, systemId, members });
     res.status(201).json(group);
   } catch (err) {
@@ -79,13 +89,18 @@ router.delete('/:id', async (req, res) => {
 
 // ========================
 // PATCH /system/:systemId/groups/:groupId/setid
+// Bot only
 // ========================
 router.patch('/system/:systemId/groups/:groupId/setid', async (req, res) => {
+  if (req.user.discordId !== 'bot') {
+    return res.status(403).json({ error: 'Forbidden: Only bot may use this route' });
+  }
+
   const { groupId } = req.params;
   const { newId } = req.body;
 
   if (!/^[A-Z0-9]{2,9}$/.test(newId)) {
-    return res.status(400).json({ error: 'Invalid ID format: IDs must be 2–9 characters long and use only **uppercase letters (A-Z)** and digits (0–9).' });
+    return res.status(400).json({ error: 'Invalid ID format: must be 2–9 uppercase letters or digits' });
   }
 
   const existing = await Group.findOne({ id: newId });

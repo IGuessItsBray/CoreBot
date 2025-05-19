@@ -1,4 +1,3 @@
-// /apps/api/routes/system.js (rewritten)
 const express = require('express');
 const router = express.Router();
 const createLogger = require('../../../shared/utils/logger');
@@ -10,10 +9,16 @@ const Group = require('../../../shared/db/schemas/group');
 const User = require('../../../shared/db/schemas/user');
 
 // ========================
-// GET: Self system (authenticated)
+// GET: Self system (authenticated) or bot can fetch via ?systemId=
 // ========================
 router.get('/', async (req, res) => {
   try {
+    if (req.user.discordId === 'bot' && req.query.systemId) {
+      const system = await System.findOne({ id: req.query.systemId });
+      if (!system) return res.status(404).json({ error: 'System not found' });
+      return res.json(system);
+    }
+
     const user = await User.findOne({ discordId: req.user.discordId });
     if (!user || !user.systemId) return res.status(404).json({ error: 'System not found for user' });
 
@@ -45,6 +50,7 @@ router.get('/all', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, description, avatar, banner } = req.body;
+
     const existingSystem = await System.findOne({ ownerId: req.user.discordId });
     if (existingSystem) return res.status(400).json({ error: 'You already have a system.' });
 
