@@ -5,6 +5,7 @@ const { ApplicationCommandType } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
 const logger = require('../../../../shared/utils/logger')('Bot');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // ============================
 // Command Export
@@ -45,24 +46,17 @@ module.exports = {
     logger.info(`[Command] Add Proxy ${proxyId} to Group ${groupId}`);
 
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
-      const userData = await userRes.json();
-
-      if (!userData?.systemId) {
-        return await interaction.reply({
-          content: '❌ You must create a system first using `/createsystem`.',
-          ephemeral: true
-        });
-      }
-
-      const response = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups/${groupId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ $addToSet: { members: proxyId } })
+      const res = await fetch(`${config.apiBaseUrl}/group/${groupId}/add-member`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ proxyId })
       });
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Unknown error');
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Unknown error');
 
       await interaction.reply({
         content: `✅ Proxy \`${proxyId}\` added to group \`${groupId}\`.`,

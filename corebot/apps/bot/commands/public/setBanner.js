@@ -2,11 +2,16 @@
 // Name / Description / Type
 // ============================
 const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+const logger = require('../../../../shared/utils/logger')('SetBanner');
+const config = require('../../../../config/configLoader');
+const Sentry = require('@sentry/node');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
   name: 'setbanner',
   description: 'Set the banner for one of your proxies',
   type: ApplicationCommandType.ChatInput,
+  enabled: true,
 
   // ============================
   // Options
@@ -31,26 +36,30 @@ module.exports = {
   // Execution
   // ============================
   async execute(interaction) {
-    const logger = require('../../../../shared/utils/logger')('SetBanner');
-    const config = require('../../../../config/configLoader');
-    const Sentry = require('@sentry/node');
-
     const proxyId = interaction.options.getString('proxy');
     const banner = interaction.options.getString('url');
 
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      // Fetch user’s systemId
+const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`, {
+          headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
       const userData = await userRes.json();
-      if (!userData?.systemId) {
+
+      if (!userRes.ok || !userData?.systemId) {
         return await interaction.reply({
           content: '⚠️ You do not have a system set up.',
           ephemeral: true,
         });
       }
 
+      // Update the proxy banner
       const response = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies/${proxyId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.botAPIToken}`
+        },
         body: JSON.stringify({ banner }),
       });
 

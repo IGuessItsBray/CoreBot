@@ -1,4 +1,10 @@
-const { ApplicationCommandType, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+const {
+  ApplicationCommandType,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder
+} = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
 const logger = require('../../../../shared/utils/logger')('Bot');
@@ -9,13 +15,19 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  options: [], // No slash options anymore
+  options: [],
 
   async execute(interaction) {
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      // Authenticated call to get the system
+      const userRes = await fetch(`${config.apiBaseUrl}/user`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`
+        }
+      });
       const userData = await userRes.json();
-      if (!userData?.systemId) {
+
+      if (!userRes.ok || !userData?.systemId) {
         return await interaction.reply({
           content: '❌ You must have a system before creating groups.',
           ephemeral: true

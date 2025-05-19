@@ -2,8 +2,7 @@ const { ApplicationCommandType, EmbedBuilder } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const paginate = require('../../../../shared/utils/paginateHandler');
 const Sentry = require('@sentry/node');
-const logger = require('../../../../shared/utils/logger')('Bot');
-
+const logger = require('../../../../shared/utils/logger')('LookupGroup');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
@@ -24,33 +23,21 @@ module.exports = {
 
   async execute(interaction) {
     const groupId = interaction.options.getString('group');
-    logger.info(`[Command] lookupGroup for ${groupId}`);
+    logger.info(`[lookupGroup] Lookup for ${groupId}`);
 
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
-      const userData = await userRes.json();
-      if (!userData?.systemId) {
-        return await interaction.reply({
-          content: '❌ You don’t have a system set up yet.',
-          ephemeral: true
-        });
-      }
+      const groupRes = await fetch(`${config.apiBaseUrl}/group/${groupId}`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
 
-      const [groupsRes, proxiesRes] = await Promise.all([
-        fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups`),
-        fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`)
-      ]);
+      if (!groupRes.ok) throw new Error(`Failed to fetch group: ${groupRes.statusText}`);
+      const group = await groupRes.json();
 
-      if (!groupsRes.ok || !proxiesRes.ok) {
-        logger.error('[lookupGroup] Failed to fetch group or proxy data');
-        throw new Error('Fetch failure');
-      }
+      const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${group.systemId}/proxies`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
 
-      const allGroups = await groupsRes.json();
-      const allProxies = await proxiesRes.json();
-      const group = allGroups.find(g => g.id === groupId);
-
-      if (!group) throw new Error('Group not found');
+      const allProxies = proxiesRes.ok ? await proxiesRes.json() : [];
 
       const memberList = group.members?.map(id => {
         const match = allProxies.find(p => p.id === id);
@@ -74,7 +61,6 @@ module.exports = {
         return await interaction.reply({ embeds: [baseEmbed], ephemeral: true });
       }
 
-      // Paginate member list inside embed descriptions
       const pages = [];
       let current = '';
       for (const entry of memberList) {
@@ -93,7 +79,7 @@ module.exports = {
       });
 
     } catch (err) {
-      logger.error('[Command] Failed to fetch group info:', err);
+      logger.error('[lookupGroup] Failed:', err);
       if (config.sentry?.enabled) Sentry.captureException(err);
       await interaction.reply({
         content: '❌ Failed to retrieve group info.',

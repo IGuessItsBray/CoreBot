@@ -9,19 +9,13 @@ const {
 const config = require('../../../../config/configLoader');
 const logger = require('../../../../shared/utils/logger')('EditProxy');
 
-// ------------------------------------------------------------------------------
-// Definition
-// ------------------------------------------------------------------------------
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
   name: 'editproxy',
   description: 'Edit an existing proxy in your system',
   type: ApplicationCommandType.ChatInput,
   enabled: true,
-
-  // ------------------------------------------------------------------------------
-  // Options
-  // ------------------------------------------------------------------------------
 
   options: [
     {
@@ -33,39 +27,29 @@ module.exports = {
     },
   ],
 
-  // ------------------------------------------------------------------------------
-  // Execution
-  // ------------------------------------------------------------------------------
-
   async execute(interaction) {
     const proxyId = interaction.options.getString('proxy');
 
     try {
-      // Get user data (to get the correct systemId)
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
-      const userData = await userRes.json();
-      if (!userRes.ok || !userData?.systemId) {
+      // ✅ Fetch the proxy directly by ID (bot-only route)
+      const proxyRes = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`,
+        },
+      });
+
+      const proxy = await proxyRes.json();
+
+      if (!proxyRes.ok || !proxy?.id) {
         return await interaction.reply({
-          content: '⚠️ You must create a system first using `/createsystem`.',
-          ephemeral: true
+          content: '❌ Proxy not found or does not belong to your system.',
+          ephemeral: true,
         });
       }
 
-      // Get the selected proxy data
-      const proxyRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`);
-      const proxies = await proxyRes.json();
-      const proxy = proxies.find(p => p.id === proxyId);
-
-      if (!proxy) {
-        return await interaction.reply({
-          content: '❌ Proxy not found.',
-          ephemeral: true
-        });
-      }
-
-      // Build modal with values from the proxy
+      // ✅ Build modal with values from proxy
       const modal = new ModalBuilder()
-        .setCustomId(`editProxyModal:${userData.systemId}:${proxyId}`)
+        .setCustomId(`editProxyModal:${proxy.systemId}:${proxyId}`)
         .setTitle('Edit Proxy');
 
       const nameInput = new TextInputBuilder()
@@ -116,10 +100,8 @@ module.exports = {
       logger.error('[Command] Failed to open editproxy modal:', err);
       await interaction.reply({
         content: '❌ Failed to open modal.',
-        ephemeral: true
+        ephemeral: true,
       }).catch(() => null);
     }
-  }
-
-  // ------------------------------------------------------------------------------
+  },
 };

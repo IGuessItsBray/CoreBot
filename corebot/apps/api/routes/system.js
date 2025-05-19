@@ -93,5 +93,45 @@ router.put('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to update system' });
   }
 });
+// ========================
+// PATCH /system/:systemId/autoproxy
+// Bots only
+// ========================
+router.patch('/:systemId/autoproxy', async (req, res) => {
+  if (req.user.discordId !== 'bot') {
+    return res.status(403).json({ error: 'Forbidden: Only bot may update autoproxy' });
+  }
+
+  const { systemId } = req.params;
+  const { mode, memberId } = req.body;
+
+  if (!['off', 'latch', 'member'].includes(mode)) {
+    return res.status(400).json({ error: 'Invalid autoproxy mode' });
+  }
+
+  try {
+    const system = await System.findOne({ id: systemId });
+    if (!system) return res.status(404).json({ error: 'System not found' });
+
+    system.autoproxy = {
+      mode,
+      ...(mode === 'member' && memberId ? { memberId } : {}),
+      ...(mode === 'latch' ? { lastUsedProxyId: memberId || system.lastUsedProxyId } : {})
+    };
+
+    await system.save();
+    res.status(200).json(system);
+  } catch (err) {
+    logger.error('[PATCH /system/:systemId/autoproxy] Error:', err);
+    res.status(500).json({ error: 'Failed to update autoproxy settings' });
+  }
+});
+// PUT /system/:systemId – update system (bot only)
+router.put('/:systemId', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const system = await System.findOneAndUpdate({ id: req.params.systemId }, req.body, { new: true });
+  if (!system) return res.status(404).json({ error: 'System not found' });
+  res.json(system);
+});
 
 module.exports = router;

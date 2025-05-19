@@ -4,7 +4,9 @@
 const { ApplicationCommandType } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
-const logger = require('../../../../shared/utils/logger')('Bot');
+const logger = require('../../../../shared/utils/logger')('RemoveMemberFromGroup');
+
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
   name: 'removememberfromgroup',
@@ -17,15 +19,15 @@ module.exports = {
   // ============================
   options: [
     {
-      name: 'proxy',
-      description: 'Select the proxy to remove from the group',
+      name: 'group',
+      description: 'Select the group to remove the proxy from',
       type: 3, // STRING
       required: true,
       autocomplete: true
     },
     {
-      name: 'group',
-      description: 'Select the group to remove the proxy from',
+      name: 'proxy',
+      description: 'Select the proxy to remove from the group',
       type: 3, // STRING
       required: true,
       autocomplete: true
@@ -42,32 +44,51 @@ module.exports = {
     logger.info(`[Command] removememberfromgroup: ${proxyId} → ${groupId}`);
 
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      // Fetch system ID
+      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
       const userData = await userRes.json();
+
       if (!userData?.systemId) {
         return await interaction.reply({
-          content: '❌ You don\'t have a system yet. Use `/createsystem` first.',
+          content: '❌ You don’t have a system yet. Use `/createsystem` first.',
           ephemeral: true
         });
       }
 
-      // Fetch group data
-      const groupRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups/${groupId}`);
+      // Fetch group
+      const groupRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups/${groupId}`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
       const group = await groupRes.json();
-      if (!group?.id || !group.memberIds.includes(proxyId)) {
+
+      if (!group?.id) {
+        return await interaction.reply({
+          content: '❌ Group not found in your system.',
+          ephemeral: true
+        });
+      }
+
+      logger.info(`[RemoveMember] Group Members: ${group.members.join(', ')}`);
+
+      if (!group.members.includes(proxyId)) {
         return await interaction.reply({
           content: '⚠️ This proxy is not a member of that group.',
           ephemeral: true
         });
       }
 
-      // Update group (remove proxy)
-      const updatedMemberIds = group.memberIds.filter(id => id !== proxyId);
+      const updatedMembers = group.members.filter(id => id !== proxyId);
 
+      // Update group
       const putRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/groups/${groupId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ memberIds: updatedMemberIds })
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.botAPIToken}`
+        },
+        body: JSON.stringify({ members: updatedMembers })
       });
 
       const result = await putRes.json();

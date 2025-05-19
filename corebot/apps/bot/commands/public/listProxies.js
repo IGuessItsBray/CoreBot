@@ -13,9 +13,6 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  // ============================
-  // Options
-  // ============================
   options: [
     {
       name: 'system',
@@ -32,9 +29,6 @@ module.exports = {
     }
   ],
 
-  // ============================
-  // Execution
-  // ============================
   async execute(interaction) {
     logger.info('[ListProxy] Fetching user data...');
     const systemOverride = interaction.options.getString('system');
@@ -43,27 +37,37 @@ module.exports = {
     try {
       let systemId;
 
+      // Resolve system ID
       if (systemOverride) {
         systemId = systemOverride;
         logger.info(`[ListProxy] Using provided system ID: ${systemId}`);
       } else {
-        const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`, {
+            headers: {
+            Authorization: `Bearer ${config.botAPIToken}`
+          }
+        });
         const userData = await userRes.json();
+
         if (!userData?.systemId) {
           return await interaction.reply({
             content: '❌ You do not have a system set up.',
             ephemeral: true
           });
         }
+
         systemId = userData.systemId;
-        logger.info(`[ListProxy] Using system ID: ${systemId}`);
+        logger.info(`[ListProxy] Using authenticated system ID: ${systemId}`);
       }
 
-      logger.info('[ListProxy] Fetching proxies...');
-      const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`);
-      const proxies = await proxiesRes.json();
+      // Fetch proxies
+      const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`
+        }
+      });
 
-      logger.info(`[ListProxy] Total proxies found: ${proxies.length}`);
+      const proxies = await proxiesRes.json();
 
       if (!Array.isArray(proxies) || proxies.length === 0) {
         return await interaction.reply({
@@ -79,7 +83,6 @@ module.exports = {
           return `\`${p.id}\` ${p.name} - ${tags}`;
         });
 
-      // Paginate entries with soft limit of ~1900 characters per page
       const pages = [];
       let current = '';
       for (const entry of entries) {

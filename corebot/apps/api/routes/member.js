@@ -146,5 +146,47 @@ router.post('/:id/log', async (req, res) => {
     res.status(500).json({ error: 'Failed to log message' });
   }
 });
+// POST /system/:systemId/proxies – create proxy (bot only)
+router.post('/system/:systemId/proxies', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const proxy = await Member.create({ ...req.body, systemId: req.params.systemId });
+  res.status(201).json(proxy);
+});
+
+// PUT /system/:systemId/proxies/:proxyId – update proxy (bot only)
+router.put('/system/:systemId/proxies/:proxyId', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const updated = await Member.findOneAndUpdate(
+    { id: req.params.proxyId, systemId: req.params.systemId },
+    req.body,
+    { new: true }
+  );
+  if (!updated) return res.status(404).json({ error: 'Proxy not found' });
+  res.json(updated);
+});
+
+// DELETE /system/:systemId/proxies/:proxyId – delete proxy (bot only)
+router.delete('/system/:systemId/proxies/:proxyId', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const deleted = await Member.findOneAndDelete({
+    id: req.params.proxyId,
+    systemId: req.params.systemId
+  });
+  if (!deleted) return res.status(404).json({ error: 'Proxy not found' });
+  res.json({ message: 'Proxy deleted' });
+});
+// GET: All proxies (bot only)
+router.get('/', async (req, res) => {
+  if (req.user.discordId !== 'bot') {
+    return res.status(403).json({ error: 'Forbidden: Bot-only route' });
+  }
+  try {
+    const proxies = await Member.find({});
+    res.json(proxies);
+  } catch (err) {
+    logger.error('[GET /proxy] Error fetching all proxies:', err);
+    res.status(500).json({ error: 'Failed to fetch all proxies' });
+  }
+});
 
 module.exports = router;

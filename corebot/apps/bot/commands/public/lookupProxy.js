@@ -3,6 +3,8 @@ const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
 const logger = require('../../../../shared/utils/logger')('lookupProxy');
 
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
 module.exports = {
   name: 'lookupproxy',
   description: 'Lookup a proxy by its ID (any system)',
@@ -29,17 +31,21 @@ module.exports = {
     const proxyId = interaction.options.getString('id');
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? true;
 
-    logger.info(`[Command] lookupproxy for ${proxyId}`);
+    logger.info(`[lookupProxy] Looking up proxy ID: ${proxyId}`);
 
     try {
-      const res = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}`);
-      const proxy = await res.json();
+      const proxyRes = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
 
-      if (!res.ok || !proxy?.id) throw new Error(proxy.error || 'Proxy not found');
+      const proxy = await proxyRes.json();
+      if (!proxyRes.ok || !proxy?.id) throw new Error(proxy.error || 'Proxy not found');
 
-      // 🔍 Fetch groups this proxy is in
-      const groupsRes = await fetch(`${config.apiBaseUrl}/proxy/${proxy.id}/groups`);
-      const groups = await groupsRes.ok ? await groupsRes.json() : [];
+      const groupsRes = await fetch(`${config.apiBaseUrl}/proxy/${proxyId}/groups`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
+
+      const groups = groupsRes.ok ? await groupsRes.json() : [];
 
       const embed = new EmbedBuilder()
         .setTitle(proxy.display_name || proxy.name)
@@ -73,7 +79,7 @@ module.exports = {
 
       await interaction.reply({ embeds: [embed], ephemeral });
     } catch (err) {
-      logger.error('[Command] Failed to look up proxy:', err);
+      logger.error('[lookupProxy] Failed to look up proxy:', err);
       if (config.sentry?.enabled) Sentry.captureException(err);
       await interaction.reply({
         content: '❌ Failed to look up proxy. Ensure the ID is valid.',

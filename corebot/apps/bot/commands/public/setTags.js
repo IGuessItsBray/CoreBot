@@ -5,6 +5,7 @@ const { ApplicationCommandType, ApplicationCommandOptionType } = require('discor
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
 const logger = require('../../../../shared/utils/logger')('SetProxyTags');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 module.exports = {
   name: 'settags',
@@ -44,18 +45,26 @@ module.exports = {
       .filter(Boolean);
 
     try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      // Get authenticated user's system
+const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`, {
+          headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      });
       const userData = await userRes.json();
-      if (!userData?.systemId) {
+
+      if (!userRes.ok || !userData?.systemId) {
         return await interaction.reply({
           content: '❌ You do not have a system set up.',
           ephemeral: true,
         });
       }
 
+      // Update proxy's tags
       const response = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies/${proxyId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.botAPIToken}`
+        },
         body: JSON.stringify({ proxyTags: tags }),
       });
 

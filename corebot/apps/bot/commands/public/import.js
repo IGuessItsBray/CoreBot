@@ -30,8 +30,10 @@ module.exports = {
   async execute(interaction) {
     const file = interaction.options.getAttachment('file');
     const url = interaction.options.getString('url');
+
     logger.info(`[Import] file.name = ${file?.name}`);
     logger.info(`[Import] url = ${url}`);
+
     let jsonURL;
     if (file && file.name.endsWith('.json')) {
       jsonURL = file.url;
@@ -69,8 +71,13 @@ module.exports = {
         });
       }
 
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      const userRes = await fetch(`${config.apiBaseUrl}/user`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`
+        }
+      });
       const userData = await userRes.json();
+
       if (!userData?.systemId) {
         return await interaction.reply({
           content: '❌ You do not have a system set up yet.',
@@ -79,9 +86,14 @@ module.exports = {
       }
 
       const systemId = userData.systemId;
+
       const [existingProxies, existingGroups] = await Promise.all([
-        fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`).then(r => r.json()),
-        fetch(`${config.apiBaseUrl}/system/${systemId}/groups`).then(r => r.json())
+        fetch(`${config.apiBaseUrl}/proxy/system`, {
+          headers: { Authorization: `Bearer ${config.botAPIToken}` }
+        }).then(r => r.json()),
+        fetch(`${config.apiBaseUrl}/group/system/${systemId}`, {
+          headers: { Authorization: `Bearer ${config.botAPIToken}` }
+        }).then(r => r.json())
       ]);
 
       let importedMembers = 0;
@@ -109,9 +121,12 @@ module.exports = {
 
         logger.info(`[Import] Creating proxy: ${member.name} → Tags: [${proxyTags.join(', ')}]`);
 
-        await fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`, {
+        await fetch(`${config.apiBaseUrl}/proxy`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.botAPIToken}`
+          },
           body: JSON.stringify(payload)
         });
 
@@ -126,15 +141,18 @@ module.exports = {
           description: group.description || '',
           avatar: '',
           banner: '',
-          memberIds: group.members || [],
+          members: group.members || [],
           systemId
         };
 
         logger.info(`[Import] Creating group: ${group.name}`);
 
-        await fetch(`${config.apiBaseUrl}/system/${systemId}/groups`, {
+        await fetch(`${config.apiBaseUrl}/group`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.botAPIToken}`
+          },
           body: JSON.stringify(payload)
         });
 

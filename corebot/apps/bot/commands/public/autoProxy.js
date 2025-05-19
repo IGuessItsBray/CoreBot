@@ -1,6 +1,5 @@
-// ============================
-// Name / Description / Type
-// ============================
+// corebot/apps/bot/commands/public/autoProxy.js
+
 const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const config = require('../../../../config/configLoader');
 const Sentry = require('@sentry/node');
@@ -12,9 +11,6 @@ module.exports = {
   type: ApplicationCommandType.ChatInput,
   enabled: true,
 
-  // ============================
-  // Options
-  // ============================
   options: [
     {
       name: 'mode',
@@ -36,11 +32,7 @@ module.exports = {
     }
   ],
 
-  // ============================
-  // Execution
-  // ============================
   async execute(interaction) {
-    const userId = interaction.user.id;
     const mode = interaction.options.getString('mode');
     const memberId = interaction.options.getString('member');
 
@@ -52,27 +44,59 @@ module.exports = {
     }
 
     try {
-      // Fetch system
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${userId}`);
-      const userData = await userRes.json();
-      if (!userData?.systemId) {
+      logger.info(`[AutoProxy] Resolving user: ${interaction.user.id}`);
+
+      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`
+        }
+      });
+
+      const userText = await userRes.text();
+      logger.info(`[AutoProxy] User response status: ${userRes.status}`);
+      logger.debug(`[AutoProxy] User raw body: ${userText.slice(0, 200)}`);
+
+      let userData;
+      try {
+        userData = JSON.parse(userText);
+      } catch (jsonErr) {
+        throw new Error(`Failed to parse user JSON: ${jsonErr.message}`);
+      }
+
+      if (!userRes.ok || !userData?.systemId) {
         return await interaction.reply({
           content: '❌ You do not have a system set up.',
           ephemeral: true
         });
       }
 
-      // Update autoproxy
+      const patchBody = {
+        mode,
+        memberId: mode === 'member' ? memberId : null
+      };
+
+      logger.info(`[AutoProxy] Patching system ${userData.systemId} with: ${JSON.stringify(patchBody)}`);
+
       const res = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/autoproxy`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mode,
-          memberId: mode === 'member' ? memberId : null
-        })
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(patchBody)
       });
 
-      const result = await res.json();
+      const resultText = await res.text();
+      logger.info(`[AutoProxy] Patch response status: ${res.status}`);
+      logger.debug(`[AutoProxy] Patch raw body: ${resultText.slice(0, 200)}`);
+
+      let result;
+      try {
+        result = JSON.parse(resultText);
+      } catch (jsonErr) {
+        throw new Error(`Failed to parse patch JSON: ${jsonErr.message}`);
+      }
+
       if (!res.ok) throw new Error(result.error || 'Unknown error');
 
       return await interaction.reply({

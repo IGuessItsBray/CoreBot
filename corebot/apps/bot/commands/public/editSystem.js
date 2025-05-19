@@ -1,5 +1,3 @@
-// apps/bot/commands/public/editsystem.js
-
 const {
   ApplicationCommandType,
   ModalBuilder,
@@ -20,22 +18,30 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Fetch user’s system
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${interaction.user.id}`);
+      // Fetch user’s system using authenticated route
+      const userRes = await fetch(`${config.apiBaseUrl}/user`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`,
+        },
+      });
       const userData = await userRes.json();
       if (!userRes.ok || !userData?.systemId) {
         return await interaction.reply({
           content: '⚠️ You must create a system first using `/createsystem`.',
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
-      const systemRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}`);
+      const systemRes = await fetch(`${config.apiBaseUrl}/system`, {
+        headers: {
+          Authorization: `Bearer ${config.botAPIToken}`,
+        },
+      });
       const system = await systemRes.json();
-      if (!systemRes.ok || !system) {
+      if (!systemRes.ok || !system?.id) {
         return await interaction.reply({
           content: '❌ Failed to fetch your system.',
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -84,8 +90,8 @@ module.exports = {
       logger.error('[Command] Failed to open editsystem modal:', err);
       await interaction.reply({
         content: '❌ Failed to open modal.',
-        ephemeral: true
+        ephemeral: true,
       }).catch(() => null);
     }
-  }
+  },
 };

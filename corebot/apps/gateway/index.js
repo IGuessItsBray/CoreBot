@@ -1,3 +1,5 @@
+// corebot/apps/gateway/index.js
+
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const Sentry = require('@sentry/node');
 const config = require('../../config/configLoader');
@@ -26,7 +28,8 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
   ],
-partials: [Partials.Channel, Partials.Message, Partials.Reaction],});
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
+});
 
 client.once('ready', () => {
   logger.info(`Gateway is online as ${client.user.tag}`);
@@ -54,14 +57,10 @@ client.on('messageCreate', async (message) => {
     let contentToSend = message.content;
 
     // ========== 1. Tag Matching ==========
-    proxyToUse = proxies.find(p =>
-      (p.proxyTags || []).some(tag => message.content.startsWith(tag))
-    );
+    proxyToUse = proxies.find(p => (p.proxyTags || []).some(tag => message.content.startsWith(tag)));
 
     if (proxyToUse) {
-      const matchedTag = (proxyToUse.proxyTags || []).find(tag =>
-        message.content.startsWith(tag)
-      );
+      const matchedTag = (proxyToUse.proxyTags || []).find(tag => message.content.startsWith(tag));
       contentToSend = message.content.slice(matchedTag.length).trim();
 
       // Update lastUsedProxyId if in latch mode
@@ -128,7 +127,6 @@ client.on('messageCreate', async (message) => {
 client.on('messageReactionAdd', async (reaction, user) => {
   if (user.bot) return;
   try {
-    // Ensure full objects if partial
     if (reaction.partial) await reaction.fetch();
     if (reaction.message.partial) await reaction.message.fetch();
 
@@ -137,8 +135,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (!validEmojis.includes(emoji)) return;
 
     const message = reaction.message;
-
-    // Don't react to your own message
     if (message.author?.id === user.id) return;
 
     const res = await fetch(`${config.apiBaseUrl}/system/proxy/lookup/by-message/${message.id}`);
@@ -148,19 +144,18 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
 
     const { proxy, system } = await res.json();
-
     if (!proxy || !system) return;
 
     const embed = new EmbedBuilder()
       .setTitle(`${proxy.display_name || proxy.name} (${proxy.id})`)
-.setDescription(
-  (proxy.description || 'No description provided.')
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join(' ')
-    .slice(0, 1000) // Optional: prevent hitting Discord embed limits
-)
+      .setDescription(
+        (proxy.description || 'No description provided.')
+          .split('\n')
+          .map(line => line.trim())
+          .filter(Boolean)
+          .join(' ')
+          .slice(0, 1000)
+      )
       .setColor(0x5865f2)
       .setFooter({ text: `Message: ${message.url}` });
 
@@ -172,11 +167,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
       embed.addFields({ name: 'System', value: system.name, inline: false });
 
     await user.send({ embeds: [embed] });
-try {
-  await reaction.users.remove(user.id);
-} catch (err) {
-  logger.warn(`[Reaction] Failed to remove reaction: ${err.message}`);
-}
+    try {
+      await reaction.users.remove(user.id);
+    } catch (err) {
+      logger.warn(`[Reaction] Failed to remove reaction: ${err.message}`);
+    }
+
     logger.info(`[Reaction] Sent proxy card to ${user.tag} for message ${message.id}`);
   } catch (err) {
     logger.error(`[Reaction] Failed to process message reaction: ${err.message}`);
