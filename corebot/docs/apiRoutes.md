@@ -1,200 +1,134 @@
+# CoreBot API Documentation
 
-# 🧾 CoreBot API — User-Facing Route Documentation
-
-This document describes all **user-facing** API routes for CoreBot, designed for logged-in Discord users.
-
----
-
-## 🔐 Authorization: Logging in with Discord
-
-1. Redirect to:
-   ```
-   https://discord.com/oauth2/authorize?client_id=955267092800733214&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3341%2Fauth%2Fcallback&scope=identify
-   ```
-
-2. After approval, Discord redirects to:
-   ```
-   http://localhost:3341/auth/callback?code=XXXX
-   ```
-
-3. The backend returns:
-   ```json
-   {
-     "token": "<JWT>",
-     "user": {
-       "discordId": "...",
-       "username": "...",
-       "tag": "..."
-     }
-   }
-   ```
-
-4. Use this JWT in requests:
-   ```
-   Authorization: Bearer <JWT>
-   ```
+This document outlines all routes in the CoreBot API and their respective methods, authentication scopes, and functionality.
 
 ---
 
-## ✅ Routes (Authenticated)
+## 🔐 Authentication
 
-### 👤 GET `/user`
-Get the currently authenticated user's data.
+All protected routes require a `Bearer` token in the `Authorization` header.
 
----
-
-### 📎 POST `/user`
-Create a user record.
-
-**Body:**
-```json
-{
-  "systemId": "G33GDB"
-}
-```
+* If `discordId === 'bot'`, the request is treated as coming from the bot.
+* Otherwise, the token must be a valid user token.
 
 ---
 
-### 🧠 GET `/system`
-Get the system belonging to the authenticated user.
+## 🧑‍💼 `/user` Routes
+
+### `GET /user`
+
+**Auth:** User or Bot
+Returns the currently authenticated user (based on token).
+
+### `GET /user/:id`
+
+**Auth:** Bot only
+Fetch user data by Discord ID.
+
+### `POST /user`
+
+**Auth:** User or Bot
+Create a user. If bot, `discordId` must be provided in the body. Requires `systemId`.
 
 ---
 
-### 🧠 POST `/system`
-Create a system.
+## 👤 `/proxy` Routes (Member Proxies)
 
-**Body:**
-```json
-{
-  "name": "Test",
-  "description": "...",
-  "avatar": "https://...",
-  "banner": "https://..."
-}
-```
+### `GET /proxy/:id`
 
----
+**Auth:** Any
+Fetch a proxy by ID.
 
-### 🧠 PUT `/system`
-Update your system.
+### `PUT /proxy/:id`
 
----
+**Auth:** Must own the proxy
+Update a proxy's data.
 
-### 👥 GET `/proxy/system`
-Get all proxies for your system.
+### `DELETE /proxy/:id`
 
----
-
-### 👤 GET `/proxy/:id`
-Get a specific proxy by ID.
-
----
-
-### 👤 POST `/proxy`
-Create a proxy.
-
-**Body:**
-```json
-{
-  "name": "Bray",
-  "display_name": "Bray 🔥",
-  "proxyTags": ["B:"]
-}
-```
-
----
-
-### 👤 PUT `/proxy/:id`
-Edit a proxy.
-
----
-
-### ❌ DELETE `/proxy/:id`
+**Auth:** Must own the proxy
 Delete a proxy.
 
 ---
 
-### 📝 POST `/proxy/:id/log`
-Log a proxied message.
+## 📚 `/group` Routes
 
-**Body:**
-```json
-{
-  "guild": "123",
-  "channel": "456",
-  "content": "hello",
-  "timestamp": "...",
-  "messageId": "...",
-  "messageLink": "..."
-}
-```
+### `GET /group/:id`
 
----
+**Auth:** Any
+Get group info by ID.
 
-### 👥 GET `/group/system/:systemId`
-Get all groups for a system.
+### `POST /group`
 
----
+**Auth:** User with system
+Create a group for the current user.
 
-### 👥 GET `/group/:id`
-Get a group.
+### `PUT /group/:id`
 
----
+**Auth:** Must own the group
+Update a group.
 
-### 👥 POST `/group`
-Create a group.
+### `DELETE /group/:id`
 
-**Body:**
-```json
-{
-  "name": "Mods",
-  "systemId": "G33GDB",
-  "members": ["BRAY"]
-}
-```
-
----
-
-### 👥 PUT `/group/:id`
-Edit a group.
-
----
-
-### 👥 DELETE `/group/:id`
+**Auth:** Must own the group
 Delete a group.
 
----
+### `PATCH /group/:groupId/add-member`
 
-### 🆔 PATCH `/group/system/:systemId/groups/:groupId/setid`
-Change a group’s ID.
+**Auth:** Bot only
+Add a member to a group. Body: `{ proxyId }`
 
-**Body:**
-```json
-{
-  "newId": "MODS"
-}
-```
+### `PATCH /group/:groupId/remove-member`
+
+**Auth:** Bot only
+Remove a member from a group. Body: `{ proxyId }`
 
 ---
 
-## 🧭 Summary
+## 🏠 `/system` Routes (General)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/user` | Get current user |
-| POST | `/user` | Create user record |
-| GET | `/system` | Get system |
-| POST | `/system` | Create system |
-| PUT | `/system` | Update system |
-| GET | `/proxy/system` | All proxies |
-| GET | `/proxy/:id` | Get proxy |
-| POST | `/proxy` | Create proxy |
-| PUT | `/proxy/:id` | Update proxy |
-| DELETE | `/proxy/:id` | Delete proxy |
-| POST | `/proxy/:id/log` | Log message |
-| GET | `/group/system/:id` | System groups |
-| GET | `/group/:id` | Get group |
-| POST | `/group` | Create group |
-| PUT | `/group/:id` | Update group |
-| DELETE | `/group/:id` | Delete group |
-| PATCH | `/group/.../setid` | Change group ID |
+### `GET /system/:systemId`
+
+**Auth:** Bot only
+Fetch a system by ID.
+
+### `PATCH /system/:systemId/autoproxy`
+
+**Auth:** Must own system
+Update autoproxy settings. Body: `{ mode, lastUsedProxyId }`
+
+---
+
+## 🔧 Bot-Only `/system/:systemId/proxies` Routes
+
+These routes exist under the base path `/system` and are **bot-only**:
+
+### `POST /system/:systemId/proxies`
+
+Create a new proxy in a system.
+
+### `GET /system/:systemId/proxies`
+
+Fetch all proxies in a system.
+
+### `PUT /system/:systemId/proxies/:proxyId`
+
+Update an existing proxy.
+
+### `DELETE /system/:systemId/proxies/:proxyId`
+
+Delete a proxy.
+
+---
+
+## 📁 `/auth` Routes
+
+Public login, Discord OAuth2, and callback endpoints (defined in `auth.js`).
+
+Not documented here — handled separately as part of the frontend OAuth2 flow.
+
+---
+
+## ✅ `/health`
+
+Returns `{ status: 'ok', uptime: ... }` to confirm server is alive.
