@@ -39,35 +39,49 @@ client.once('ready', () => {
 // Message Create Handler
 // ============================
 client.on('messageCreate', async (message) => {
+  console.log('[Gateway] Received message:', message.content);
   if (message.author.bot || message.channel.type !== 0) return;
 
   try {
-    const userRes = await fetch(`${config.apiBaseUrl}/user/${message.author.id}`);
+    const userRes = await fetch(`${config.apiBaseUrl}/user/${message.author.id}`, {
+      headers: { Authorization: `Bearer ${config.botAPIToken}` }
+    });
     const userData = await userRes.json();
+    console.log('[Gateway] System ID:', userData.systemId);
+
     if (!userData?.systemId) return;
 
-    const systemRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}`);
+    const systemRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}`, {
+      headers: { Authorization: `Bearer ${config.botAPIToken}` }
+    });
     const systemData = await systemRes.json();
+    console.log('[Gateway] Autoproxy config:', systemData.autoproxy);
     if (!systemData) return;
 
-    const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`);
+    const proxiesRes = await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies`, {
+      headers: { Authorization: `Bearer ${config.botAPIToken}` }
+    });
     const proxies = await proxiesRes.json();
+    console.log('[Gateway] Fetched proxies:', Array.isArray(proxies) ? proxies.length : 'Invalid response');
 
     let proxyToUse = null;
     let contentToSend = message.content;
 
-    // ========== 1. Tag Matching ==========
     proxyToUse = proxies.find(p => (p.proxyTags || []).some(tag => message.content.startsWith(tag)));
 
     if (proxyToUse) {
       const matchedTag = (proxyToUse.proxyTags || []).find(tag => message.content.startsWith(tag));
       contentToSend = message.content.slice(matchedTag.length).trim();
+      console.log('[Gateway] Tag matched:', matchedTag);
+      console.log('[Gateway] Using proxy:', proxyToUse.name, proxyToUse.id);
 
-      // Update lastUsedProxyId if in latch mode
       if (systemData.autoproxy?.mode === 'latch') {
         await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/autoproxy`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.botAPIToken}`
+          },
           body: JSON.stringify({
             mode: 'latch',
             lastUsedProxyId: proxyToUse.id,
@@ -76,12 +90,15 @@ client.on('messageCreate', async (message) => {
       }
     }
 
-    // ========== 2. Latch Fallback ==========
     if (!proxyToUse && systemData.autoproxy?.mode === 'latch' && systemData.lastUsedProxyId) {
       proxyToUse = proxies.find(p => p.id === systemData.lastUsedProxyId);
+      console.log('[Gateway] Latch fallback proxy:', proxyToUse?.id);
     }
 
-    if (!proxyToUse || !contentToSend.trim()) return;
+    if (!proxyToUse || !contentToSend.trim()) {
+      console.log('[Gateway] No proxy matched or content empty.');
+      return;
+    }
 
     const webhooks = await message.channel.fetchWebhooks();
     let webhook = webhooks.find(h => h.name === 'Corebot Proxy');
@@ -97,14 +114,17 @@ client.on('messageCreate', async (message) => {
       username: proxyToUse.display_name || proxyToUse.name,
       avatarURL: proxyToUse.avatar || undefined,
     });
+    console.log('[Gateway] Proxy sent:', sentMessage.id);
 
     await message.delete();
 
-    // ========== Log Message ==========
     if (config.directDBQuery === false) {
       await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/proxies/${proxyToUse.id}/log`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.botAPIToken}`
+        },
         body: JSON.stringify({
           guild: message.guild.id,
           channel: message.channel.id,
@@ -114,68 +134,10 @@ client.on('messageCreate', async (message) => {
           messageLink: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${sentMessage.id}`,
         }),
       });
+      console.log('[Gateway] Log sent to API.');
     }
   } catch (err) {
     logger.error('Failed to proxy message:', err);
-    if (config.sentry?.enabled) Sentry.captureException(err);
-  }
-});
-
-// ============================
-// Reaction Handler
-// ============================
-client.on('messageReactionAdd', async (reaction, user) => {
-  if (user.bot) return;
-  try {
-    if (reaction.partial) await reaction.fetch();
-    if (reaction.message.partial) await reaction.message.fetch();
-
-    const emoji = reaction.emoji.name;
-    const validEmojis = ['❓', '⁉️', '❔', '❕'];
-    if (!validEmojis.includes(emoji)) return;
-
-    const message = reaction.message;
-    if (message.author?.id === user.id) return;
-
-    const res = await fetch(`${config.apiBaseUrl}/system/proxy/lookup/by-message/${message.id}`);
-    if (!res.ok) {
-      logger.warn(`[Reaction] Lookup failed for message ${message.id} (${res.status})`);
-      return;
-    }
-
-    const { proxy, system } = await res.json();
-    if (!proxy || !system) return;
-
-    const embed = new EmbedBuilder()
-      .setTitle(`${proxy.display_name || proxy.name} (${proxy.id})`)
-      .setDescription(
-        (proxy.description || 'No description provided.')
-          .split('\n')
-          .map(line => line.trim())
-          .filter(Boolean)
-          .join(' ')
-          .slice(0, 1000)
-      )
-      .setColor(0x5865f2)
-      .setFooter({ text: `Message: ${message.url}` });
-
-    if (proxy.avatar) embed.setThumbnail(proxy.avatar);
-    if (proxy.banner) embed.setImage(proxy.banner);
-    if (proxy.proxyTags?.length)
-      embed.addFields({ name: 'Tags', value: proxy.proxyTags.join(', '), inline: false });
-    if (system.name)
-      embed.addFields({ name: 'System', value: system.name, inline: false });
-
-    await user.send({ embeds: [embed] });
-    try {
-      await reaction.users.remove(user.id);
-    } catch (err) {
-      logger.warn(`[Reaction] Failed to remove reaction: ${err.message}`);
-    }
-
-    logger.info(`[Reaction] Sent proxy card to ${user.tag} for message ${message.id}`);
-  } catch (err) {
-    logger.error(`[Reaction] Failed to process message reaction: ${err.message}`);
     if (config.sentry?.enabled) Sentry.captureException(err);
   }
 });

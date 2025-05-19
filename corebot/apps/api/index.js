@@ -5,7 +5,7 @@ const { connectToDatabase } = require('../../shared/utils/mongoClient');
 const config = require('../../config/configLoader');
 const createLogger = require('../../shared/utils/logger');
 const logger = createLogger('API');
-
+const System = require('../../shared/db/schemas/system');
 const app = express();
 const port = config.apiPort || 3341;
 
@@ -99,6 +99,21 @@ botProxyRouter.get('/:systemId/proxies', async (req, res) => {
   } catch (err) {
     logger.error('[GET /system/:systemId/proxies] Error:', err);
     res.status(500).json({ error: 'Failed to fetch proxies' });
+  }
+});
+// GET /system/:systemId → fetch a system (bot only)
+botProxyRouter.get('/:systemId', async (req, res) => {
+  if (req.user.discordId !== 'bot') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  try {
+    const system = await System.findOne({ id: req.params.systemId });
+    if (!system) return res.status(404).json({ error: 'System not found' });
+    res.json(system);
+  } catch (err) {
+    logger.error('[GET /system/:systemId] Error:', err);
+    res.status(500).json({ error: 'Failed to fetch system' });
   }
 });
 
