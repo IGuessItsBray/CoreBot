@@ -15,167 +15,192 @@ module.exports = async (interaction) => {
 
   logger.info(`[Autocomplete] ${commandName} → "${focused.value}"`);
 
-  // Get systemId for current user
-  let systemId;
-  try {
-    const userRes = await fetch(`${config.apiBaseUrl}/user/${user.id}`, {
-      headers: apiHeaders
-    });
-    const userData = await userRes.json();
-    if (!userRes.ok || !userData?.systemId) return interaction.respond([]);
-    systemId = userData.systemId;
-  } catch (err) {
-    logger.error('[Autocomplete] Failed to fetch user:', err);
-    return interaction.respond([]);
-  }
-
-  const fetchAndFilter = async (endpoint, getListFn) => {
+  const fetchAndFilter = async (endpoint, systemId, getListFn) => {
     try {
       const res = await fetch(`${config.apiBaseUrl}/system/${systemId}/${endpoint}`, {
         headers: apiHeaders
       });
       const items = await res.json();
-      const filtered = items
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .filter(i => i.name.toLowerCase().includes(focused.value.toLowerCase()))
-        .slice(0, 25)
-        .map(getListFn);
-      return interaction.respond(filtered);
+      return interaction.respond(
+        items
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .filter(i => i.name.toLowerCase().includes(focused.value.toLowerCase()))
+          .slice(0, 25)
+          .map(getListFn)
+      );
     } catch (err) {
       logger.error(`[Autocomplete] Failed to fetch ${endpoint}:`, err);
       return interaction.respond([]);
     }
   };
 
-  // Proxy-based commands
+  const getSystemId = async (discordId) => {
+    try {
+      const res = await fetch(`${config.apiBaseUrl}/user/${discordId}`, {
+        headers: apiHeaders
+      });
+      const data = await res.json();
+      return res.ok ? data.systemId : null;
+    } catch (err) {
+      logger.error('[Autocomplete] Failed to fetch user systemId:', err);
+      return null;
+    }
+  };
+
+  const systemId = await getSystemId(user.id);
+  if (!systemId) return interaction.respond([]);
+
+  // --- Proxy-based Commands ---
   if ([
     'editproxy', 'deleteproxy', 'setavatar', 'settags', 'setbanner', 'proxyinfo'
   ].includes(commandName)) {
-    return fetchAndFilter('proxies', p => ({ name: `${p.id} - ${p.name}`, value: p.id }));
+    return fetchAndFilter('proxies', systemId, p => ({ name: `${p.id} - ${p.name}`, value: p.id }));
   }
 
-  // Autoproxy member mode
   if (commandName === 'autoproxy' && focused.name === 'member') {
-    return fetchAndFilter('proxies', p => ({ name: `${p.name} (${p.id})`, value: p.id }));
+    return fetchAndFilter('proxies', systemId, p => ({ name: `${p.name} (${p.id})`, value: p.id }));
   }
 
-  // Lookup proxies globally
   if (commandName === 'lookupproxy') {
     try {
       const res = await fetch(`${config.apiBaseUrl}/proxy`, { headers: apiHeaders });
       const all = await res.json();
-      const filtered = all
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
-        .slice(0, 25)
-        .map(p => ({ name: `${p.name} (${p.id})`, value: p.id }));
-      return interaction.respond(filtered);
+      return interaction.respond(
+        all
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
+          .slice(0, 25)
+          .map(p => ({ name: `${p.name} (${p.id})`, value: p.id }))
+      );
     } catch (err) {
       logger.error('[Autocomplete] Failed to fetch all proxies:', err);
       return interaction.respond([]);
     }
   }
 
-  // Group commands
+  // --- Group Commands ---
   if ([
     'groupinfo', 'editgroup', 'deletegroup', 'lookupgroup'
   ].includes(commandName)) {
-    return fetchAndFilter('groups', g => ({ name: `${g.id} - ${g.name}`, value: g.id }));
+    return fetchAndFilter('groups', systemId, g => ({ name: `${g.id} - ${g.name}`, value: g.id }));
   }
 
   if (commandName === 'addmembertogroup') {
     if (focused.name === 'proxy') {
-      return fetchAndFilter('proxies', p => ({ name: `${p.name}`, value: p.id }));
-    }
-    if (focused.name === 'group') {
-      return fetchAndFilter('groups', g => ({ name: `${g.name}`, value: g.id }));
+      return fetchAndFilter('proxies', systemId, p => ({ name: p.name, value: p.id }));
+    } else if (focused.name === 'group') {
+      return fetchAndFilter('groups', systemId, g => ({ name: g.name, value: g.id }));
     }
   }
 
   if (commandName === 'removememberfromgroup') {
     if (focused.name === 'group') {
-      return fetchAndFilter('groups', g => ({ name: g.name, value: g.id }));
-    }
-    if (focused.name === 'proxy') {
+      return fetchAndFilter('groups', systemId, g => ({ name: g.name, value: g.id }));
+    } else if (focused.name === 'proxy') {
       try {
         const groupId = options.getString('group');
         if (!groupId) return interaction.respond([]);
 
-        const groupRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/groups`, {
-          headers: apiHeaders
-        });
+        const groupRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/groups`, { headers: apiHeaders });
         const groups = await groupRes.json();
         const selected = groups.find(g => g.id === groupId);
         if (!selected) return interaction.respond([]);
 
-        const memberRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`, {
-          headers: apiHeaders
-        });
-        const members = await memberRes.json();
+        const proxyRes = await fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`, { headers: apiHeaders });
+        const proxies = await proxyRes.json();
 
-        const filtered = members
-          .filter(m => selected.members.includes(m.id))
-          .filter(m => m.name.toLowerCase().includes(focused.value.toLowerCase()))
-          .slice(0, 25)
-          .map(m => ({ name: m.name, value: m.id }));
-
-        return interaction.respond(filtered);
+        return interaction.respond(
+          proxies
+            .filter(p => selected.members.includes(p.id))
+            .filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
+            .slice(0, 25)
+            .map(p => ({ name: p.name, value: p.id }))
+        );
       } catch (err) {
-        logger.error('[Autocomplete] Failed to fetch members for group:', err);
+        logger.error('[Autocomplete] Failed to fetch group members:', err);
         return interaction.respond([]);
       }
     }
   }
 
-  if (commandName === 'setid') {
-    const type = options.getString('type');
-    const targetUser = options.getString('user');
-    if (!type || !targetUser) return interaction.respond([]);
+ if (commandName === 'setid') {
+  const type = options.getString('type');
+  const targetUser = options.getString('user');
+  if (!type || !targetUser) return interaction.respond([]);
 
-    try {
-      const userRes = await fetch(`${config.apiBaseUrl}/user/${targetUser}`, {
-        headers: apiHeaders
-      });
-      const userData = await userRes.json();
-      if (!userRes.ok || !userData?.systemId) return interaction.respond([]);
-      const targetSystemId = userData.systemId;
-
-      if (type === 'member') {
-        const res = await fetch(`${config.apiBaseUrl}/system/${targetSystemId}/proxies`, {
-          headers: apiHeaders
-        });
-        const data = await res.json();
-        return interaction.respond(
-          data.filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
-              .slice(0, 25)
-              .map(p => ({ name: `${p.name} (${p.id})`, value: p.id }))
-        );
-      }
-
-      if (type === 'group') {
-        const res = await fetch(`${config.apiBaseUrl}/system/${targetSystemId}/groups`, {
-          headers: apiHeaders
-        });
-        const data = await res.json();
-        return interaction.respond(
-          data.filter(g => g.name.toLowerCase().includes(focused.value.toLowerCase()))
-              .slice(0, 25)
-              .map(g => ({ name: `${g.name} (${g.id})`, value: g.id }))
-        );
-      }
-
-      if (type === 'system') {
-        const res = await fetch(`${config.apiBaseUrl}/system?systemId=${targetSystemId}`, {
-          headers: apiHeaders
-        });
-        const system = await res.json();
-        return interaction.respond([{ name: `${system.name} (${system.id})`, value: system.id }]);
-      }
-    } catch (err) {
-      logger.error('[Autocomplete] Failed to fetch data for /setid:', err);
+  try {
+    const userRes = await fetch(`${config.apiBaseUrl}/user/${targetUser}`, {
+      headers: apiHeaders
+    });
+    const userData = await userRes.json();
+    if (!userRes.ok || !userData?.systemId) {
+      logger.warn('[Autocomplete] User has no system');
       return interaction.respond([]);
     }
+
+    const targetSystemId = userData.systemId;
+
+    if (type === 'member') {
+      const res = await fetch(`${config.apiBaseUrl}/system/${targetSystemId}/proxies`, {
+        headers: apiHeaders
+      });
+      const data = await res.json();
+      return interaction.respond(
+        data
+          .filter(p => p.name.toLowerCase().includes(focused.value.toLowerCase()))
+          .slice(0, 25)
+          .map(p => ({ name: `${p.name} (${p.id})`, value: p.id }))
+      );
+    }
+
+    if (type === 'group') {
+      const res = await fetch(`${config.apiBaseUrl}/system/${targetSystemId}/groups`, {
+        headers: apiHeaders
+      });
+      const data = await res.json();
+      return interaction.respond(
+        data
+          .filter(g => g.name.toLowerCase().includes(focused.value.toLowerCase()))
+          .slice(0, 25)
+          .map(g => ({ name: `${g.name} (${g.id})`, value: g.id }))
+      );
+    }
+
+if (type === 'system') {
+  try {
+    const systemUrl = `${config.apiBaseUrl}/system?systemId=${userData.systemId}`;
+    logger.info(`[Autocomplete] Fetching system for setid. User: ${targetUser}, URL: ${systemUrl}`);
+
+    const res = await fetch(systemUrl, {
+      headers: {
+        'Authorization': `Bearer ${config.botAPIToken}`
+      }
+    });
+
+    if (!res.ok) {
+      logger.warn(`[Autocomplete] Failed to fetch system ${userData.systemId}: HTTP ${res.status}`);
+      return interaction.respond([]);
+    }
+
+    const system = await res.json();
+
+    return interaction.respond([
+      {
+        name: `${system.name || 'Unnamed'} (${system.id})`,
+        value: system.id
+      }
+    ]);
+  } catch (err) {
+    logger.error(`[Autocomplete] Error fetching system for setid:`, err);
+    return interaction.respond([]);
   }
+}
+
+  } catch (err) {
+    logger.error('[Autocomplete] Failed to fetch items for /setid:', err);
+    return interaction.respond([]);
+  }
+}
 
   if (commandName === 'listproxies' && focused.name === 'system') {
     try {
@@ -184,12 +209,13 @@ module.exports = async (interaction) => {
       });
       const systems = await res.json();
       return interaction.respond(
-        systems.filter(s => s.name.toLowerCase().includes(focused.value.toLowerCase()))
-               .slice(0, 25)
-               .map(s => ({ name: `${s.name} (${s.id})`, value: s.id }))
+        systems
+          .filter(s => s.name.toLowerCase().includes(focused.value.toLowerCase()))
+          .slice(0, 25)
+          .map(s => ({ name: `${s.name} (${s.id})`, value: s.id }))
       );
     } catch (err) {
-      logger.error('[Autocomplete] Failed to fetch systems:', err);
+      logger.error('[Autocomplete] Failed to fetch all systems:', err);
       return interaction.respond([]);
     }
   }

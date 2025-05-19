@@ -6,36 +6,30 @@ const config = require('../../config/configLoader');
 const createLogger = require('../../shared/utils/logger');
 const logger = createLogger('API');
 const System = require('../../shared/db/schemas/system');
-const app = express();
-const port = config.apiPort || 3341;
-
-// Routes
+const Member = require('../../shared/db/schemas/member');
 const userRoutes = require('./routes/user');
 const proxyRoutes = require('./routes/member');
-const groupRoutes = require('./routes/group');
 const systemRoutes = require('./routes/system');
-const verifyToken = require('./middleware/verifyToken');
-const Member = require('../../shared/db/schemas/member');
+const groupRoutes = require('./routes/group');
+const app = express();
+const port = config.apiPort || 3341;
 
 // Middleware
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
-// Public auth
+// Auth middleware
+const verifyToken = require('./middleware/verifyToken');
+
+// Public routes
 app.use('/auth', require('./routes/auth'));
 
-// Protected API routes
-app.use('/user', verifyToken, userRoutes);
-app.use('/proxy', verifyToken, proxyRoutes);
-app.use('/group', verifyToken, groupRoutes);
-app.use('/system', verifyToken, systemRoutes);
-
-// Bot-only system-scoped proxy routes
+// Bot-only system-scoped routes (MUST be mounted before /system user routes)
 const botProxyRouter = express.Router();
 botProxyRouter.use(verifyToken);
 
-// POST /system/:systemId/proxies
+// Create proxy
 botProxyRouter.post('/:systemId/proxies', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
   try {
@@ -47,27 +41,16 @@ botProxyRouter.post('/:systemId/proxies', async (req, res) => {
   }
 });
 
-// PUT /system/:systemId/proxies/:proxyId
+// Update proxy
 botProxyRouter.put('/:systemId/proxies/:proxyId', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
-
-  const { systemId, proxyId } = req.params;
-  logger.info('[PUT] System ID:', systemId);
-  logger.info('[PUT] Proxy ID:', proxyId);
-  logger.info('[PUT] Body:', req.body);
-
   try {
     const updated = await Member.findOneAndUpdate(
-      { id: proxyId, systemId: systemId },
+      { id: req.params.proxyId, systemId: req.params.systemId },
       req.body,
       { new: true }
     );
-
-    if (!updated) {
-      logger.warn('[PUT] No match for query:', { id: proxyId, systemId: systemId });
-      return res.status(404).json({ error: 'Proxy not found' });
-    }
-
+    if (!updated) return res.status(404).json({ error: 'Proxy not found' });
     res.json(updated);
   } catch (err) {
     logger.error('[PUT /system/:systemId/proxies/:proxyId] Error:', err);
@@ -75,7 +58,7 @@ botProxyRouter.put('/:systemId/proxies/:proxyId', async (req, res) => {
   }
 });
 
-// DELETE /system/:systemId/proxies/:proxyId
+// Delete proxy
 botProxyRouter.delete('/:systemId/proxies/:proxyId', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
   try {
@@ -90,7 +73,8 @@ botProxyRouter.delete('/:systemId/proxies/:proxyId', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete proxy' });
   }
 });
-// GET /system/:systemId/proxies
+
+// Get proxies
 botProxyRouter.get('/:systemId/proxies', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
   try {
@@ -101,12 +85,10 @@ botProxyRouter.get('/:systemId/proxies', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch proxies' });
   }
 });
-// GET /system/:systemId → fetch a system (bot only)
-botProxyRouter.get('/:systemId', async (req, res) => {
-  if (req.user.discordId !== 'bot') {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
 
+// Get system by ID
+botProxyRouter.get('/:systemId', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
   try {
     const system = await System.findOne({ id: req.params.systemId });
     if (!system) return res.status(404).json({ error: 'System not found' });
@@ -117,14 +99,67 @@ botProxyRouter.get('/:systemId', async (req, res) => {
   }
 });
 
+// Change member ID
+botProxyRouter.patch('/:systemId/member/:memberId/setid', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const { newId } = req.body;
+  if (!/^[A-Z0-9]{2,9}$/.test(newId)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+  try {
+    const updated = await Member.findOneAndUpdate(
+      { id: req.params.memberId, systemId: req.params.systemId },
+      { id: newId },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: 'Member not found' });
+    res.json(updated);
+  } catch (err) {
+    logger.error(`[PATCH /system/${req.params.systemId}/member/${req.params.memberId}/setid] Error:`, err);
+    res.status(500).json({ error: 'Failed to update proxy ID' });
+  }
+});
+
+// Change system ID
+botProxyRouter.patch('/:systemId/setid', async (req, res) => {
+  if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const { newId } = req.body;
+  if (!/^[A-Z0-9]{2,9}$/.test(newId)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+  try {
+    const existing = await System.findOne({ id: newId });
+    if (existing) return res.status(409).json({ error: 'ID already in use' });
+
+    const updated = await System.findOneAndUpdate(
+      { id: req.params.systemId },
+      { id: newId },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: 'System not found' });
+    res.json(updated);
+  } catch (err) {
+    logger.error(`[PATCH /system/${req.params.systemId}/setid] Error:`, err);
+    res.status(500).json({ error: 'Failed to update system ID' });
+  }
+});
+
+// Register bot routes BEFORE user routes
 app.use('/system', botProxyRouter);
+
+// Verified user API routes
+app.use('/user', verifyToken, userRoutes);
+app.use('/proxy', verifyToken, proxyRoutes);
+app.use('/group', verifyToken, groupRoutes);
+app.use('/system', verifyToken, systemRoutes);
 app.use('/system/:systemId/groups', verifyToken, groupRoutes);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-// Start server
+// Startup
 (async () => {
   await connectToDatabase();
   app.listen(port, () => {
