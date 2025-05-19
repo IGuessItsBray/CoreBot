@@ -12,15 +12,18 @@ const userRoutes = require('./routes/user');
 const proxyRoutes = require('./routes/member');
 const groupRoutes = require('./routes/group');
 const systemRoutes = require('./routes/system');
+const authRoutes = require('./routes/auth');
+const verifyToken = require('./middleware/verifyToken');
 // Middleware
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
-app.use('/user', userRoutes);
-app.use('/proxy', proxyRoutes);
-app.use('/group', groupRoutes);
-app.use('/system', systemRoutes);
 
+app.use('/auth', require('./routes/auth')); // public
+app.use('/user', verifyToken, require('./routes/user')); // protected now
+app.use('/proxy', verifyToken, proxyRoutes);
+app.use('/group', verifyToken, groupRoutes);
+app.use('/system', verifyToken, systemRoutes);
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });

@@ -2,10 +2,12 @@ const express = require('express');
 const User = require('../../../shared/db/schemas/user');
 const router = express.Router();
 
-// GET /user/:discordId
-router.get('/:discordId', async (req, res) => {
+// ==============================
+// GET /user → fetch authenticated user
+// ==============================
+router.get('/', async (req, res) => {
   try {
-    const user = await User.findOne({ discordId: req.params.discordId });
+    const user = await User.findOne({ discordId: req.user.discordId });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -13,15 +15,19 @@ router.get('/:discordId', async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error('[GET /user/:id] Error:', err);
+    console.error('[GET /user] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// POST /user
+// ==============================
+// POST /user → create new user record (for dev setup / dashboard)
+// ==============================
 router.post('/', async (req, res) => {
   try {
-    const { discordId, systemId } = req.body;
+    const { systemId } = req.body;
+    const discordId = req.user.discordId;
+
     if (!discordId || !systemId) {
       return res.status(400).json({ error: 'discordId and systemId are required' });
     }

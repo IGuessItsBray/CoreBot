@@ -1,10 +1,16 @@
 const express = require('express');
-const Group = require('../../../shared/db/schemas/group');
 const router = express.Router();
+const Group = require('../../../shared/db/schemas/group');
 const createLogger = require('../../../shared/utils/logger');
+const verifyToken = require('../middleware/verifyToken');
 const logger = createLogger('GroupAPI');
 
+// All routes in this file are protected
+router.use(verifyToken);
+
+// ========================
 // GET /group/:id
+// ========================
 router.get('/:id', async (req, res) => {
   try {
     const group = await Group.findOne({ id: req.params.id });
@@ -16,7 +22,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// ========================
 // GET /group/system/:systemId
+// ========================
 router.get('/system/:systemId', async (req, res) => {
   try {
     const groups = await Group.find({ systemId: req.params.systemId });
@@ -27,7 +35,9 @@ router.get('/system/:systemId', async (req, res) => {
   }
 });
 
+// ========================
 // POST /group
+// ========================
 router.post('/', async (req, res) => {
   try {
     const { name, systemId, members } = req.body;
@@ -39,7 +49,9 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ========================
 // PUT /group/:id
+// ========================
 router.put('/:id', async (req, res) => {
   try {
     const updated = await Group.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
@@ -51,7 +63,9 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// ========================
 // DELETE /group/:id
+// ========================
 router.delete('/:id', async (req, res) => {
   try {
     const deleted = await Group.findOneAndDelete({ id: req.params.id });
@@ -62,7 +76,10 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete group' });
   }
 });
+
+// ========================
 // PATCH /system/:systemId/groups/:groupId/setid
+// ========================
 router.patch('/system/:systemId/groups/:groupId/setid', async (req, res) => {
   const { groupId } = req.params;
   const { newId } = req.body;
@@ -79,4 +96,5 @@ router.patch('/system/:systemId/groups/:groupId/setid', async (req, res) => {
 
   return res.json(group);
 });
+
 module.exports = router;

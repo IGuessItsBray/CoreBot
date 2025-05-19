@@ -3,7 +3,11 @@ const router = express.Router();
 const Member = require('../../../shared/db/schemas/member');
 const Group = require('../../../shared/db/schemas/group');
 const createLogger = require('../../../shared/utils/logger');
-const logger = createLogger('MemberAPI');
+const verifyToken = require('../middleware/verifyToken');
+const logger = createLogger('ProxyAPI');
+
+// Middleware to protect routes
+router.use(verifyToken);
 
 // ========================
 // GET: Groups a member is in
@@ -13,82 +17,70 @@ router.get('/:id/groups', async (req, res) => {
     const groups = await Group.find({ members: req.params.id }).select('id name');
     res.json(groups);
   } catch (err) {
-    logger.error('[GET /member/:id/groups] Error:', err);
-    res.status(500).json({ error: 'Failed to fetch groups for member' });
+    logger.error('[GET /proxy/:id/groups] Error:', err);
+    res.status(500).json({ error: 'Failed to fetch groups for proxy' });
   }
 });
 
 // ========================
-// CRUD for Members
+// CRUD for Proxies
 // ========================
 
-// GET /member/system/:systemId - fetch all members in system
-router.get('/system/:systemId', async (req, res) => {
+// GET /proxy/system - fetch all proxies for current user's system
+router.get('/system', async (req, res) => {
   try {
-    const members = await Member.find({ systemId: req.params.systemId });
+    const members = await Member.find({ systemId: req.user.systemId });
     res.json(members);
   } catch (err) {
-    logger.error('[GET /member/system/:systemId] Error:', err);
+    logger.error('[GET /proxy/system] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET /member/:id - fetch single member
+// GET /proxy/:id - fetch single proxy
 router.get('/:id', async (req, res) => {
   try {
     const member = await Member.findOne({ id: req.params.id });
-    if (!member) return res.status(404).json({ error: 'Member not found' });
+    if (!member) return res.status(404).json({ error: 'Proxy not found' });
     res.json(member);
   } catch (err) {
-    logger.error('[GET /member/:id] Error:', err);
+    logger.error('[GET /proxy/:id] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET /member - fetch all members globally
-router.get('/', async (req, res) => {
-  try {
-    const members = await Member.find().select('id name').lean();
-    res.json(members);
-  } catch (err) {
-    logger.error('[GET /member] Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// POST /member - create a new member
+// POST /proxy - create a new proxy
 router.post('/', async (req, res) => {
   try {
-    const { name, systemId } = req.body;
-    const member = await Member.create({ name, systemId });
+    const member = await Member.create({ ...req.body, systemId: req.user.systemId });
     res.status(201).json(member);
   } catch (err) {
-    logger.error('[POST /member] Error:', err);
-    res.status(500).json({ error: 'Failed to create member' });
+    logger.error('[POST /proxy] Error:', err);
+    res.status(500).json({ error: 'Failed to create proxy' });
   }
 });
 
-// PUT /member/:id - update an existing member
+// PUT /proxy/:id - update an existing proxy
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await Member.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
-    if (!updated) return res.status(404).json({ error: 'Member not found' });
+    const updated = await Member.findOneAndUpdate({ id: req.params.id, systemId: req.user.systemId }, req.body, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Proxy not found' });
     res.json(updated);
   } catch (err) {
-    logger.error('[PUT /member/:id] Error:', err);
-    res.status(500).json({ error: 'Failed to update member' });
+    logger.error('[PUT /proxy/:id] Error:', err);
+    res.status(500).json({ error: 'Failed to update proxy' });
   }
 });
 
-// DELETE /member/:id - remove a member
+// DELETE /proxy/:id - remove a proxy
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Member.findOneAndDelete({ id: req.params.id });
-    if (!deleted) return res.status(404).json({ error: 'Member not found' });
-    res.json({ message: 'Member deleted' });
+    const deleted = await Member.findOneAndDelete({ id: req.params.id, systemId: req.user.systemId });
+    if (!deleted) return res.status(404).json({ error: 'Proxy not found' });
+    res.json({ message: 'Proxy deleted' });
   } catch (err) {
-    logger.error('[DELETE /member/:id] Error:', err);
-    res.status(500).json({ error: 'Failed to delete member' });
+    logger.error('[DELETE /proxy/:id] Error:', err);
+    res.status(500).json({ error: 'Failed to delete proxy' });
   }
 });
 
@@ -96,42 +88,8 @@ router.delete('/:id', async (req, res) => {
 // Logging
 // ========================
 
-// PUT /member/:id/message - log a proxied message (old method)
-router.put('/:id/message', async (req, res) => {
-  const { guild, channel, content } = req.body;
-
-  if (!guild || !channel || !content) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  try {
-    const member = await Member.findOne({ id: req.params.id });
-    if (!member) return res.status(404).json({ error: 'Member not found' });
-
-    const newMessage = { content, channel, guild };
-    let guildLog = member.guildLogs.find(g => g.guildId === guild);
-
-    if (!guildLog) {
-      member.guildLogs.push({ guildId: guild, messages: [newMessage] });
-    } else {
-      guildLog.messages.push(newMessage);
-    }
-
-    member.messageCount += 1;
-    member.characterCount += content.length;
-
-    await member.save();
-
-    res.json({ message: 'Logged message', member });
-  } catch (err) {
-    logger.error('[PUT /member/:id/message] Error:', err);
-    res.status(500).json({ error: 'Failed to log message' });
-  }
-});
-
-// POST /system/:systemId/proxies/:proxyId/log - new structured logger
-router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
-  const { systemId, proxyId } = req.params;
+// POST /proxy/:id/log - log a proxied message
+router.post('/:id/log', async (req, res) => {
   const { guild, channel, content, timestamp, messageId, messageLink } = req.body;
 
   if (!guild || !channel || !content) {
@@ -139,10 +97,8 @@ router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
   }
 
   try {
-    const member = await Member.findOne({ id: proxyId, systemId });
-    if (!member) {
-      return res.status(404).json({ error: 'Proxy not found' });
-    }
+    const member = await Member.findOne({ id: req.params.id, systemId: req.user.systemId });
+    if (!member) return res.status(404).json({ error: 'Proxy not found' });
 
     member.messageCount = (member.messageCount || 0) + 1;
     member.characterCount = (member.characterCount || 0) + content.length;
@@ -163,10 +119,20 @@ router.post('/:systemId/proxies/:proxyId/log', async (req, res) => {
     });
 
     await member.save();
-    return res.status(201).json({ success: true });
+    res.status(201).json({ success: true });
   } catch (err) {
-    logger.error('[POST /system/:systemId/proxies/:proxyId/log] Error:', err);
-    return res.status(500).json({ error: 'Failed to log message' });
+    logger.error('[POST /proxy/:id/log] Error:', err);
+    res.status(500).json({ error: 'Failed to log message' });
+  }
+});
+// GET /proxy/system/:systemId - get all proxies in a system
+router.get('/system/:systemId', async (req, res) => {
+  try {
+    const proxies = await Member.find({ systemId: req.params.systemId });
+    res.json(proxies);
+  } catch (err) {
+    logger.error('[GET /proxy/system/:systemId] Error:', err);
+    res.status(500).json({ error: 'Failed to fetch proxies for system' });
   }
 });
 
