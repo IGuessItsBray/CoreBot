@@ -3,7 +3,8 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const jwt = require('jsonwebtoken');
 const config = require('../../../config/configLoader');
 const router = express.Router();
-
+const verifyToken = require('../middleware/verifyToken');
+const User = require('../../../shared/db/schemas/user');
 router.get('/login', (req, res) => {
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -44,7 +45,7 @@ try {
 }
 
 if (!tokenData.access_token) {
-  throw new Error(`Failed to get access token: ${tokenData.error_description || tokenData.error}`);
+  return res.status(400).json({ error: tokenData.error_description || tokenData.error || 'No access token received' });
 }
 
     // Step 2: Fetch Discord user
@@ -54,15 +55,19 @@ if (!tokenData.access_token) {
     const user = await userRes.json();
 
     // Step 3: Sign and return JWT
-    const jwtToken = jwt.sign(
-      {
-        discordId: user.id,
-        username: user.username,
-        tag: `${user.username}#${user.discriminator}`,
-      },
-      config.jwtSecret,
-      { expiresIn: '1h' }
-    );
+    // Step 3: Sign and redirect with JWT
+const jwtToken = jwt.sign(
+  {
+    discordId: user.id,
+    username: user.username,
+    tag: `${user.username}#${user.discriminator}`,
+  },
+  config.jwtSecret,
+  { expiresIn: '1h' }
+);
+
+// ✅ Redirect to dashboard, include token in query (or set as cookie if you'd rather)
+res.redirect(`${config.dashboard_url}/callback?token=${jwtToken}`);
 
     res.json({ token: jwtToken });
   } catch (err) {
@@ -70,5 +75,20 @@ if (!tokenData.access_token) {
     res.status(500).send('Authentication failed');
   }
 });
+router.get('/me', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ discordId: req.user.discordId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
+    res.json({
+      id: user.discordId,
+      systemId: user.systemId,
+      username: req.user.username,
+      tag: req.user.tag
+    });
+  } catch (err) {
+    console.error('[GET /auth/me] Error:', err);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
 module.exports = router;

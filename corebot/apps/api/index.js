@@ -14,8 +14,11 @@ const groupRoutes = require('./routes/group');
 const app = express();
 const port = config.apiPort || 3341;
 
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow frontend dev server
+  credentials: true                // Optional, for cookies/auth
+}));
 // Middleware
-app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
@@ -119,7 +122,74 @@ botProxyRouter.patch('/:systemId/member/:memberId/setid', async (req, res) => {
     res.status(500).json({ error: 'Failed to update proxy ID' });
   }
 });
+app.get('/export/:discordId', verifyToken, async (req, res) => {
+  const { discordId } = req.params;
 
+  if (req.user.discordId !== 'bot') {
+    return res.status(403).json({ error: 'Forbidden: Bot access only' });
+  }
+
+  try {
+    const userRes = await fetch(`${config.apiBaseUrl}/user/${discordId}`, {
+      headers: { Authorization: `Bearer ${config.botAPIToken}` }
+    });
+    if (!userRes.ok) return res.status(404).json({ error: 'User not found' });
+
+    const userData = await userRes.json();
+    const systemId = userData.systemId;
+    if (!systemId) return res.status(404).json({ error: 'User has no system' });
+
+    // Fetch system, members, and groups
+    const [systemRes, proxiesRes, groupsRes] = await Promise.all([
+      fetch(`${config.apiBaseUrl}/system?systemId=${systemId}`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      }),
+      fetch(`${config.apiBaseUrl}/system/${systemId}/proxies`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      }),
+      fetch(`${config.apiBaseUrl}/system/${systemId}/groups`, {
+        headers: { Authorization: `Bearer ${config.botAPIToken}` }
+      }),
+    ]);
+
+    const system = await systemRes.json();
+    const members = await proxiesRes.json();
+    const groups = await groupsRes.json();
+
+    const exportData = {
+      platform: "corebot",
+      version: config.exportVersion || "4",
+      system: {
+        id: system.id,
+        name: system.name,
+        memberCount: members.length,
+        groupCount: groups.length
+      },
+      members: members.map(m => ({
+        id: m.id,
+        name: m.name,
+        description: m.description || "",
+        pronouns: m.pronouns || "",
+        proxyTags: m.proxyTags || [],
+        groups: groups
+          .filter(g => Array.isArray(g.members) && g.members.includes(m.id))
+          .map(g => g.id)
+      })),
+      groups: groups.map(g => ({
+        id: g.id,
+        name: g.name,
+        description: g.description || "",
+        members: g.members || []
+      }))
+    };
+
+    return res.json(exportData);
+
+  } catch (err) {
+    logger.error(`[GET /export/${discordId}] Error:`, err);
+    return res.status(500).json({ error: 'Failed to export user data' });
+  }
+});
 // Change system ID
 botProxyRouter.patch('/:systemId/setid', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
