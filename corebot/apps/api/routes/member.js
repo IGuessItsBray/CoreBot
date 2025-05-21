@@ -1,4 +1,4 @@
-// /apps/api/routes/member.js (rewritten)
+// /apps/api/routes/member.js
 const express = require('express');
 const router = express.Router();
 const Member = require('../../../shared/db/schemas/member');
@@ -67,7 +67,16 @@ router.get('/:id', async (req, res) => {
 // POST: Create a new proxy in user's system
 router.post('/', async (req, res) => {
   try {
-    const proxy = await Member.create({ ...req.body, systemId: req.user.systemId });
+    const { proxyTags, ...rest } = req.body;
+    const newProxy = {
+      ...rest,
+      systemId: req.user.systemId,
+      proxyTags: {
+        prefix: Array.isArray(proxyTags?.prefix) ? proxyTags.prefix : [],
+        suffix: Array.isArray(proxyTags?.suffix) ? proxyTags.suffix : [],
+      },
+    };
+    const proxy = await Member.create(newProxy);
     res.status(201).json(proxy);
   } catch (err) {
     logger.error('[POST /proxy] Error:', err);
@@ -78,9 +87,19 @@ router.post('/', async (req, res) => {
 // PUT: Update an existing proxy (must belong to user)
 router.put('/:id', async (req, res) => {
   try {
+    const { proxyTags, ...rest } = req.body;
+    const updateData = {
+      ...rest,
+    };
+    if (proxyTags) {
+      updateData.proxyTags = {
+        prefix: Array.isArray(proxyTags.prefix) ? proxyTags.prefix : [],
+        suffix: Array.isArray(proxyTags.suffix) ? proxyTags.suffix : [],
+      };
+    }
     const updated = await Member.findOneAndUpdate(
       { id: req.params.id, systemId: req.user.systemId },
-      req.body,
+      updateData,
       { new: true }
     );
     if (!updated) return res.status(404).json({ error: 'Proxy not found' });
@@ -136,7 +155,7 @@ router.post('/:id/log', async (req, res) => {
       content,
       timestamp: timestamp ? new Date(timestamp) : new Date(),
       messageId,
-      messageLink
+      messageLink,
     });
 
     await proxy.save();
@@ -146,19 +165,38 @@ router.post('/:id/log', async (req, res) => {
     res.status(500).json({ error: 'Failed to log message' });
   }
 });
+
 // POST /system/:systemId/proxies – create proxy (bot only)
 router.post('/system/:systemId/proxies', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
-  const proxy = await Member.create({ ...req.body, systemId: req.params.systemId });
+  const { proxyTags, ...rest } = req.body;
+  const proxy = await Member.create({
+    ...rest,
+    systemId: req.params.systemId,
+    proxyTags: {
+      prefix: Array.isArray(proxyTags?.prefix) ? proxyTags.prefix : [],
+      suffix: Array.isArray(proxyTags?.suffix) ? proxyTags.suffix : [],
+    },
+  });
   res.status(201).json(proxy);
 });
 
 // PUT /system/:systemId/proxies/:proxyId – update proxy (bot only)
 router.put('/system/:systemId/proxies/:proxyId', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
+  const { proxyTags, ...rest } = req.body;
+  const updateData = {
+    ...rest,
+  };
+  if (proxyTags) {
+    updateData.proxyTags = {
+      prefix: Array.isArray(proxyTags.prefix) ? proxyTags.prefix : [],
+      suffix: Array.isArray(proxyTags.suffix) ? proxyTags.suffix : [],
+    };
+  }
   const updated = await Member.findOneAndUpdate(
     { id: req.params.proxyId, systemId: req.params.systemId },
-    req.body,
+    updateData,
     { new: true }
   );
   if (!updated) return res.status(404).json({ error: 'Proxy not found' });
@@ -170,11 +208,12 @@ router.delete('/system/:systemId/proxies/:proxyId', async (req, res) => {
   if (req.user.discordId !== 'bot') return res.status(403).json({ error: 'Forbidden' });
   const deleted = await Member.findOneAndDelete({
     id: req.params.proxyId,
-    systemId: req.params.systemId
+    systemId: req.params.systemId,
   });
   if (!deleted) return res.status(404).json({ error: 'Proxy not found' });
   res.json({ message: 'Proxy deleted' });
 });
+
 // GET: All proxies (bot only)
 router.get('/', async (req, res) => {
   if (req.user.discordId !== 'bot') {

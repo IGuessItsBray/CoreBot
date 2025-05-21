@@ -64,31 +64,54 @@ client.on('messageCreate', async (message) => {
     const proxies = await proxiesRes.json();
     console.log('[Gateway] Fetched proxies:', Array.isArray(proxies) ? proxies.length : 'Invalid response');
 
-    let proxyToUse = null;
-    let contentToSend = message.content;
+let proxyToUse = null;
+let contentToSend = message.content;
 
-    proxyToUse = proxies.find(p => (p.proxyTags || []).some(tag => message.content.startsWith(tag)));
+for (const proxy of proxies) {
+  const prefixTags = proxy.proxyTags?.prefix || [];
+  const suffixTags = proxy.proxyTags?.suffix || [];
 
-    if (proxyToUse) {
-      const matchedTag = (proxyToUse.proxyTags || []).find(tag => message.content.startsWith(tag));
-      contentToSend = message.content.slice(matchedTag.length).trim();
-      console.log('[Gateway] Tag matched:', matchedTag);
-      console.log('[Gateway] Using proxy:', proxyToUse.name, proxyToUse.id);
+  // Check prefix tags
+  for (const tag of prefixTags) {
+    if (message.content.startsWith(tag)) {
+      proxyToUse = proxy;
+      contentToSend = message.content.slice(tag.length).trim();
+      console.log('[Gateway] Prefix tag matched:', tag);
+      break;
+    }
+  }
 
-      if (systemData.autoproxy?.mode === 'latch') {
-        await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/autoproxy`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${config.botAPIToken}`
-          },
-          body: JSON.stringify({
-            mode: 'latch',
-            lastUsedProxyId: proxyToUse.id,
-          }),
-        });
+  // Check suffix tags only if prefix didn't match
+  if (!proxyToUse) {
+    for (const tag of suffixTags) {
+      if (message.content.endsWith(tag)) {
+        proxyToUse = proxy;
+        contentToSend = message.content.slice(0, -tag.length).trim();
+        console.log('[Gateway] Suffix tag matched:', tag);
+        break;
       }
     }
+  }
+
+  if (proxyToUse) {
+    console.log('[Gateway] Using proxy:', proxyToUse.name, proxyToUse.id);
+
+    if (systemData.autoproxy?.mode === 'latch') {
+      await fetch(`${config.apiBaseUrl}/system/${userData.systemId}/autoproxy`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.botAPIToken}`
+        },
+        body: JSON.stringify({
+          mode: 'latch',
+          lastUsedProxyId: proxyToUse.id,
+        }),
+      });
+    }
+    break;
+  }
+}
 
     if (!proxyToUse && systemData.autoproxy?.mode === 'latch' && systemData.lastUsedProxyId) {
       proxyToUse = proxies.find(p => p.id === systemData.lastUsedProxyId);

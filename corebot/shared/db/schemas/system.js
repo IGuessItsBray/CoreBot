@@ -1,9 +1,16 @@
 const mongoose = require('mongoose');
-const { customAlphabet } = require('nanoid');
+const { customAlphabet, nanoid } = require('nanoid');
 
-const generateId = () => customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6)();
+const generateId = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 
 const systemSchema = new mongoose.Schema({
+  uuid: {
+    type: String,
+    default: () => nanoid(),
+    immutable: true, // Cannot be changed
+    unique: true,
+    index: true,
+  },
   id: {
     type: String,
     default: () => generateId(),
@@ -15,13 +22,13 @@ const systemSchema = new mongoose.Schema({
   avatar: String,
   banner: String,
   autoproxy: {
-  mode: { type: String, enum: ['off', 'latch', 'member'], default: 'off' },
-  memberId: { type: String, default: null }
-},
-lastUsedProxyId: {
-  type: String,
-  default: null,
-}
+    mode: { type: String, enum: ['off', 'latch', 'member'], default: 'off' },
+    memberId: { type: String, default: null },
+  },
+  lastUsedProxyId: {
+    type: String,
+    default: null,
+  }
 });
 
 module.exports = mongoose.model('System', systemSchema);
