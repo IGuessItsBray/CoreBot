@@ -169,3 +169,33 @@ for (const proxy of proxies) {
 // Login
 // ============================
 client.login(config.token);
+
+// ============================
+// Latency Reporting to API
+// ============================
+setInterval(async () => {
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/status/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.botAPIToken}`,
+      },
+      body: JSON.stringify({
+        source: 'gateway',
+        latency: client.ws.ping,
+        timestamp: new Date().toISOString(),
+        shardStatus: {
+          '0': client.ws.status.toString()
+        }
+      }),
+    });
+
+    if (!res.ok) {
+      logger.warn(`[Latency] Failed to post latency report: ${res.status}`);
+    }
+  } catch (err) {
+    logger.error('[Latency] Error posting status report:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+  }
+}, 30_000); // every 30 seconds

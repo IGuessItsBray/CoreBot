@@ -4,8 +4,11 @@ const createLogger = require('../../shared/utils/logger');
 const logger = createLogger('Bot');
 const Sentry = require('@sentry/node');
 const handleCommands = require('./handlers/commandHandler');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-// Initialize Sentry if enabled
+// ============================
+// Sentry Initialization
+// ============================
 if (config.sentry?.enabled) {
   Sentry.init({
     dsn: config.sentry.dsn,
@@ -14,7 +17,9 @@ if (config.sentry?.enabled) {
   logger.info('Sentry initialized.');
 }
 
-// Create Discord client with intents
+// ============================
+// Discord Client Setup
+// ============================
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -25,23 +30,56 @@ const client = new Client({
 
 client.commands = new Collection();
 
-// Ready event
 client.once('ready', () => {
   logger.info(`Logged in as ${client.user.tag}`);
 });
 
-// Interaction handling
+// ============================
+// Interaction Handling
+// ============================
 client.on('interactionCreate', async (interaction) => {
-    try {
-      await handleCommands(interaction, client);
-    } catch (err) {
-      logger.error('Error handling interaction:', err);
-      if (config.sentry?.enabled) Sentry.captureException(err);
-    }
-  });
+  try {
+    await handleCommands(interaction, client);
+  } catch (err) {
+    logger.error('Error handling interaction:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+  }
+});
 
-// Login
+// ============================
+// Login to Discord
+// ============================
 client.login(config.token).catch(err => {
   logger.error('Login failed:', err);
   if (config.sentry?.enabled) Sentry.captureException(err);
 });
+
+// ============================
+// Latency Reporting to API
+// ============================
+setInterval(async () => {
+  try {
+    const res = await fetch(`${config.apiBaseUrl}/status/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.botAPIToken}`,
+      },
+      body: JSON.stringify({
+        source: 'bot',
+        latency: client.ws.ping,
+        timestamp: new Date().toISOString(),
+        shardStatus: {
+          '0': client.ws.status.toString()
+        }
+      }),
+    });
+
+    if (!res.ok) {
+      logger.warn(`[Latency] Failed to post latency report: ${res.status}`);
+    }
+  } catch (err) {
+    logger.error('[Latency] Error posting status report:', err);
+    if (config.sentry?.enabled) Sentry.captureException(err);
+  }
+}, 30_000); // every 30 seconds
