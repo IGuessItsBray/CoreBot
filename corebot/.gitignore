@@ -1,5 +1,6 @@
 # Ignore all JSON config files in the config folder
 /config/*.json
+config.js
 
 # Node modules
 node_modules/
