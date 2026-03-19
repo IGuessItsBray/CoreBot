@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
  * GuildSchema defines the persistent settings for a Discord Server.
  */
 const GuildSchema = new mongoose.Schema({
+    modLogChannelId: { type: String, default: null },
   // The unique ID of the Discord Guild (Snowflake)
   guildId: { 
     type: String, 
@@ -11,6 +12,13 @@ const GuildSchema = new mongoose.Schema({
     unique: true,
     index: true 
   },
+
+  access: {
+  password: { type: String },
+  roleId: { type: String },
+  enabled: { type: Boolean, default: false },
+  lastUpdated: { type: Date }
+},
   
   // Custom prefix for non-slash commands (if you use them)
   prefix: { 

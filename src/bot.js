@@ -1,5 +1,5 @@
 // src/bot.js
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js"); // 🔹 Added Partials
 
 const Container = require("./core/container");
 const PluginLoader = require("./core/pluginLoader");
@@ -7,7 +7,8 @@ const PluginWatcher = require("./core/pluginWatcher");
 
 const RedisService = require("./services/redisService");
 const EventBus = require("./services/eventBus");
-const DatabaseService = require("./services/databaseService"); // 🔹 Added Database Service
+const DatabaseService = require("./services/databaseService");
+const LoggingService = require("./services/loggingService"); // 🔹 Added Logging Service
 
 const logger = require("./utils/logger");
 const config = require("./core/config");
@@ -18,8 +19,11 @@ async function startBot() {
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent
-    ]
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildMembers, // 🔹 Required for Role/Member audit logs
+    ],
+    // 🔹 Partials allow the bot to see events for messages sent while it was offline
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.GuildMember]
   });
 
   const container = new Container();
@@ -32,11 +36,11 @@ async function startBot() {
   container.register("config", config);
 
   /*
-  Database (MongoDB via Mongoose)
+  Database (MongoDB)
   */
   const dbService = new DatabaseService(container);
   container.register("database", dbService);
-  await dbService.init(); // 🔹 Ensure DB is connected before plugins load
+  await dbService.init();
 
   /*
   Redis
@@ -45,6 +49,12 @@ async function startBot() {
   await redis.connect();
   container.register("redis", redis);
   logger.info("Redis connected");
+
+  /*
+  Logging Service (Centralized logs)
+  */
+  const loggingService = new LoggingService(container);
+  container.register("logging", loggingService);
 
   /*
   Event Bus (built on Redis)
