@@ -1,0 +1,29 @@
+{
+  "discord": {
+    "token": "",
+    "clientId": "",
+    "clientSecret": "",
+    "intents": [
+      "Guilds",
+      "GuildMessages",
+      "MessageContent"
+    ]
+  },
+
+  "database": {
+    "mongoURI": "mongodb://localhost:27017/corebot"
+  },
+
+  "redis": {
+    "url": "redis://localhost:6379"
+  },
+
+  "logging": {
+    "level": "info"
+  },
+
+  "bot": {
+    "name": "",
+    "environment": ""
+  }
+}
