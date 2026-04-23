@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "^0.3.0",
+    "@discordjs/rest": "^0.6.0",
     "@discordjs/voice": "github:discordjs/voice",
     "@twurple/api": "^5.2.4",
     "@twurple/auth": "^5.2.4",
