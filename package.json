@@ -12,7 +12,7 @@
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "@discordjs/voice": "github:discordjs/voice",
-    "@twurple/api": "^5.2.4",
+    "@twurple/api": "^8.0.0",
     "@twurple/auth": "^5.2.4",
     "@twurple/eventsub": "^5.2.4",
     "@twurple/eventsub-ngrok": "^5.2.4",
